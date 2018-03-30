@@ -7,27 +7,76 @@
     tools:context=".MainActivity">
 
 
+    <Button
+        android:id="@+id/signUpBtn"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="75dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="111dp"
+        android:elevation="0dp"
+        android:fontFamily="sans-serif-smallcaps"
+        android:text="Sign Up"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:textColor="@android:color/holo_orange_dark" />
+
+    <Button
+        android:id="@+id/loginBtn"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="72dp"
+        android:fontFamily="sans-serif-smallcaps"
+        android:text="Login"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:textColor="@android:color/holo_orange_dark"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
     <TextView
         android:id="@+id/titleTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="55dp"
+        android:layout_marginTop="35dp"
         android:fontFamily="sans-serif-smallcaps"
         android:text="Orlyst"
         android:textAllCaps="true"
-        android:textSize="36sp"
+        android:textColor="@android:color/black"
+        android:textSize="60dp"
         android:textStyle="bold" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/noLoginBtn"
+        style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="59dp"
+        android:layout_centerInParent="true"
         android:fontFamily="sans-serif-smallcaps"
         android:text="Check out orlyst"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:textColor="@android:color/holo_orange_light"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/signUpBtn"
+        android:layout_toStartOf="@+id/signUpBtn"
+        android:fontFamily="sans-serif-smallcaps"
+        android:text="New to Orlyst?" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/titleTextView"
+        android:layout_centerHorizontal="true"
+        android:text="[insert Orlyst's motto/mission statement]"
+        android:textSize="10sp" />
 </RelativeLayout>
