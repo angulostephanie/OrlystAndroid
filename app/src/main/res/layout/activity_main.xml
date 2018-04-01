@@ -8,7 +8,7 @@
 
 
     <Button
-        android:id="@+id/signUpBtn"
+        android:id="@+id/signUpPageBtn"
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="75dp"
         android:layout_height="wrap_content"
@@ -68,8 +68,8 @@
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/signUpBtn"
-        android:layout_toStartOf="@+id/signUpBtn"
+        android:layout_alignBaseline="@+id/signUpPageBtn"
+        android:layout_toStartOf="@+id/signUpPageBtn"
         android:fontFamily="sans-serif-smallcaps"
         android:text="New to Orlyst?" />
 
