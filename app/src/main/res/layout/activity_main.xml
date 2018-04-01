@@ -8,7 +8,7 @@
 
 
     <Button
-        android:id="@+id/signUpBtn"
+        android:id="@+id/signUpPageBtn"
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="75dp"
         android:layout_height="wrap_content"
@@ -55,9 +55,11 @@
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="140dp"
         android:fontFamily="sans-serif-smallcaps"
-        android:text="Check out orlyst"
+        android:text="Preview Orlyst"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
         android:textColor="@android:color/holo_orange_light"
         android:textSize="12sp" />
@@ -66,8 +68,8 @@
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/signUpBtn"
-        android:layout_toStartOf="@+id/signUpBtn"
+        android:layout_alignBaseline="@+id/signUpPageBtn"
+        android:layout_toStartOf="@+id/signUpPageBtn"
         android:fontFamily="sans-serif-smallcaps"
         android:text="New to Orlyst?" />
 
@@ -79,4 +81,23 @@
         android:layout_centerHorizontal="true"
         android:text="[insert Orlyst's motto/mission statement]"
         android:textSize="10sp" />
+
+    <EditText
+        android:id="@+id/emailText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:ems="10"
+        android:inputType="textEmailAddress" />
+
+    <EditText
+        android:id="@+id/passwordText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="157dp"
+        android:ems="10"
+        android:inputType="textPassword" />
+
 </RelativeLayout>

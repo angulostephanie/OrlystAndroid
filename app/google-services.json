@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1099441918201",
+    "firebase_url": "https://orlystapp.firebaseio.com",
+    "project_id": "orlystapp",
+    "storage_bucket": "orlystapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1099441918201:android:f1d5ad0a8290bbcf",
+        "android_client_info": {
+          "package_name": "com.example.stephanieangulo.orlyst"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1099441918201-08roa96ksn7ifgsfndohri40oiqfhl6g.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.stephanieangulo.orlyst",
+            "certificate_hash": "0bab68c5b91c61331bfc06b6be57c82a221a5e2d"
+          }
+        },
+        {
+          "client_id": "1099441918201-7u0iepdhnfk1iiadmd1v0pj9o5gb49ej.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDkzdjHTwlqV9yQQETO8wv6vKx4k02nlBY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1099441918201-7u0iepdhnfk1iiadmd1v0pj9o5gb49ej.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
