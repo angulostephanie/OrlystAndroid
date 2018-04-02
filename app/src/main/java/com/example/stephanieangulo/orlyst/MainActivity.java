@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity
                     loadFragment(fragment);
                     return true;
                 case R.id.navigation_sell:
-                    Intent intent = new Intent(mContext, CreateItemActivity.class);
+                    Intent intent = new Intent(mContext, TakePhotoActivity.class);
                     startActivity(intent);
                     return true;
                 case R.id.navigation_profile:
