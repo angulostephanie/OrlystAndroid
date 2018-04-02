@@ -56,6 +56,8 @@ public class MainActivity extends AppCompatActivity
                     loadFragment(fragment);
                     return true;
             }
+            fragment = new NewsFeedFragment();
+            loadFragment(fragment);
             return false;
         }
     };
