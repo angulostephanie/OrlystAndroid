@@ -18,7 +18,6 @@ import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity
         implements NewsFeedFragment.OnFragmentInteractionListener,
-        SellFragment.OnFragmentInteractionListener,
         ProfileFragment.OnFragmentInteractionListener {
 
     private Context mContext;
@@ -52,9 +51,6 @@ public class MainActivity extends AppCompatActivity
                 case R.id.navigation_sell:
                     Intent intent = new Intent(mContext, CreateItemActivity.class);
                     startActivity(intent);
-//                    toolbar.setTitle("Sell");
-//                    fragment = new SellFragment();
-//                    loadFragment(fragment);
                     return true;
                 case R.id.navigation_profile:
                     toolbar.setTitle("Profile");
