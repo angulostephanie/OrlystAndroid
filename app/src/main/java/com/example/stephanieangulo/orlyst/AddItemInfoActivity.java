@@ -25,11 +25,8 @@ public class AddItemInfoActivity extends AppCompatActivity {
         backBtn = findViewById(R.id.back_btn);
         itemImage = findViewById(R.id.item_image);
 
-        if(getIntent().hasExtra("bytes")) {
-            byte[] bytes = this.getIntent().getByteArrayExtra("bytes");
-            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-            itemImage.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 120, 120, false));
-        }
+        setThumbnail();
+
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -37,5 +34,19 @@ public class AddItemInfoActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        postBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                System.out.println("Posting image woo");
+            }
+        });
+    }
+
+    public void setThumbnail() {
+        if(getIntent().hasExtra("bytes")) {
+            byte[] bytes = this.getIntent().getByteArrayExtra("bytes");
+            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+            itemImage.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 120, 120, false));
+        }
     }
 }

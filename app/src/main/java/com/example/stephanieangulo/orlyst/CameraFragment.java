@@ -173,7 +173,7 @@ public class CameraFragment extends Fragment {
 
         @Override
         public void onImage(CameraKitImage cameraKitImage) {
-            cameraKitImage.getJpeg(); 
+            cameraKitImage.getJpeg();
         }
 
         @Override
