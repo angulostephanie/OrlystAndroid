@@ -16,7 +16,7 @@ import android.view.View;
 import android.widget.Button;
 
 public class TakePhotoActivity extends AppCompatActivity
-        implements LibraryFragment.OnFragmentInteractionListener,
+        implements GalleryFragment.OnFragmentInteractionListener,
         CameraFragment.OnFragmentInteractionListener {
 
     private static final String TAG = "TakePhotoActivity";
@@ -38,7 +38,7 @@ public class TakePhotoActivity extends AppCompatActivity
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         toolbar.setTitle("Library");
-        loadFragment(new LibraryFragment());
+        loadFragment(new GalleryFragment());
 
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,7 +58,7 @@ public class TakePhotoActivity extends AppCompatActivity
             switch (item.getItemId()) {
                 case R.id.camera_navigation_library:
                     toolbar.setTitle("Library");
-                    fragment = new LibraryFragment();
+                    fragment = new GalleryFragment();
                     loadFragment(fragment);
                     return true;
                 case R.id.camera_navigation_capture:
