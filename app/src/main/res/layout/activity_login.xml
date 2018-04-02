@@ -4,11 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".LoginActivity">
 
 
     <Button
-        android:id="@+id/signUpPageBtn"
+        android:id="@+id/sign_up_page_btn"
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="75dp"
         android:layout_height="wrap_content"
@@ -22,7 +22,7 @@
         android:textColor="@android:color/holo_orange_dark" />
 
     <Button
-        android:id="@+id/loginBtn"
+        android:id="@+id/login_btn"
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -37,7 +37,7 @@
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/titleTextView"
+        android:id="@+id/app_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -51,7 +51,7 @@
         android:textStyle="bold" />
 
     <Button
-        android:id="@+id/noLoginBtn"
+        android:id="@+id/preview_btn"
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -65,25 +65,25 @@
         android:textSize="12sp" />
 
     <TextView
-        android:id="@+id/signupT"
+        android:id="@+id/sign_up_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/signUpPageBtn"
-        android:layout_toStartOf="@+id/signUpPageBtn"
+        android:layout_alignBaseline="@+id/sign_up_page_btn"
+        android:layout_toStartOf="@+id/sign_up_page_btn"
         android:fontFamily="sans-serif-smallcaps"
         android:text="@string/new_to_orlyst" />
 
     <TextView
-        android:id="@+id/missionStatement"
+        android:id="@+id/mission_statement"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/titleTextView"
+        android:layout_below="@+id/app_title"
         android:layout_centerHorizontal="true"
         android:text="@string/mission_statement"
         android:textSize="12sp" />
 
     <EditText
-        android:id="@+id/emailText"
+        android:id="@+id/email_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
@@ -93,7 +93,7 @@
         android:singleLine="true" />
 
     <EditText
-        android:id="@+id/passwordText"
+        android:id="@+id/password_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

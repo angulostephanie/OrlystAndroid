@@ -34,9 +34,9 @@ public class SignUpActivity extends AppCompatActivity {
         mContext = this;
         mAuth = FirebaseAuth.getInstance();
 
-        emailText = findViewById(R.id.newEmailText);
-        passwordText = findViewById(R.id.newPasswordText);
-        signUpBtn = findViewById(R.id.signUpPageBtn);
+        emailText = findViewById(R.id.new_email_text);
+        passwordText = findViewById(R.id.new_password_text);
+        signUpBtn = findViewById(R.id.sign_up_btn);
 
         signUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override

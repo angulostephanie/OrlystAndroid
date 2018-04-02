@@ -86,8 +86,8 @@ public class NewsFeedFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_news_feed, container, false);
 
         searchEditText = view.findViewById(R.id.search);
-        numItemsFound = view.findViewById(R.id.numItems);
-        recyclerView = view.findViewById(R.id.feedRecyclerView);
+        numItemsFound = view.findViewById(R.id.num_items);
+        recyclerView = view.findViewById(R.id.feed_recycler_view);
 
         fixedItems = new SellingItem().getTempData();
         mAdapter = new NewsFeedAdapter(getActivity(), fixedItems);

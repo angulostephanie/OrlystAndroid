@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SignUpActivity">
 
     <EditText
-        android:id="@+id/newEmailText"
+        android:id="@+id/new_email_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -15,7 +18,7 @@
         android:inputType="textEmailAddress" />
 
     <EditText
-        android:id="@+id/newPasswordText"
+        android:id="@+id/new_password_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -26,7 +29,7 @@
         android:inputType="textPassword" />
 
     <Button
-        android:id="@+id/signUpPageBtn"
+        android:id="@+id/sign_up_btn"
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
