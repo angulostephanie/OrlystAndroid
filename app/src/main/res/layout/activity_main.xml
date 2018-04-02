@@ -88,6 +88,7 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:ems="10"
+        android:hint="Email"
         android:inputType="textEmailAddress" />
 
     <EditText
@@ -98,6 +99,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="157dp"
         android:ems="10"
+        android:hint="Password"
         android:inputType="textPassword" />
 
 </RelativeLayout>
