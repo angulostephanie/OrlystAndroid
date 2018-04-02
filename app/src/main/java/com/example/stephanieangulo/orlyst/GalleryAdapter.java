@@ -3,7 +3,6 @@ package com.example.stephanieangulo.orlyst;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,9 +30,9 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         final byte[] bytes = imageGallery.get(position);
         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
         Bitmap mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
-        Canvas canvas = new Canvas(mutableBitmap);
-        holder.thumbnail.draw(canvas);
-        //holder.thumbnail.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 120, 120, false));
+        holder.thumbnail.setImageBitmap(
+                Bitmap.createScaledBitmap(mutableBitmap, mutableBitmap.getWidth(),
+                        mutableBitmap.getHeight(), false));
     }
 
     @Override

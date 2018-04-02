@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity
                     return true;
                 case R.id.navigation_sell:
                     Intent intent = new Intent(mContext, TakePhotoActivity.class);
+                    intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     startActivity(intent);
                     return true;
                 case R.id.navigation_profile:

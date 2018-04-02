@@ -23,23 +23,11 @@ public class GalleryItemDecoration extends RecyclerView.ItemDecoration {
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
         // customize how gallery recycler view looks
         int position = parent.getChildAdapterPosition(view); // item position
-        int column = position % spanCount; // item column
-
-        if (includeEdge) {
-            outRect.left = spacing - column * spacing / spanCount; // spacing - column * ((1f / spanCount) * spacing)
-            outRect.right = (column + 1) * spacing / spanCount; // (column + 1) * ((1f / spanCount) * spacing)
-
-            if (position < spanCount) { // top edge
-                outRect.top = spacing;
-            }
-            outRect.bottom = spacing; // item bottom
-        } else {
-            outRect.left = column * spacing / spanCount; // column * ((1f / spanCount) * spacing)
-            outRect.right = spacing - (column + 1) * spacing / spanCount; // spacing - (column + 1) * ((1f /    spanCount) * spacing)
-            if (position >= spanCount) {
-                outRect.top = spacing; // item top
-            }
-        }
+        //int column = position % spanCount; // item column
+        outRect.left = spacing;
+        outRect.right = spacing;
+        outRect.bottom = spacing;
+        outRect.top = spacing;
     }
     private int dpToPx(int dp) {
         Resources r = context.getResources();

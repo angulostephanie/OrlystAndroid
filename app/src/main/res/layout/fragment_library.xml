@@ -20,7 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/selected_image_view"
-            android:background="@android:color/black"/>
+            android:listSelector="@android:color/darker_gray"/>
     </RelativeLayout>
 
 

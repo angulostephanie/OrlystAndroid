@@ -1,11 +1,17 @@
 package com.example.stephanieangulo.orlyst;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -15,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,16 +40,21 @@ public class GalleryFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private static final String TAG = "GalleryFragment";
+
+
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
     private GalleryAdapter mAdapter;
-
-    RecyclerView recyclerView;
-    ImageView selectedImage;
-    List<byte[]> test;
+    private String[] paths;
+    private String mostRecent = "";
+    private Context mContext;
+    private Activity mActivity;
+    private RecyclerView recyclerView;
+    private ImageView selectedImage;
+    private List<byte[]> imageGallery = new ArrayList<>();
 
     public GalleryFragment() {
         // Required empty public constructor
@@ -78,29 +90,55 @@ public class GalleryFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.fragment_library, container, false);
+        mContext = getContext();
+        mActivity = getActivity();
         recyclerView = view.findViewById(R.id.gallery_recycler_view);
         selectedImage = view.findViewById(R.id.selected_image_view);
-        Drawable color = selectedImage.getDrawable();
 
-        int width = color.getIntrinsicWidth();
-        width = width > 0 ? width : 1;
-        int height = color.getIntrinsicHeight();
-        height = height > 0 ? height : 1;
+        int permissionCheck = ContextCompat.checkSelfPermission(mContext, android.Manifest.permission.READ_EXTERNAL_STORAGE);
 
-        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        byte[] bytes = baos.toByteArray();
-        test = makeTempImages(bytes, 40);
+        while(permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(mActivity, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
+            // I want to force the user from the beginning however, maybe when they login idk.
+        }
 
-        mAdapter = new GalleryAdapter(getActivity(), test);
-        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getActivity(), 4);
+        if(!isGalleryEmpty()) {
+            mostRecent = getMostRecentImage();
+            paths = getImagePaths();
+
+            imageGallery = getGalleryImages(paths);
+            mAdapter = new GalleryAdapter(mContext, imageGallery);
+
+            Bitmap bitmap = BitmapFactory.decodeFile(mostRecent);
+            selectedImage.setImageBitmap(Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), false));
+
+
+        } else {
+            mAdapter = new GalleryAdapter(mContext, new ArrayList<byte[]>());
+        }
+
+
+        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(mContext, 4);
+
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setAdapter(mAdapter);
-        recyclerView.addItemDecoration(new GalleryItemDecoration(3, 4, true, getContext()));
+        recyclerView.addItemDecoration(new GalleryItemDecoration(3, 1, true, getContext()));
         recyclerView.setNestedScrollingEnabled(false);
-        Log.d(TAG, "This is the size of the gallery " +test.size());
+
+        recyclerView.addOnItemTouchListener(new MyRecyclerItemClickListener(mContext, new MyRecyclerItemClickListener.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                String path = paths[position];
+                Bitmap bitmap = BitmapFactory.decodeFile(path);
+                selectedImage.setImageBitmap(Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), false));
+
+                // update selectedimageview
+                Log.d(TAG, "Clicking on this image path" + path);
+            }
+        }));
+        //Log.d(TAG, "This is the size of the gallery " + imageGallery.size());
         return view;
     }
 
@@ -143,11 +181,69 @@ public class GalleryFragment extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    public List<byte[]> makeTempImages(byte[] bytes, int num) {
-        List<byte[]> list = new ArrayList<>();
-        for(int i = 0; i < num; i++)
-            list.add(bytes);
-        return list;
-
+    private List<byte[]> getGalleryImages(String[] imagePaths) {
+        List<byte[]> imagesConverted = new ArrayList<>();
+        for(int i=0;i<imagePaths.length;i++){
+            Bitmap bitmap = BitmapFactory.decodeFile(imagePaths[i]);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 90, baos);
+            byte[] b = baos.toByteArray();
+            imagesConverted.add(b);
+        }
+        return imagesConverted;
     }
+
+    private String[] getImagePaths() {
+        final String[] projection = { MediaStore.Images.Media.DATA, MediaStore.Images.Media._ID };
+        final String orderBy = MediaStore.Images.Media._ID;
+        Cursor cursor = mContext.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                projection, null, null, orderBy);
+        //int columnIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID);
+        int count = cursor.getCount();
+        String[] paths = new String[count];
+//        int[] ids = new int[count];
+        for (int i = 0; i < count; i++) {
+            cursor.moveToPosition(i);
+//            ids[i] = cursor.getInt(columnIndex);
+            int dataColumnIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
+            paths[i] = cursor.getString(dataColumnIndex);
+        }
+        cursor.close();
+        return paths;
+    }
+
+    private String getMostRecentImage() {
+        String[] projection = new String[]{
+                MediaStore.Images.ImageColumns._ID,
+                MediaStore.Images.ImageColumns.DATA,
+                MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME,
+                MediaStore.Images.ImageColumns.DATE_TAKEN,
+                MediaStore.Images.ImageColumns.MIME_TYPE
+        };
+        final Cursor cursor = mContext.getContentResolver()
+                .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null,
+                        null, MediaStore.Images.Media._ID);
+        if (cursor.moveToFirst()) {
+            //final ImageView imageView = (ImageView) findViewById(R.id.pictureView);
+            String imageLocation = cursor.getString(1);
+            File imageFile = new File(imageLocation);
+            if (imageFile.exists())
+                return imageLocation;
+
+        }
+        return null;
+    }
+    private boolean isGalleryEmpty() {
+        String[] projection = {MediaStore.Images.Media._ID};
+        Cursor cursor = mContext.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                projection, null, null, MediaStore.Images.Media._ID);
+        //int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
+        int size = cursor.getCount();
+        // If size is 0, there are no images on the SD Card.
+        if (size == 0) {
+            return true;
+        }
+        return false;
+    }
+
 }

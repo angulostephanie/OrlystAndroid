@@ -82,14 +82,13 @@ public class NewsFeedFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_news_feed, container, false);
 
         searchEditText = view.findViewById(R.id.search);
         numItemsFound = view.findViewById(R.id.num_items);
         recyclerView = view.findViewById(R.id.feed_recycler_view);
 
-        fixedItems = new SellingItem().getTempData();
+        fixedItems = new SellingItem().getTempData(); // temp data
         mAdapter = new NewsFeedAdapter(getActivity(), fixedItems);
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
@@ -103,8 +102,7 @@ public class NewsFeedFragment extends Fragment {
                 new MyRecyclerItemClickListener.OnItemClickListener() {
                     @Override public void onItemClick(View view, int position) {
                         String title = fixedItems.get(position).getItemName();
-                        //System.out.print("Hi! This item was clicked on: " + fixedItems.get(position).getItemName());
-                        Log.d(TAG, title);
+                        Log.d(TAG, "Getting detail view of : " + title);
                         Intent itemIntent = new Intent(getActivity(), ItemDetailActivity.class);
                         itemIntent.putExtra("itemTitle", title);
                         startActivity(itemIntent);
