@@ -1,6 +1,7 @@
 package com.example.stephanieangulo.orlyst;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -8,7 +9,14 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
+import com.wonderkiln.camerakit.CameraKitError;
+import com.wonderkiln.camerakit.CameraKitEvent;
+import com.wonderkiln.camerakit.CameraKitEventCallback;
+import com.wonderkiln.camerakit.CameraKitEventListener;
+import com.wonderkiln.camerakit.CameraKitImage;
+import com.wonderkiln.camerakit.CameraKitVideo;
 import com.wonderkiln.camerakit.CameraView;
 
 
@@ -32,6 +40,9 @@ public class CameraFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
     private CameraView cameraView;
+    Button captureBtn;
+
+    boolean canTakePicture;
 
     public CameraFragment() {
         // Required empty public constructor
@@ -69,7 +80,24 @@ public class CameraFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_camera, container, false);
         cameraView = view.findViewById(R.id.capture_camera_view);
-        // Inflate the layout for this fragment
+        cameraView.addCameraKitListener(cameraListener);
+
+        captureBtn = view.findViewById(R.id.capture_btn);
+        captureBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cameraView.captureImage(new CameraKitEventCallback<CameraKitImage>() {
+                    @Override
+                    public void callback(CameraKitImage cameraKitImage) {
+                        cameraListener.onImage(cameraKitImage);
+                        byte[] jpeg = cameraKitImage.getJpeg();
+                        Intent intent = new Intent(getActivity(), AddItemInfoActivity.class);
+                        intent.putExtra("bytes", jpeg);
+                        startActivity(intent);
+                    }
+                });
+            }
+        });
         return view;
     }
 
@@ -123,4 +151,34 @@ public class CameraFragment extends Fragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+
+    private CameraKitEventListener cameraListener = new CameraKitEventListener() {
+        @Override
+        public void onEvent(CameraKitEvent cameraKitEvent) {
+            switch (cameraKitEvent.getType()) {
+                case CameraKitEvent.TYPE_CAMERA_OPEN:
+                    canTakePicture = true;
+                    break;
+
+                case CameraKitEvent.TYPE_CAMERA_CLOSE:
+                    canTakePicture = false;
+                    break;
+            }
+        }
+
+        @Override
+        public void onError(CameraKitError cameraKitError) {
+
+        }
+
+        @Override
+        public void onImage(CameraKitImage cameraKitImage) {
+            cameraKitImage.getJpeg();
+        }
+
+        @Override
+        public void onVideo(CameraKitVideo cameraKitVideo) {
+
+        }
+    };
 }

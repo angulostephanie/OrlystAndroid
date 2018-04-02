@@ -22,7 +22,9 @@
         </activity>
         <activity android:name=".ItemDetailActivity">
         </activity>
-        <activity android:name=".CreateItemActivity">
+        <activity android:name=".TakePhotoActivity">
+        </activity>
+        <activity android:name=".AddItemInfoActivity">
         </activity>
     </application>
 
