@@ -1,91 +1,77 @@
 package com.example.stephanieangulo.orlyst;
 
-import android.content.Context;
-import android.content.Intent;
+
+//import android.app.Fragment;
+
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
+import android.view.MenuItem;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
-public class MainActivity extends AppCompatActivity {
-    private static final String TAG = "MainActivity";
-    private FirebaseAuth mAuth;
-    EditText emailText;
-    EditText passwordText;
-    Button loginBtn;
-    Button signUpPageBtn;
-    Context mContext;
+public class MainActivity extends AppCompatActivity
+        implements NewsFeedFragment.OnFragmentInteractionListener,
+        SellFragment.OnFragmentInteractionListener,
+        ProfileFragment.OnFragmentInteractionListener {
+
+    private ActionBar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mContext = this;
-        mAuth = FirebaseAuth.getInstance();
 
-        emailText = findViewById(R.id.emailText);
-        passwordText = findViewById(R.id.passwordText);
-        loginBtn = findViewById(R.id.loginBtn);
-        signUpPageBtn = findViewById(R.id.signUpPageBtn);
+        toolbar = getSupportActionBar();
 
-        signUpPageBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent signUpPageIntent = new Intent(mContext, SignUpPageActivity.class);
-                startActivity(signUpPageIntent);
-            }
-        });
+        BottomNavigationView navigation = findViewById(R.id.navigation);
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-
-        loginBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String email = emailText.getText().toString();
-                String password = passwordText.getText().toString();
-                if(TextUtils.isEmpty(email) && TextUtils.isEmpty(password))
-                    System.out.print("tf no");
-                else {
-                    final Intent newsFeedIntent = new Intent(mContext, NewsFeedActivity.class);
-                    mAuth.signInWithEmailAndPassword(email, password)
-                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                    if (task.isSuccessful()) {
-                                        // Sign in success, update UI with the signed-in user's information
-                                        Log.d(TAG, "signInWithEmail:success");
-                                        FirebaseUser user = mAuth.getCurrentUser();
-                                        startActivity(newsFeedIntent);
-                                    } else {
-                                        // If sign in fails, display a message to the user.
-                                        Log.w(TAG, "signInWithEmail:failure", task.getException());
-                                        Toast.makeText(mContext, "Authentication failed.",
-                                                Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            });
-                }
-            }
-        });
-
-
+        toolbar.setTitle("News Feed");
     }
+
+    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            Fragment fragment;
+            switch (item.getItemId()) {
+                case R.id.navigation_newsfeed:
+                    toolbar.setTitle("NewsFeed");
+                    fragment = new NewsFeedFragment();
+                    loadFragment(fragment);
+                    return true;
+                case R.id.navigation_sell:
+                    toolbar.setTitle("Sell");
+                    fragment = new SellFragment();
+                    loadFragment(fragment);
+                    return true;
+                case R.id.navigation_profile:
+                    toolbar.setTitle("Profile");
+                    fragment = new ProfileFragment();
+                    loadFragment(fragment);
+                    return true;
+            }
+            return false;
+        }
+    };
+
+    private void loadFragment(Fragment fragment) {
+        // load fragment
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.frame_container, fragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
+
+
     @Override
-    public void onStart() {
-        super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        System.out.print(currentUser);
+    public void onFragmentInteraction(Uri uri){
+        //you can leave it empty
     }
 
 

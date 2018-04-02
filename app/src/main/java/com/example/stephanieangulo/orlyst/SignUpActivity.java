@@ -18,7 +18,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class SignUpPageActivity extends AppCompatActivity {
+public class SignUpActivity extends AppCompatActivity {
     private static final String TAG = "SignUpPageActivity";
     private FirebaseAuth mAuth;
     EditText emailText;
@@ -46,7 +46,7 @@ public class SignUpPageActivity extends AppCompatActivity {
                 if(TextUtils.isEmpty(email) && TextUtils.isEmpty(password))
                     System.out.print("tf no");
                 else {
-                    final Intent newsFeedIntent = new Intent(mContext, NewsFeedActivity.class);
+                    final Intent newsFeedIntent = new Intent(mContext, MainActivity.class);
 
                     mAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override

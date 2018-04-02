@@ -2,11 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/navigation_newsfeed"
-        android:title="Newsfeed" />
+        android:title="@string/nav_feed" />
     <item
         android:id="@+id/navigation_sell"
-        android:title="Sell" />
+        android:title="@string/nav_sell" />
     <item
         android:id="@+id/navigation_profile"
-        android:title="Profile" />
+        android:title="@string/nav_profile" />
 </menu>

@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">Orlyst</string>
+    <string name="nav_feed">Newsfeed</string>
+    <string name="nav_sell">Sell</string>
+    <string name="nav_profile">Profile</string>
+    <string name="sign_up_btn">Sign Up</string>
+    <string name="login_btn">Login</string>
+    <string name="preview_orlyst">Preview Orlyst</string>
+    <string name="title">Orlyst</string>
+    <string name="new_to_orlyst">New to Orlyst?</string>
+    <string name="email_hint">Email</string>
+    <string name="mission_statement">[insert Orlyst\'s motto/mission statement]</string>
+    <string name="password_hint">Password</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
