@@ -3,6 +3,7 @@ package com.example.stephanieangulo.orlyst;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,12 +15,12 @@ import com.wonderkiln.camerakit.CameraView;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link SellFragment.OnFragmentInteractionListener} interface
+ * {@link CameraFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link SellFragment#newInstance} factory method to
+ * Use the {@link CameraFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SellFragment extends Fragment {
+public class CameraFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -30,9 +31,9 @@ public class SellFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+    private CameraView cameraView;
 
-    CameraView cameraView;
-    public SellFragment() {
+    public CameraFragment() {
         // Required empty public constructor
     }
 
@@ -42,11 +43,11 @@ public class SellFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment SellFragment.
+     * @return A new instance of fragment CameraFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static SellFragment newInstance(String param1, String param2) {
-        SellFragment fragment = new SellFragment();
+    public static CameraFragment newInstance(String param1, String param2) {
+        CameraFragment fragment = new CameraFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -64,10 +65,10 @@ public class SellFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_sell, container, false);
-        cameraView = view.findViewById(R.id.camera_view);
+        View view = inflater.inflate(R.layout.fragment_camera, container, false);
+        cameraView = view.findViewById(R.id.capture_camera_view);
         // Inflate the layout for this fragment
         return view;
     }
@@ -107,6 +108,7 @@ public class SellFragment extends Fragment {
         cameraView.stop();
         super.onPause();
     }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated

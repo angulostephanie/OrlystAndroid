@@ -3,11 +3,14 @@
     android:id = "@+id/navigation">
     <item
         android:id="@+id/navigation_newsfeed"
+        android:icon="@android:drawable/ic_menu_compass"
         android:title="@string/nav_feed" />
     <item
         android:id="@+id/navigation_sell"
+        android:icon="@android:drawable/ic_menu_add"
         android:title="@string/nav_sell" />
     <item
         android:id="@+id/navigation_profile"
+        android:icon="@android:drawable/ic_menu_myplaces"
         android:title="@string/nav_profile" />
 </menu>

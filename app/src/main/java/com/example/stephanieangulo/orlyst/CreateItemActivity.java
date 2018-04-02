@@ -1,8 +1,5 @@
 package com.example.stephanieangulo.orlyst;
 
-
-//import android.app.Fragment;
-
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -13,55 +10,65 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
+public class CreateItemActivity extends AppCompatActivity
+        implements LibraryFragment.OnFragmentInteractionListener,
+        CameraFragment.OnFragmentInteractionListener {
 
-public class MainActivity extends AppCompatActivity
-        implements NewsFeedFragment.OnFragmentInteractionListener,
-        SellFragment.OnFragmentInteractionListener,
-        ProfileFragment.OnFragmentInteractionListener {
-
-    private Context mContext;
+    private static final String TAG = "CreateItemActivity";
     private ActionBar toolbar;
+    private Context mContext;
+    Button cancelBtn;
+    Button nextBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_create_item);
         mContext = this;
+        cancelBtn = findViewById(R.id.cancel_btn);
+        nextBtn = findViewById(R.id.next_btn);
         toolbar = getSupportActionBar();
 
-        BottomNavigationView navigation = findViewById(R.id.navigation);
+        BottomNavigationView navigation = findViewById(R.id.camera_navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        toolbar.setTitle("NewsFeed");
-        loadFragment(new NewsFeedFragment());
-    }
+        toolbar.setTitle("Library");
+        loadFragment(new LibraryFragment());
 
+        cancelBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "returning back to main activity (news feed)");
+                Intent intent = new Intent(mContext, MainActivity.class);
+                startActivity(intent);
+            }
+        });
+
+    }
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             Fragment fragment;
             switch (item.getItemId()) {
-                case R.id.navigation_newsfeed:
-                    toolbar.setTitle("NewsFeed");
-                    fragment = new NewsFeedFragment();
+                case R.id.camera_navigation_library:
+                    toolbar.setTitle("Library");
+                    fragment = new LibraryFragment();
                     loadFragment(fragment);
                     return true;
-                case R.id.navigation_sell:
-                    Intent intent = new Intent(mContext, CreateItemActivity.class);
-                    startActivity(intent);
-//                    toolbar.setTitle("Sell");
-//                    fragment = new SellFragment();
-//                    loadFragment(fragment);
-                    return true;
-                case R.id.navigation_profile:
-                    toolbar.setTitle("Profile");
-                    fragment = new ProfileFragment();
+                case R.id.camera_navigation_capture:
+                    toolbar.setTitle("Capture");
+                    fragment = new CameraFragment();
                     loadFragment(fragment);
                     return true;
             }
+            fragment = new NewsFeedFragment();
+            loadFragment(fragment);
             return false;
         }
     };
@@ -69,7 +76,7 @@ public class MainActivity extends AppCompatActivity
     private void loadFragment(Fragment fragment) {
         // load fragment
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.frame_container, fragment);
+        transaction.replace(R.id.create_item_frame_container, fragment);
         transaction.addToBackStack(null);
         transaction.commit();
     }
@@ -79,6 +86,4 @@ public class MainActivity extends AppCompatActivity
     public void onFragmentInteraction(Uri uri){
         //you can leave it empty
     }
-
-
 }

@@ -8,18 +8,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.wonderkiln.camerakit.CameraView;
-
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link SellFragment.OnFragmentInteractionListener} interface
+ * {@link LibraryFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link SellFragment#newInstance} factory method to
+ * Use the {@link LibraryFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SellFragment extends Fragment {
+public class LibraryFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -31,8 +29,7 @@ public class SellFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    CameraView cameraView;
-    public SellFragment() {
+    public LibraryFragment() {
         // Required empty public constructor
     }
 
@@ -42,11 +39,11 @@ public class SellFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment SellFragment.
+     * @return A new instance of fragment LibraryFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static SellFragment newInstance(String param1, String param2) {
-        SellFragment fragment = new SellFragment();
+    public static LibraryFragment newInstance(String param1, String param2) {
+        LibraryFragment fragment = new LibraryFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -66,8 +63,7 @@ public class SellFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_sell, container, false);
-        cameraView = view.findViewById(R.id.camera_view);
+        View view = inflater.inflate(R.layout.fragment_library, container, false);
         // Inflate the layout for this fragment
         return view;
     }
@@ -96,17 +92,6 @@ public class SellFragment extends Fragment {
         mListener = null;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        cameraView.start();
-    }
-
-    @Override
-    public void onPause() {
-        cameraView.stop();
-        super.onPause();
-    }
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
