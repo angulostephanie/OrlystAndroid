@@ -2,10 +2,12 @@ package com.example.stephanieangulo.orlyst;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -18,6 +20,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import java.io.ByteArrayOutputStream;
@@ -55,6 +58,8 @@ public class GalleryFragment extends Fragment {
     private RecyclerView recyclerView;
     private ImageView selectedImage;
     private List<byte[]> imageGallery = new ArrayList<>();
+    private Button nextBtn;
+
 
     public GalleryFragment() {
         // Required empty public constructor
@@ -90,18 +95,18 @@ public class GalleryFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-        View view = inflater.inflate(R.layout.fragment_library, container, false);
+        View view = inflater.inflate(R.layout.fragment_gallery, container, false);
         mContext = getContext();
         mActivity = getActivity();
         recyclerView = view.findViewById(R.id.gallery_recycler_view);
         selectedImage = view.findViewById(R.id.selected_image_view);
+        nextBtn = view.findViewById(R.id.next_btn);
 
         int permissionCheck = ContextCompat.checkSelfPermission(mContext, android.Manifest.permission.READ_EXTERNAL_STORAGE);
 
         while(permissionCheck != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(mActivity, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
-            // I want to force the user from the beginning however, maybe when they login idk.
+            // I want to force the user from the beginning however, maybe when they login, idk.
         }
 
         if(!isGalleryEmpty()) {
@@ -113,12 +118,9 @@ public class GalleryFragment extends Fragment {
 
             Bitmap bitmap = BitmapFactory.decodeFile(mostRecent);
             selectedImage.setImageBitmap(Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), false));
-
-
         } else {
             mAdapter = new GalleryAdapter(mContext, new ArrayList<byte[]>());
         }
-
 
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(mContext, 4);
 
@@ -133,12 +135,22 @@ public class GalleryFragment extends Fragment {
                 String path = paths[position];
                 Bitmap bitmap = BitmapFactory.decodeFile(path);
                 selectedImage.setImageBitmap(Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), false));
-
-                // update selectedimageview
                 Log.d(TAG, "Clicking on this image path" + path);
             }
         }));
-        //Log.d(TAG, "This is the size of the gallery " + imageGallery.size());
+
+        nextBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bitmap bitmap =((BitmapDrawable)selectedImage.getDrawable()).getBitmap();
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                byte[] jpeg = stream.toByteArray();
+                Intent intent = new Intent(mContext, AddItemInfoActivity.class);
+                intent.putExtra("bytes", jpeg);
+                startActivity(intent);
+            }
+        });
         return view;
     }
 
@@ -198,13 +210,10 @@ public class GalleryFragment extends Fragment {
         final String orderBy = MediaStore.Images.Media._ID;
         Cursor cursor = mContext.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 projection, null, null, orderBy);
-        //int columnIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID);
         int count = cursor.getCount();
         String[] paths = new String[count];
-//        int[] ids = new int[count];
         for (int i = 0; i < count; i++) {
             cursor.moveToPosition(i);
-//            ids[i] = cursor.getInt(columnIndex);
             int dataColumnIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
             paths[i] = cursor.getString(dataColumnIndex);
         }
@@ -224,9 +233,9 @@ public class GalleryFragment extends Fragment {
                 .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null,
                         null, MediaStore.Images.Media._ID);
         if (cursor.moveToFirst()) {
-            //final ImageView imageView = (ImageView) findViewById(R.id.pictureView);
             String imageLocation = cursor.getString(1);
             File imageFile = new File(imageLocation);
+            cursor.close();
             if (imageFile.exists())
                 return imageLocation;
 
@@ -237,13 +246,9 @@ public class GalleryFragment extends Fragment {
         String[] projection = {MediaStore.Images.Media._ID};
         Cursor cursor = mContext.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 projection, null, null, MediaStore.Images.Media._ID);
-        //int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
         int size = cursor.getCount();
-        // If size is 0, there are no images on the SD Card.
-        if (size == 0) {
-            return true;
-        }
-        return false;
+        cursor.close();
+        return size == 0;
     }
 
 }

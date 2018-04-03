@@ -31,7 +31,6 @@ public class TakePhotoActivity extends AppCompatActivity
         setContentView(R.layout.activity_take_photo);
         mContext = this;
         cancelBtn = findViewById(R.id.cancel_btn);
-        nextBtn = findViewById(R.id.next_btn);
         toolbar = getSupportActionBar();
 
         BottomNavigationView navigation = findViewById(R.id.camera_navigation);

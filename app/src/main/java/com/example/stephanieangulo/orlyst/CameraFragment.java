@@ -91,7 +91,7 @@ public class CameraFragment extends Fragment {
                     public void callback(CameraKitImage cameraKitImage) {
                         cameraListener.onImage(cameraKitImage);
                         byte[] jpeg = cameraKitImage.getJpeg();
-                        Intent intent = new Intent(getActivity(), AddItemInfoActivity.class);
+                        Intent intent = new Intent(getContext(), AddItemInfoActivity.class);
                         intent.putExtra("bytes", jpeg);
                         startActivity(intent);
                     }

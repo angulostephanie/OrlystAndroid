@@ -3,15 +3,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+
     tools:context=".CameraFragment">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
+        <Button
+            android:id="@+id/lolpls_ignoreme"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:fontFamily="sans-serif-smallcaps"
+            android:text=""
+            android:textColor="@android:color/white" />
         <com.wonderkiln.camerakit.CameraView
             android:id="@+id/capture_camera_view"
             android:layout_width="350dp"
             android:layout_height="350dp"
+            android:layout_below="@+id/lolpls_ignoreme"
             android:layout_centerHorizontal="true"
             android:adjustViewBounds="true" />
 

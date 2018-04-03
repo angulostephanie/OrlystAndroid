@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/activity_take_photo"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -14,26 +15,13 @@
         android:fontFamily="sans-serif-smallcaps"
         android:text="@string/cancel"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
-    <Button
-        android:id="@+id/next_btn"
-        style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        android:fontFamily="sans-serif-smallcaps"
-        android:text="@string/next"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textColor="@android:color/holo_blue_dark"
-        android:textStyle="bold" />
 
     <FrameLayout
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/create_item_frame_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/cancel_btn"
-        android:layout_above="@id/navigation"
+        android:layout_above="@id/camera_navigation"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 

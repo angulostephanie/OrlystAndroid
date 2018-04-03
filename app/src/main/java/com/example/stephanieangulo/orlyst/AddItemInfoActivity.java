@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 
 public class AddItemInfoActivity extends AppCompatActivity {
@@ -15,6 +16,8 @@ public class AddItemInfoActivity extends AppCompatActivity {
     Button postBtn;
     Button backBtn;
     ImageView itemImage;
+    EditText titleText;
+    EditText descriptionText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,7 +26,9 @@ public class AddItemInfoActivity extends AppCompatActivity {
         mContext = this;
         postBtn = findViewById(R.id.post_btn);
         backBtn = findViewById(R.id.back_btn);
-        itemImage = findViewById(R.id.item_image);
+        itemImage = findViewById(R.id.post_item_image);
+        titleText = findViewById(R.id.post_item_title);
+        descriptionText = findViewById(R.id.post_item_description);
 
         setThumbnail();
 
@@ -38,6 +43,8 @@ public class AddItemInfoActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 System.out.println("Posting image woo");
+
+
             }
         });
     }
@@ -46,7 +53,7 @@ public class AddItemInfoActivity extends AppCompatActivity {
         if(getIntent().hasExtra("bytes")) {
             byte[] bytes = this.getIntent().getByteArrayExtra("bytes");
             Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-            itemImage.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 120, 120, false));
+            itemImage.setImageBitmap(Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), false));
         }
     }
 }

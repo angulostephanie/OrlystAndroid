@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,9 +6,23 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+        <Button
+            android:id="@+id/next_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:fontFamily="sans-serif-smallcaps"
+            android:text="@string/next"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="@android:color/holo_blue_dark"
+            android:textStyle="bold" />
         <ImageView
             android:id="@+id/selected_image_view"
-            android:layout_width="350dp"
+            android:layout_below="@+id/next_btn"
+            android:layout_width="match_parent"
             android:layout_height="350dp"
             android:layout_centerHorizontal="true"
             android:src="@android:color/holo_purple" />
