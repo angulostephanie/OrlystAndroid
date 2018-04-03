@@ -1,10 +1,12 @@
 package com.example.stephanieangulo.orlyst;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SellingItem {
-    private String itemName, description, user;
+    private String itemName, description, username, email,key;
 
     public SellingItem() {
     }
@@ -12,13 +14,20 @@ public class SellingItem {
     public SellingItem(String name, String description, String user) {
         this.itemName = name;
         this.description = description;
-        this.user = user;
+        this.username = user;
+    }
+    public SellingItem(String name, String description, String username, String email, String key) {
+        this.itemName = name;
+        this.description = description;
+        this.username = username;
+        this.email = email;
+        this.key = key;
     }
     public String getItemName() {
         return itemName;
     }
 
-    public void setName(String newName) {
+    public void setItemName(String newName) {
         itemName = newName;
     }
 
@@ -31,11 +40,13 @@ public class SellingItem {
     }
 
     public String getUser() {
-        return user;
+        return username;
     }
-
-    public void setUser(String newUser) {
-        user = newUser;
+    public String getEmail() {
+        return email;
+    }
+    public String getKey() {
+        return key;
     }
     public List<SellingItem> getTempData() {
         List<SellingItem> items = new ArrayList<>();
@@ -87,5 +98,14 @@ public class SellingItem {
         items.add(item11);
 
         return items;
+    }
+    public Map<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("title", itemName);
+        result.put("description", description);
+        result.put("author", username);
+        result.put("email", email);
+        result.put("key", key);
+        return result;
     }
 }

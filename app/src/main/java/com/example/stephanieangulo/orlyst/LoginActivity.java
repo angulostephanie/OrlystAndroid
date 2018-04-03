@@ -33,6 +33,8 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         mContext = this;
         mAuth = FirebaseAuth.getInstance();
+        mAuth.signOut(); //<-- how to sign out a user
+
 
         emailText = findViewById(R.id.email_text);
         passwordText = findViewById(R.id.password_text);
@@ -86,15 +88,13 @@ public class LoginActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        Log.d(TAG,"HELLO THERE " + currentUser);
         updateUI();
     }
 
     public void updateUI() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
-            Log.d(TAG, "There is a user signed in!");
+            Log.d(TAG,"HELLO THERE " + user.getEmail());
             Intent intent = new Intent(mContext, MainActivity.class);
             startActivity(intent);
         } else {
@@ -102,6 +102,4 @@ public class LoginActivity extends AppCompatActivity {
             // No user is signed in
         }
     }
-
-
 }
