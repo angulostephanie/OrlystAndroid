@@ -5,7 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -20,12 +21,18 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
+
+    // entry point of Firebase Auth SDK
     private FirebaseAuth mAuth;
+
     private EditText emailText;
     private EditText passwordText;
     private Button loginBtn;
     private Button signUpPageBtn;
     private Context mContext;
+
+    private boolean isEmailFilled = false;
+    private boolean isPasswordFilled = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,13 +42,13 @@ public class LoginActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         mAuth.signOut(); //<-- how to sign out a user
 
-
         emailText = findViewById(R.id.email_text);
         passwordText = findViewById(R.id.password_text);
         loginBtn = findViewById(R.id.login_btn);
         signUpPageBtn = findViewById(R.id.sign_up_page_btn);
 
-        updateUI();
+        updateButtonStatus(false);
+        addTextListeners();
 
         signUpPageBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -51,55 +58,123 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-
-        loginBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String email = emailText.getText().toString();
-                String password = passwordText.getText().toString();
-                if(TextUtils.isEmpty(email) && TextUtils.isEmpty(password))
-                    System.out.print("tf no");
-                else {
-                    final Intent newsFeedIntent = new Intent(mContext, MainActivity.class);
-                    mAuth.signInWithEmailAndPassword(email, password)
-                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                    if (task.isSuccessful()) {
-                                        // Sign in success, update UI with the signed-in user's information
-                                        Log.d(TAG, "signInWithEmail:success");
-                                        FirebaseUser user = mAuth.getCurrentUser();
-                                        startActivity(newsFeedIntent);
-                                    } else {
-                                        // If sign in fails, display a message to the user.
-                                        Log.w(TAG, "signInWithEmail:failure", task.getException());
-                                        Toast.makeText(mContext, "Authentication failed.",
-                                                Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            });
+        // only let users click sign up when button status is enabled
+        if(loginBtn.isEnabled()) {
+            loginBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    login();
                 }
-            }
-        });
-
+            });
+        }
 
     }
+
     @Override
     public void onStart() {
         super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
         updateUI();
     }
 
     public void updateUI() {
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
+            // if firebase user exists, skip login page, take them to their news feed
             Log.d(TAG,"HELLO THERE " + user.getEmail());
             Intent intent = new Intent(mContext, MainActivity.class);
             startActivity(intent);
         } else {
+            // else no changes bc user is not signed in
             Log.d(TAG, "No user signed in");
-            // No user is signed in
         }
+    }
+
+    private void login() {
+        String email = emailText.getText().toString();
+        String password = passwordText.getText().toString();
+        final Intent newsFeedIntent = new Intent(mContext, MainActivity.class);
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "signInWithEmail:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            startActivity(newsFeedIntent);
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            // TODO: make password box red when password incorrect?
+                            // TODO: allow user to request password change after 3 incorrect tries?
+                            Log.w(TAG, "signInWithEmail:failure", task.getException());
+                            Toast.makeText(mContext, "Login failed.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
+    private void addTextListeners() {
+        emailText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                isEmailFilled = false;
+                if(s.length() != 0) {
+                    isEmailFilled = true;
+                }
+                updateButtonStatus(isEmailFilled && isPasswordFilled);
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                isEmailFilled = false;
+                if(s.length() != 0) {
+                    isEmailFilled = true;
+                }
+                updateButtonStatus(isEmailFilled && isPasswordFilled);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        passwordText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                isPasswordFilled = false;
+                if(s.length() != 0) {
+                    isPasswordFilled  = true;
+                }
+                updateButtonStatus(isEmailFilled && isPasswordFilled);
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                isPasswordFilled = false;
+                if(s.length() != 0) {
+                    isPasswordFilled  = true;
+                }
+                updateButtonStatus(isEmailFilled && isPasswordFilled);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+    }
+
+    private void updateButtonStatus(boolean filled) {
+        if(filled) {
+            loginBtn.setClickable(true);
+            loginBtn.setEnabled(true);
+            loginBtn.setAlpha(1f);
+        } else {
+            loginBtn.setClickable(false);
+            loginBtn.setEnabled(false);
+            loginBtn.setAlpha(.5f);
+        }
+
     }
 }

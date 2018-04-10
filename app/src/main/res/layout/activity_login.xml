@@ -29,10 +29,11 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="72dp"
+        android:background="@android:color/holo_orange_dark"
         android:fontFamily="sans-serif-smallcaps"
         android:text="@string/login_btn"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-        android:textColor="@android:color/holo_orange_dark"
+        android:textColor="@android:color/background_light"
         android:textSize="18sp"
         android:textStyle="bold" />
 

@@ -5,7 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -23,7 +24,10 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class SignUpActivity extends AppCompatActivity {
     private static final String TAG = "SignUpActivity";
+
+    // entry point of Firebase Auth SDK
     private FirebaseAuth mAuth;
+
     private DatabaseReference mDatabase;
     private EditText firstNameText;
     private EditText lastNameText;
@@ -31,6 +35,11 @@ public class SignUpActivity extends AppCompatActivity {
     private EditText passwordText;
     private Button signUpBtn;
     private Context mContext;
+
+    private boolean isFirstFilled = false;
+    private boolean isLastFilled = false;
+    private boolean isEmailFilled = false;
+    private boolean isPasswordFilled = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,42 +55,49 @@ public class SignUpActivity extends AppCompatActivity {
         passwordText = findViewById(R.id.new_password_text);
         signUpBtn = findViewById(R.id.sign_up_btn);
 
-        signUpBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final String firstName = firstNameText.getText().toString();
-                final String lastName = lastNameText.getText().toString();
-                String email = emailText.getText().toString();
-                String password = passwordText.getText().toString();
+        updateButtonStatus(false);
+        addTextListeners();
 
-                if(!isCompletelyFilled(firstName,lastName,email,password))
-                    Toast.makeText(mContext, "PLEASE FILL OUT EVERYTHING", Toast.LENGTH_SHORT).show();
-                else {
-                    final Intent newsFeedIntent = new Intent(mContext, MainActivity.class);
-                    mAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                // Sign in success, update UI with the signed-in user's information
-                                Log.d(TAG, "createUserWithEmail:success");
-                                FirebaseUser user = mAuth.getCurrentUser();
-                                writeNewUser(user, firstName, lastName);
-                                startActivity(newsFeedIntent);
-                            } else {
-                                // If sign in fails, display a message to the user.
-                                Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                                Toast.makeText(mContext, "Authentication failed.",
-                                        Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
+        // only let users click sign up when button status is enabled
+        if (signUpBtn.isEnabled()) {
+            signUpBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    signUp();
+                }
+            });
+        }
+    }
+
+    private void signUp() {
+        final String firstName = firstNameText.getText().toString();
+        final String lastName = lastNameText.getText().toString();
+        String email = emailText.getText().toString();
+        String password = passwordText.getText().toString();
+
+        final Intent newsFeedIntent = new Intent(mContext, MainActivity.class);
+        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                    // Sign in success, update UI with the signed-in user's information
+                    Log.d(TAG, "createUserWithEmail:success");
+                    FirebaseUser user = mAuth.getCurrentUser();
+                    writeNewUser(user, firstName, lastName);
+                    startActivity(newsFeedIntent);
+                } else {
+                    // If sign in fails, display a message to the user.
+                    Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                    Toast.makeText(mContext, "Authentication failed.",
+                            Toast.LENGTH_SHORT).show();
                 }
             }
         });
+
     }
 
     private void writeNewUser(FirebaseUser user, String first, String last) {
-        User newUser = new User(first, last, user.getEmail(), user.getUid());
+        // make a UserProfile, needed for Firebase Authentication
         UserProfileChangeRequest newProfile = new UserProfileChangeRequest.Builder()
                 .setDisplayName(first + " " + last)
                 .build();
@@ -96,11 +112,136 @@ public class SignUpActivity extends AppCompatActivity {
                         }
                     }
                 });
+
+        // make a User object.
+        // add User obj to FirebaseDatabase (this is separate from Firebase Authentication)
+        // allows us to store other objs that are related to specific User (items, settings, etc)
+        User newUser = new User(first, last, user.getEmail(), user.getUid());
         mDatabase.child("users").child(user.getUid()).setValue(newUser);
     }
 
-    private boolean isCompletelyFilled(String first, String last, String email, String password) {
-        return !TextUtils.isEmpty(first) && !TextUtils.isEmpty(last) && !TextUtils.isEmpty(email)
-                && !TextUtils.isEmpty(password);
+    private void addTextListeners() {
+        firstNameText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                isFirstFilled= false;
+                if(s.length() != 0) {
+                    isFirstFilled = true;
+                }
+                updateButtonStatus(isFirstFilled && isLastFilled &&
+                        isEmailFilled && isPasswordFilled);
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                isFirstFilled= false;
+                if(s.length() != 0) {
+                    isFirstFilled = true;
+                }
+                updateButtonStatus(isFirstFilled && isLastFilled &&
+                        isEmailFilled && isPasswordFilled);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        // maybe remove last name? not needed?
+        lastNameText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                isLastFilled = false;
+                if(s.length() != 0) {
+                    isLastFilled = true;
+                }
+                updateButtonStatus(isFirstFilled && isLastFilled &&
+                        isEmailFilled && isPasswordFilled);
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                isLastFilled = false;
+                if(s.length() != 0) {
+                    isLastFilled = true;
+                }
+                updateButtonStatus(isFirstFilled && isLastFilled &&
+                        isEmailFilled && isPasswordFilled);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        // TODO: make sure email is a valid oxy.edu
+        emailText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                isEmailFilled = false;
+                if(s.length() != 0) {
+                    isEmailFilled = true;
+                }
+                updateButtonStatus(isFirstFilled && isLastFilled &&isEmailFilled && isPasswordFilled);
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                isEmailFilled = false;
+                if(s.length() != 0) {
+                    isEmailFilled = true;
+                }
+                updateButtonStatus(isFirstFilled && isLastFilled &&
+                        isEmailFilled && isPasswordFilled);
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        // TODO: make users have passwords longer than 6 characters
+        // (firebase does not allow passwords < 6)
+        passwordText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                isPasswordFilled = false;
+                if(s.length() != 0) {
+                    isPasswordFilled = true;
+                }
+                updateButtonStatus(isFirstFilled && isLastFilled &&
+                        isEmailFilled && isPasswordFilled);
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                isPasswordFilled = false;
+                if(s.length() != 0) {
+                    isPasswordFilled = true;
+                }
+                updateButtonStatus(isFirstFilled && isLastFilled &&
+                        isEmailFilled && isPasswordFilled);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+    }
+
+    private void updateButtonStatus(boolean filled) {
+        if(filled) {
+            signUpBtn.setClickable(true);
+            signUpBtn.setEnabled(true);
+            signUpBtn.setAlpha(1f);
+        } else {
+            signUpBtn.setClickable(false);
+            signUpBtn.setEnabled(false);
+            signUpBtn.setAlpha(.4f);
+        }
+
     }
 }
