@@ -58,15 +58,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        // only let users click sign up when button status is enabled
-        if(loginBtn.isEnabled()) {
-            loginBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    login();
-                }
-            });
-        }
 
     }
 
@@ -89,6 +80,13 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    protected void onLogin(View view) {
+        // only let users click sign up when button status is enabled
+        if(loginBtn.isEnabled()) {
+            login();
+        }
+    }
+
     private void login() {
         String email = emailText.getText().toString();
         String password = passwordText.getText().toString();
@@ -104,7 +102,7 @@ public class LoginActivity extends AppCompatActivity {
                             startActivity(newsFeedIntent);
                         } else {
                             // If sign in fails, display a message to the user.
-                            // TODO: make password box red when password incorrect?
+                            // TODO: make password box red when password incorrect? (firebaseAuthInvalidCredentialsException)
                             // TODO: allow user to request password change after 3 incorrect tries?
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
                             Toast.makeText(mContext, "Login failed.",
@@ -175,6 +173,5 @@ public class LoginActivity extends AppCompatActivity {
             loginBtn.setEnabled(false);
             loginBtn.setAlpha(.5f);
         }
-
     }
 }

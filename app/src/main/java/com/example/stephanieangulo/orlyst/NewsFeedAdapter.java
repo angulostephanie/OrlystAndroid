@@ -13,9 +13,9 @@ import java.util.List;
 public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.ViewHolder>{
 
     private Context context;
-    private List<SellingItem> itemsList;
+    private List<Item> itemsList;
 
-    public NewsFeedAdapter(Context context, List<SellingItem> itemsList) {
+    public NewsFeedAdapter(Context context, List<Item> itemsList) {
         this.context = context;
         this.itemsList = itemsList;
     }
@@ -30,7 +30,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-        final SellingItem item = itemsList.get(position);
+        final Item item = itemsList.get(position);
         holder.name.setText(item.getItemName());
         holder.description.setText(item.getDescription());
         holder.user.setText(item.getUser());

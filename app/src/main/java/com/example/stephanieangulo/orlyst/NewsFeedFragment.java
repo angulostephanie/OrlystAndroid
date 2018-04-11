@@ -44,7 +44,7 @@ public class NewsFeedFragment extends Fragment {
     EditText searchEditText;
     TextView numItemsFound;
     NewsFeedAdapter mAdapter;
-    List<SellingItem> fixedItems;
+    List<Item> fixedItems;
 
     public NewsFeedFragment() {
         // Required empty public constructor
@@ -88,7 +88,7 @@ public class NewsFeedFragment extends Fragment {
         numItemsFound = view.findViewById(R.id.num_items);
         recyclerView = view.findViewById(R.id.feed_recycler_view);
 
-        fixedItems = new SellingItem().getTempData(); // temp data
+        fixedItems = new Item().getTempData(); // temp data
         mAdapter = new NewsFeedAdapter(getActivity(), fixedItems);
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);

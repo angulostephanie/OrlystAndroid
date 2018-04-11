@@ -112,10 +112,8 @@ public class GalleryFragment extends Fragment {
         if(!isGalleryEmpty()) {
             mostRecent = getMostRecentImage();
             paths = getImagePaths();
-
             imageGallery = getGalleryImages(paths);
             mAdapter = new GalleryAdapter(mContext, imageGallery);
-
             Bitmap bitmap = BitmapFactory.decodeFile(mostRecent);
             selectedImage.setImageBitmap(Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), false));
         } else {
@@ -142,11 +140,11 @@ public class GalleryFragment extends Fragment {
         nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Bitmap bitmap =((BitmapDrawable)selectedImage.getDrawable()).getBitmap();
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                Bitmap bitmap = ((BitmapDrawable)selectedImage.getDrawable()).getBitmap();
+                ItemImage image = new ItemImage(bitmap);
+                ByteArrayOutputStream stream = image.getCompressedStream(100);
                 byte[] jpeg = stream.toByteArray();
-                Intent intent = new Intent(mContext, AddItemInfoActivity.class);
+                Intent intent = new Intent(mContext, PostItemActivity.class);
                 intent.putExtra("bytes", jpeg);
                 startActivity(intent);
             }
@@ -195,10 +193,10 @@ public class GalleryFragment extends Fragment {
 
     private List<byte[]> getGalleryImages(String[] imagePaths) {
         List<byte[]> imagesConverted = new ArrayList<>();
-        for(int i=0;i<imagePaths.length;i++){
+        for(int i=0;i<imagePaths.length;i++) {
             Bitmap bitmap = BitmapFactory.decodeFile(imagePaths[i]);
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.PNG, 90, baos);
+            ItemImage image = new ItemImage(bitmap);
+            ByteArrayOutputStream baos = image.getCompressedStream(100);
             byte[] b = baos.toByteArray();
             imagesConverted.add(b);
         }

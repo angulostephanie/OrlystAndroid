@@ -5,40 +5,38 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SellingItem {
-    private String itemName, description, username, email,key;
 
-    public SellingItem() {
+public class Item {
+    private String itemName, description, username, email, key;
+    private byte[] bytes;
+
+    public Item() {
     }
-
-    public SellingItem(String name, String description, String user) {
+    public Item(String name, String description, String user) {
         this.itemName = name;
         this.description = description;
         this.username = user;
     }
-    public SellingItem(String name, String description, String username, String email, String key) {
+    public Item(String name, String description, String username, String email, String key, byte[] bytes) {
         this.itemName = name;
         this.description = description;
         this.username = username;
         this.email = email;
         this.key = key;
+        this.bytes = bytes;
+    }
+    public void setItemName(String newName) {
+        itemName = newName;
+    }
+    public void setDescription(String newDescription) {
+        description = newDescription;
     }
     public String getItemName() {
         return itemName;
     }
-
-    public void setItemName(String newName) {
-        itemName = newName;
-    }
-
     public String getDescription() {
         return description;
     }
-
-    public void setDescription(String newDescription) {
-        description = newDescription;
-    }
-
     public String getUser() {
         return username;
     }
@@ -48,39 +46,52 @@ public class SellingItem {
     public String getKey() {
         return key;
     }
-    public List<SellingItem> getTempData() {
-        List<SellingItem> items = new ArrayList<>();
+    public byte[] getBytes() {
+        return bytes;
+    }
+//    public byte[] convertListToArray(List<Byte> list) {
+//        Byte[] byteObjects = new Byte[list.size()];
+//        byte[] converted = new byte[list.size()];
+//
+//        int i=0;
+//        for(Byte b: byteObjects)
+//            converted[i++] = b.byteValue();
+//
+//        return converted;
+//    }
+    public List<Item> getTempData() {
+        List<Item> items = new ArrayList<>();
 
-        SellingItem item = new SellingItem("Books",
+        Item item = new Item("Books",
                 "Random text random text wooo Random text random text wooo Random text random text wooo", "Steph");
-        SellingItem item1 = new SellingItem("Pencils",
+        Item item1 = new Item("Pencils",
                 "More random text more random text more random text ", "Emily");
-        SellingItem item2 = new SellingItem("Water bottle",
+        Item item2 = new Item("Water bottle",
                 "Steph doesn't deserve a new water bottle " +
                         "Steph doesn't deserve a new water bottle Steph " +
                         "doesn't deserve a new water bottle", "Vanessa");
-        SellingItem item3 = new SellingItem("Pens",
+        Item item3 = new Item("Pens",
                 "Lalalalaalala lalalalalala lalalalalalal", "Nicole");
-        SellingItem item4 = new SellingItem("iPhone adapter",
+        Item item4 = new Item("iPhone adapter",
                 "Techy tech tech Techy tech tech Techy tech tech", "Mario");
-        SellingItem item5 = new SellingItem("Guitar",
+        Item item5 = new Item("Guitar",
                 "I buy really expensive guitars, " +
                         "now I'm selling it cos I realized how expensive they are", "Luis");
-        SellingItem item6 = new SellingItem("More textbooks",
+        Item item6 = new Item("More textbooks",
                 "Take my discrete textbook pls Random text random text wooo " +
                         "Random text random text wooo Random text random text wooo", "Steph");
-        SellingItem item7 = new SellingItem("Caligraphy pens",
+        Item item7 = new Item("Caligraphy pens",
                 "I got a caligraphy set for my birthday and i didn't like it " +
                         "More random text more random text more random text ", "Emily");
-        SellingItem item8 = new SellingItem("Hydroflask",
+        Item item8 = new Item("Hydroflask",
                 "Steph still doesn't deserve a new water bottle " +
                         "Steph still doesn't deserve a new water bottle Steph " +
                         "still doesn't deserve a new water bottle", "Vanessa");
-        SellingItem item9 = new SellingItem("Red pens",
+        Item item9 = new Item("Red pens",
                 "Let me edit your essay at the writing center", "Nicole");
-        SellingItem item10 = new SellingItem("Circa survive vinyl",
+        Item item10 = new Item("Circa survive vinyl",
                 "I bought two lol", "Mario");
-        SellingItem item11 = new SellingItem("Amp",
+        Item item11 = new Item("Amp",
                 "I buy really expensive amps, " +
                         "now I'm selling it cos I realized how expensive they are", "Luis");
 
@@ -99,13 +110,22 @@ public class SellingItem {
 
         return items;
     }
+    public List<Item> getItemsFromDataBase() {
+        // TODO: pull from firebase HERE.
+        return null;
+    }
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
+
+        //Byte[] byteObjectArray = ArrayUtils.toObject(bytes);
+        //List<Byte> list =  Arrays.asList(byteObjectArray);
+
         result.put("title", itemName);
         result.put("description", description);
         result.put("author", username);
         result.put("email", email);
         result.put("key", key);
+        //result.put("bytes", list);
         return result;
     }
 }

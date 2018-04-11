@@ -58,17 +58,15 @@ public class SignUpActivity extends AppCompatActivity {
         updateButtonStatus(false);
         addTextListeners();
 
+    }
+    protected void onSignUp(View view) {
         // only let users click sign up when button status is enabled
-        if (signUpBtn.isEnabled()) {
-            signUpBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    signUp();
-                }
-            });
+        if(signUpBtn.isEnabled()) {
+            signUp();
+        } else {
+            Log.d(TAG, "can't click on sign up, complete all fields!");
         }
     }
-
     private void signUp() {
         final String firstName = firstNameText.getText().toString();
         final String lastName = lastNameText.getText().toString();
@@ -87,6 +85,7 @@ public class SignUpActivity extends AppCompatActivity {
                     startActivity(newsFeedIntent);
                 } else {
                     // If sign in fails, display a message to the user.
+                    // TODO: if email already exists in database (FirebaseAuthUserCollisionException)
                     Log.w(TAG, "createUserWithEmail:failure", task.getException());
                     Toast.makeText(mContext, "Authentication failed.",
                             Toast.LENGTH_SHORT).show();
@@ -242,6 +241,6 @@ public class SignUpActivity extends AppCompatActivity {
             signUpBtn.setEnabled(false);
             signUpBtn.setAlpha(.4f);
         }
-
+        //Log.d(TAG, "sign up btn is:" + signUpBtn.isEnabled() + " and" + signUpBtn.isClickable());
     }
 }

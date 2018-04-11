@@ -2,12 +2,11 @@ package com.example.stephanieangulo.orlyst;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -26,8 +25,9 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Map;
 
-public class AddItemInfoActivity extends AppCompatActivity {
-    private static final String TAG = "AddItemInfoActivity";
+public class PostItemActivity extends AppCompatActivity {
+    private static final String TAG = "PostItemActivity";
+
     private DatabaseReference mUserSellingItemReference;
     private FirebaseUser mUser;
     private FirebaseAuth mAuth;
@@ -38,14 +38,17 @@ public class AddItemInfoActivity extends AppCompatActivity {
     private EditText titleText;
     private EditText descriptionText;
 
+    private boolean isTitleFilled;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_info);
+        setContentView(R.layout.activity_post_item);
         mContext = this;
         mAuth = FirebaseAuth.getInstance();
         mUser = mAuth.getCurrentUser();
-        mUserSellingItemReference = FirebaseDatabase.getInstance().getReference().child("selling-items").child(mUser.getUid());
+        mUserSellingItemReference = FirebaseDatabase.getInstance().getReference()
+                .child("selling-items").child(mUser.getUid());
 
         postBtn = findViewById(R.id.post_btn);
         backBtn = findViewById(R.id.back_btn);
@@ -53,6 +56,8 @@ public class AddItemInfoActivity extends AppCompatActivity {
         titleText = findViewById(R.id.post_item_title);
         descriptionText = findViewById(R.id.post_item_description);
 
+        updateButtonStatus(false);
+        addTextListeners();
         setThumbnail();
 
         backBtn.setOnClickListener(new View.OnClickListener() {
@@ -63,44 +68,48 @@ public class AddItemInfoActivity extends AppCompatActivity {
             }
         });
 
-        postBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                System.out.println("Posting image woo");
-                String title = titleText.getText().toString();
-                String description = descriptionText.getText().toString();
-                if(!isCompletelyFilled(title, description))
-                    Toast.makeText(mContext, "PLEASE FILL OUT EVERYTHING", Toast.LENGTH_SHORT).show();
-                else
-                    addItemToDB(title, description);
-            }
-        });
     }
-
-    public void setThumbnail() {
-        if(getIntent().hasExtra("bytes")) {
-            byte[] bytes = this.getIntent().getByteArrayExtra("bytes");
-            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-            itemImage.setImageBitmap(Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), false));
+    protected void onPost(View view) {
+        if(postBtn.isEnabled()) {
+            System.out.println("Posting image woo");
+            String title = titleText.getText().toString();
+            String description = descriptionText.getText().toString();
+            addItemToDatabase(title, description);
         }
     }
+    private byte[] getImage() {
+        if(getIntent().hasExtra("bytes")) {
+            return this.getIntent().getByteArrayExtra("bytes");
+        }
+        return null;
+    }
+    private void setThumbnail() {
+        ItemImage image = new ItemImage(getImage());
+        itemImage.setImageBitmap(image.decodeToBitmap());
 
-    public void addItemToDB(final String title, final String description) {
+    }
+    private void addItemToDatabase(String title, String description) {
         DatabaseReference specificSellingItemRef = mUserSellingItemReference.push();
         String key = specificSellingItemRef.getKey();
-        SellingItem item = new SellingItem(title, description, mUser.getDisplayName(), mUser.getEmail(), key);
+        Item item = new Item(title, description, mUser.getDisplayName(), mUser.getEmail(), key, getImage());
         Map<String, Object> itemValues = item.toMap();
+        // TODO: figure out how to add bytes[] to firebase (https://firebase.google.com/docs/storage/android/upload-files)
+
         specificSellingItemRef.updateChildren(itemValues).
                 addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Log.e(TAG, "Success !");
+                        Log.e(TAG, "Success!");
+                        Toast.makeText(mContext, "Success!!! Check database for changes;)",
+                                Toast.LENGTH_SHORT).show();
                     }
                 }
         ).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 Log.e(TAG, "FAIL");
+                Toast.makeText(mContext, "fail :/ check logcat for error",
+                        Toast.LENGTH_SHORT).show();
             }
         }).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
@@ -109,7 +118,41 @@ public class AddItemInfoActivity extends AppCompatActivity {
             }
         });
     }
-    private boolean isCompletelyFilled(String title, String description) {
-        return !TextUtils.isEmpty(title) && !TextUtils.isEmpty(description);
+    private void addTextListeners() {
+        titleText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                isTitleFilled = false;
+                if(s.length() != 0) {
+                    isTitleFilled = true;
+                }
+                updateButtonStatus(isTitleFilled);
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                isTitleFilled = false;
+                if(s.length() != 0) {
+                    isTitleFilled = true;
+                }
+                updateButtonStatus(isTitleFilled);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+    }
+    private void updateButtonStatus(boolean filled) {
+        if(filled) {
+            postBtn.setClickable(true);
+            postBtn.setEnabled(true);
+            postBtn.setAlpha(1f);
+        } else {
+            postBtn.setClickable(false);
+            postBtn.setEnabled(false);
+            postBtn.setAlpha(.2f);
+        }
     }
 }

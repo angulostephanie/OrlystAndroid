@@ -58,5 +58,6 @@
         android:background="@android:color/holo_orange_dark"
         android:fontFamily="sans-serif-smallcaps"
         android:text="@string/sign_up"
+        android:onClick="onSignUp"
         android:textColor="@android:color/background_light" />
 </RelativeLayout>
