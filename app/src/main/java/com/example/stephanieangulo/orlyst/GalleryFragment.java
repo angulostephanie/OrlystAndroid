@@ -1,6 +1,7 @@
 package com.example.stephanieangulo.orlyst;
 
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -11,6 +12,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -22,8 +24,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,15 +53,28 @@ public class GalleryFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
     private GalleryAdapter mAdapter;
-    private String[] paths;
-    private String mostRecent = "";
     private Context mContext;
     private Activity mActivity;
     private RecyclerView recyclerView;
     private ImageView selectedImage;
-    private List<byte[]> imageGallery = new ArrayList<>();
+    private String[] paths;
+    private String mostRecent = "";
+    private List<byte[]> imageGalleryInBytes = new ArrayList<>();
     private Button nextBtn;
 
+    private final String orderBy = MediaStore.Images.Media._ID;
+    private final String[] basicProjection = {
+            MediaStore.Images.Media.DATA,
+            MediaStore.Images.Media._ID
+    };
+    private final String[] recentProjection = {
+            MediaStore.Images.ImageColumns._ID,
+            MediaStore.Images.ImageColumns.DATA,
+            MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME,
+            MediaStore.Images.ImageColumns.DATE_TAKEN,
+            MediaStore.Images.ImageColumns.MIME_TYPE
+    };
+    private final Uri imageGalleryLink = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
 
     public GalleryFragment() {
         // Required empty public constructor
@@ -93,11 +108,13 @@ public class GalleryFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_gallery, container, false);
         mContext = getContext();
         mActivity = getActivity();
+        mAdapter = new GalleryAdapter(mContext, new ArrayList<byte[]>());
+
         recyclerView = view.findViewById(R.id.gallery_recycler_view);
         selectedImage = view.findViewById(R.id.selected_image_view);
         nextBtn = view.findViewById(R.id.next_btn);
@@ -106,33 +123,33 @@ public class GalleryFragment extends Fragment {
 
         while(permissionCheck != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(mActivity, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
-            // I want to force the user from the beginning however, maybe when they login, idk.
+            // TODO: I want to force the user from the beginning however, maybe when they login, idk.
         }
+
+        mAdapter = new GalleryAdapter(mContext, new ArrayList<byte[]>());
 
         if(!isGalleryEmpty()) {
             mostRecent = getMostRecentImage();
             paths = getImagePaths();
-            imageGallery = getGalleryImages(paths);
-            mAdapter = new GalleryAdapter(mContext, imageGallery);
-            Bitmap bitmap = BitmapFactory.decodeFile(mostRecent);
-            selectedImage.setImageBitmap(Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), false));
-        } else {
-            mAdapter = new GalleryAdapter(mContext, new ArrayList<byte[]>());
+            imageGalleryInBytes = getGalleryImages(paths);
+            mAdapter = new GalleryAdapter(mContext, imageGalleryInBytes);
+            ItemImage firstImage = new ItemImage(mostRecent);
+            selectedImage.setImageBitmap(firstImage.decodeToBitmap());
         }
 
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(mContext, 4);
-
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setAdapter(mAdapter);
         recyclerView.addItemDecoration(new GalleryItemDecoration(3, 1, true, getContext()));
         recyclerView.setNestedScrollingEnabled(false);
 
-        recyclerView.addOnItemTouchListener(new MyRecyclerItemClickListener(mContext, new MyRecyclerItemClickListener.OnItemClickListener() {
+        recyclerView.addOnItemTouchListener(new MyRecyclerItemClickListener(mContext,
+                new MyRecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 String path = paths[position];
-                Bitmap bitmap = BitmapFactory.decodeFile(path);
-                selectedImage.setImageBitmap(Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), false));
+                ItemImage image = new ItemImage(path);
+                selectedImage.setImageBitmap(image.decodeToBitmap());
                 Log.d(TAG, "Clicking on this image path" + path);
             }
         }));
@@ -140,10 +157,14 @@ public class GalleryFragment extends Fragment {
         nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(isGalleryEmpty()) {
+                    Toast.makeText(mContext, "Image gallery is empty, please take a photo!",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 Bitmap bitmap = ((BitmapDrawable)selectedImage.getDrawable()).getBitmap();
                 ItemImage image = new ItemImage(bitmap);
-                ByteArrayOutputStream stream = image.getCompressedStream(100);
-                byte[] jpeg = stream.toByteArray();
+                byte[] jpeg = image.convertToBytes(100);
                 Intent intent = new Intent(mContext, PostItemActivity.class);
                 intent.putExtra("bytes", jpeg);
                 startActivity(intent);
@@ -192,22 +213,21 @@ public class GalleryFragment extends Fragment {
     }
 
     private List<byte[]> getGalleryImages(String[] imagePaths) {
+        // converts image paths to byte arrays
         List<byte[]> imagesConverted = new ArrayList<>();
-        for(int i=0;i<imagePaths.length;i++) {
-            Bitmap bitmap = BitmapFactory.decodeFile(imagePaths[i]);
+        for (String imagePath : imagePaths) {
+            Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
             ItemImage image = new ItemImage(bitmap);
-            ByteArrayOutputStream baos = image.getCompressedStream(100);
-            byte[] b = baos.toByteArray();
+            byte[] b = image.convertToBytes(100);
             imagesConverted.add(b);
         }
         return imagesConverted;
     }
 
     private String[] getImagePaths() {
-        final String[] projection = { MediaStore.Images.Media.DATA, MediaStore.Images.Media._ID };
-        final String orderBy = MediaStore.Images.Media._ID;
-        Cursor cursor = mContext.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                projection, null, null, orderBy);
+        // queries device's media store
+        // returns image's file paths
+        Cursor cursor = createCursor(basicProjection, orderBy);
         int count = cursor.getCount();
         String[] paths = new String[count];
         for (int i = 0; i < count; i++) {
@@ -220,16 +240,9 @@ public class GalleryFragment extends Fragment {
     }
 
     private String getMostRecentImage() {
-        String[] projection = new String[]{
-                MediaStore.Images.ImageColumns._ID,
-                MediaStore.Images.ImageColumns.DATA,
-                MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME,
-                MediaStore.Images.ImageColumns.DATE_TAKEN,
-                MediaStore.Images.ImageColumns.MIME_TYPE
-        };
-        final Cursor cursor = mContext.getContentResolver()
-                .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null,
-                        null, MediaStore.Images.Media._ID);
+        // queries for first image in cursor
+        // returns first image
+        final Cursor cursor = createCursor(recentProjection, orderBy);
         if (cursor.moveToFirst()) {
             String imageLocation = cursor.getString(1);
             File imageFile = new File(imageLocation);
@@ -240,13 +253,21 @@ public class GalleryFragment extends Fragment {
         }
         return null;
     }
+
     private boolean isGalleryEmpty() {
-        String[] projection = {MediaStore.Images.Media._ID};
-        Cursor cursor = mContext.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                projection, null, null, MediaStore.Images.Media._ID);
+        Cursor cursor = createCursor(basicProjection, orderBy);
         int size = cursor.getCount();
         cursor.close();
         return size == 0;
+    }
+
+    private Cursor createCursor(String[] projection, String orderBy) {
+        // The cursor class allows us to query databases
+        // This is needed to query through the device's image gallery
+        ContentResolver imageGallery = mContext.getContentResolver();
+        Cursor cursor = imageGallery.query(imageGalleryLink,
+                projection, null, null, orderBy);
+        return cursor;
     }
 
 }

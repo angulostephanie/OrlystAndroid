@@ -6,10 +6,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.wonderkiln.camerakit.CameraKitError;
 import com.wonderkiln.camerakit.CameraKitEvent;
@@ -33,16 +35,18 @@ public class CameraFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final String TAG = "CameraFragment";
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+    private Context mContext;
     private CameraView cameraView;
-    Button captureBtn;
+    private Button captureBtn;
 
-    boolean canTakePicture;
+    private boolean canTakePicture;
 
     public CameraFragment() {
         // Required empty public constructor
@@ -79,23 +83,16 @@ public class CameraFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_camera, container, false);
+        mContext = getContext();
+
         cameraView = view.findViewById(R.id.capture_camera_view);
         cameraView.addCameraKitListener(cameraListener);
-
         captureBtn = view.findViewById(R.id.capture_btn);
+
         captureBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                cameraView.captureImage(new CameraKitEventCallback<CameraKitImage>() {
-                    @Override
-                    public void callback(CameraKitImage cameraKitImage) {
-                        cameraListener.onImage(cameraKitImage);
-                        byte[] jpeg = cameraKitImage.getJpeg();
-                        Intent intent = new Intent(getContext(), PostItemActivity.class);
-                        intent.putExtra("bytes", jpeg);
-                        startActivity(intent);
-                    }
-                });
+                captureImage();
             }
         });
         return view;
@@ -151,7 +148,18 @@ public class CameraFragment extends Fragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
-
+    private void captureImage() {
+        cameraView.captureImage(new CameraKitEventCallback<CameraKitImage>() {
+            @Override
+            public void callback(CameraKitImage cameraKitImage) {
+                cameraListener.onImage(cameraKitImage);
+                byte[] jpeg = cameraKitImage.getJpeg();
+                Intent intent = new Intent(getContext(), PostItemActivity.class);
+                intent.putExtra("bytes", jpeg);
+                startActivity(intent);
+            }
+        });
+    }
     private CameraKitEventListener cameraListener = new CameraKitEventListener() {
         @Override
         public void onEvent(CameraKitEvent cameraKitEvent) {
@@ -168,7 +176,9 @@ public class CameraFragment extends Fragment {
 
         @Override
         public void onError(CameraKitError cameraKitError) {
-
+            Toast.makeText(mContext, "Unable to take an image :(",
+                    Toast.LENGTH_SHORT).show();
+            Log.e(TAG, "Error: " + cameraKitError.toString());
         }
 
         @Override

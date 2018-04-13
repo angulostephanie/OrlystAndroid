@@ -9,6 +9,7 @@ import java.io.ByteArrayOutputStream;
 public class ItemImage {
     private byte[] bytes;
     private Bitmap bitmap;
+    private String path;
 
     public ItemImage(byte[] bytes) {
         this.bytes = bytes;
@@ -16,11 +17,19 @@ public class ItemImage {
     public ItemImage(Bitmap bitmap) {
         this.bitmap = bitmap;
     }
+    public ItemImage(String path) {
+        this.path = path;
+    }
     public Bitmap decodeToBitmap() {
-        // decode byte array to bitmap
+        // decode byte array or file path to bitmap
         // create a copy of bitmap (java requires this)
+        Bitmap decodedBitmap;
+        if(path == null) {
+            decodedBitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+        } else {
+            decodedBitmap = BitmapFactory.decodeFile(path);
+        }
 
-        Bitmap decodedBitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
         Bitmap mutableBitmap = decodedBitmap.copy(Bitmap.Config.ARGB_8888, true);
 
         // return scaled version of bitmap (has to be scaled)
@@ -28,12 +37,11 @@ public class ItemImage {
             mutableBitmap.getHeight(), false);
         return scaledBitmap;
     }
-    public ByteArrayOutputStream getCompressedStream(int quality) {
-        // creates a byte[] stream from a bitmap
-
+    public byte[] convertToBytes(int quality) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, quality, stream);
-        return stream;
+        return stream.toByteArray();
     }
+
 
 }
