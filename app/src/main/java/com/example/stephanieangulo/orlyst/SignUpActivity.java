@@ -59,7 +59,7 @@ public class SignUpActivity extends AppCompatActivity {
         addTextListeners();
 
     }
-    protected void onSignUp(View view) {
+    public void onSignUp(View view) {
         // only let users click sign up when button status is enabled
         if(signUpBtn.isEnabled()) {
             signUp();

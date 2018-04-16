@@ -80,7 +80,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    protected void onLogin(View view) {
+    public void onLogin(View view) {
         // only let users click sign up when button status is enabled
         if(loginBtn.isEnabled()) {
             login();
