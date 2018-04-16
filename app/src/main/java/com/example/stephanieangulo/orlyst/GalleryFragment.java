@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -30,7 +29,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -60,11 +58,10 @@ public class GalleryFragment extends Fragment {
     private Activity mActivity;
     private RecyclerView recyclerView;
     private ImageView selectedImage;
-    private String[] paths;
     private String mostRecent = "";
-    private List<byte[]> imageGalleryInBytes = new ArrayList<>();
     private Button nextBtn;
 
+    private List<byte[]> images;
     private final String orderBy = MediaStore.Images.Media._ID;
     private final String[] basicProjection = {
             MediaStore.Images.Media.DATA,
@@ -116,7 +113,7 @@ public class GalleryFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_gallery, container, false);
         mContext = getContext();
         mActivity = getActivity();
-        mAdapter = new GalleryAdapter(mContext, new ArrayList<byte[]>());
+        mAdapter = new GalleryAdapter(mContext);
 
         recyclerView = view.findViewById(R.id.gallery_recycler_view);
         selectedImage = view.findViewById(R.id.selected_image_view);
@@ -129,15 +126,11 @@ public class GalleryFragment extends Fragment {
             // TODO: I want to force the user from the beginning however, maybe when they login, idk.
         }
 
-        mAdapter = new GalleryAdapter(mContext, new ArrayList<byte[]>());
-
         if(!isGalleryEmpty()) {
             mostRecent = getMostRecentImage();
-            paths = getImagePaths();
-            imageGalleryInBytes = getGalleryImages(paths);
-            mAdapter = new GalleryAdapter(mContext, imageGalleryInBytes);
             ItemImage firstImage = new ItemImage(mostRecent);
-            selectedImage.setImageBitmap(firstImage.decodeToBitmap());
+            Bitmap bitmap = firstImage.decodeToBitmap();
+            setSelectedImage(bitmap);
         }
 
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(mContext, 4);
@@ -150,11 +143,11 @@ public class GalleryFragment extends Fragment {
                 new MyRecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                String path = paths[position];
-                ItemImage imageWithPath = new ItemImage(path);
-                ItemImage image = new ItemImage(imageWithPath.decodeToBitmap());
-                setSelectedImage(image);
-                Log.d(TAG, "Clicking on this image path" + path);
+                images = GalleryAdapter.getImageGallery();
+                ItemImage image = new ItemImage(images.get(position));
+                Bitmap bitmap = image.decodeToBitmap();
+                setSelectedImage(bitmap);
+                Log.d(TAG, "Clicking on this image path" + position);
             }
         }));
 
@@ -166,7 +159,8 @@ public class GalleryFragment extends Fragment {
                             Toast.LENGTH_SHORT).show();
                     return;
                 }
-                Bitmap bitmap = ((BitmapDrawable)selectedImage.getDrawable()).getBitmap();
+                Bitmap originalBitmap = (((BitmapDrawable)selectedImage.getDrawable()).getBitmap());
+                Bitmap bitmap = ItemImage.scaleDownBitmap(originalBitmap);
                 ItemImage image = new ItemImage(bitmap);
                 byte[] jpeg = image.convertToBytes(100);
                 Intent intent = new Intent(mContext, PostItemActivity.class);
@@ -216,7 +210,8 @@ public class GalleryFragment extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    private void setSelectedImage(ItemImage image) {
+    private void setSelectedImage(Bitmap bitmap) {
+        ItemImage image = new ItemImage(bitmap);
         byte[] bytes = image.convertToBytes(100);
         Glide.with(mContext)
                 .asBitmap()
@@ -225,32 +220,6 @@ public class GalleryFragment extends Fragment {
                         .placeholder(R.drawable.spinner)
                         .fitCenter())
                 .into(selectedImage);
-    }
-    private List<byte[]> getGalleryImages(String[] imagePaths) {
-        // converts image paths to byte arrays
-        List<byte[]> imagesConverted = new ArrayList<>();
-        for (String imagePath : imagePaths) {
-            Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
-            ItemImage image = new ItemImage(bitmap);
-            byte[] b = image.convertToBytes(100);
-            imagesConverted.add(b);
-        }
-        return imagesConverted;
-    }
-
-    private String[] getImagePaths() {
-        // queries device's media store
-        // returns image's file paths
-        Cursor cursor = createCursor(basicProjection, orderBy);
-        int count = cursor.getCount();
-        String[] paths = new String[count];
-        for (int i = 0; i < count; i++) {
-            cursor.moveToPosition(i);
-            int dataColumnIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
-            paths[i] = cursor.getString(dataColumnIndex);
-        }
-        cursor.close();
-        return paths;
     }
 
     private String getMostRecentImage() {

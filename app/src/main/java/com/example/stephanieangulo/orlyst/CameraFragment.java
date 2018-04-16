@@ -2,6 +2,7 @@ package com.example.stephanieangulo.orlyst;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -153,7 +154,9 @@ public class CameraFragment extends Fragment {
             @Override
             public void callback(CameraKitImage cameraKitImage) {
                 cameraListener.onImage(cameraKitImage);
-                byte[] jpeg = cameraKitImage.getJpeg();
+                Bitmap bitmap = ItemImage.scaleDownBitmap(cameraKitImage.getBitmap());
+                byte[] jpeg = new ItemImage(bitmap).convertToBytes(100);
+
                 Intent intent = new Intent(getContext(), PostItemActivity.class);
                 intent.putExtra("bytes", jpeg);
                 startActivity(intent);
@@ -183,7 +186,7 @@ public class CameraFragment extends Fragment {
 
         @Override
         public void onImage(CameraKitImage cameraKitImage) {
-            cameraKitImage.getJpeg();
+            cameraKitImage.getBitmap();
         }
 
         @Override
