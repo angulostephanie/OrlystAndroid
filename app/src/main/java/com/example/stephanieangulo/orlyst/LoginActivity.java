@@ -40,7 +40,6 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         mContext = this;
         mAuth = FirebaseAuth.getInstance();
-        mAuth.signOut(); //<-- how to sign out a user
 
         emailText = findViewById(R.id.email_text);
         passwordText = findViewById(R.id.password_text);
