@@ -15,6 +15,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -45,6 +47,8 @@ public class PostItemActivity extends AppCompatActivity {
     private EditText descriptionText;
 
     private boolean isTitleFilled;
+    private boolean photoUploaded = false;
+    private boolean infoUploaded = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,9 +95,13 @@ public class PostItemActivity extends AppCompatActivity {
         return null;
     }
     private void setThumbnail() {
-        ItemImage image = new ItemImage(getImage());
-        itemImage.setImageBitmap(image.decodeToBitmap());
-
+        Glide.with(mContext)
+                .asBitmap()
+                .load(getImage())
+                .apply(new RequestOptions()
+                        .placeholder(R.drawable.spinner)
+                        .fitCenter())
+                .into(itemImage);
     }
     private void addItemToDatabase(String title, String description) {
         DatabaseReference postItemRef = mItemReference.push();
@@ -109,9 +117,9 @@ public class PostItemActivity extends AppCompatActivity {
                 addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Log.e(TAG, "Success!");
-                        Toast.makeText(mContext, "Success!!! Check database for changes;)",
-                                Toast.LENGTH_SHORT).show();
+                        Log.e(TAG, "Successfully uploaded item info!");
+                        infoUploaded = true;
+                        returnToNewsFeed(photoUploaded);
                     }
                 }
         ).addOnFailureListener(new OnFailureListener() {
@@ -139,7 +147,8 @@ public class PostItemActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                         progressDialog.dismiss();
-                        Toast.makeText(PostItemActivity.this, "Uploaded", Toast.LENGTH_SHORT).show();
+                        photoUploaded = true;
+                        returnToNewsFeed(infoUploaded);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -157,6 +166,13 @@ public class PostItemActivity extends AppCompatActivity {
                         progressDialog.setMessage("Uploaded "+(int)progress+"%");
                     }
                 });
+    }
+    private void returnToNewsFeed(boolean success) {
+        if(success) {
+            Toast.makeText(PostItemActivity.this, "Uploaded", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(mContext, MainActivity.class);
+            startActivity(intent);
+        }
     }
     private void addTextListeners() {
         titleText.addTextChangedListener(new TextWatcher() {

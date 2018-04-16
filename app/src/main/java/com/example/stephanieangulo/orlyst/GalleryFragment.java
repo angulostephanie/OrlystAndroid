@@ -26,6 +26,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -148,8 +151,9 @@ public class GalleryFragment extends Fragment {
             @Override
             public void onItemClick(View view, int position) {
                 String path = paths[position];
-                ItemImage image = new ItemImage(path);
-                selectedImage.setImageBitmap(image.decodeToBitmap());
+                ItemImage imageWithPath = new ItemImage(path);
+                ItemImage image = new ItemImage(imageWithPath.decodeToBitmap());
+                setSelectedImage(image);
                 Log.d(TAG, "Clicking on this image path" + path);
             }
         }));
@@ -212,6 +216,16 @@ public class GalleryFragment extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
+    private void setSelectedImage(ItemImage image) {
+        byte[] bytes = image.convertToBytes(100);
+        Glide.with(mContext)
+                .asBitmap()
+                .load(bytes)
+                .apply(new RequestOptions()
+                        .placeholder(R.drawable.spinner)
+                        .fitCenter())
+                .into(selectedImage);
+    }
     private List<byte[]> getGalleryImages(String[] imagePaths) {
         // converts image paths to byte arrays
         List<byte[]> imagesConverted = new ArrayList<>();
