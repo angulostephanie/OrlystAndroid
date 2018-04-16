@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHolder>{
+
     private static final int ITEM = 0;
     private static final int LOADING = 1;
 
