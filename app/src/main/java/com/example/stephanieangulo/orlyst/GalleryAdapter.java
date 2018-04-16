@@ -7,6 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+
 import java.util.List;
 
 public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHolder>{
@@ -26,8 +29,13 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
     @Override
     public void onBindViewHolder(GalleryAdapter.ViewHolder holder, final int position) {
         final byte[] bytes = imageGallery.get(position);
-        ItemImage image = new ItemImage(bytes);
-        holder.thumbnail.setImageBitmap(image.decodeToBitmap());
+        Glide.with(context)
+                .asBitmap()
+                .load(bytes)
+                .apply(new RequestOptions()
+                .placeholder(R.drawable.loading_spinner)
+                        .fitCenter())
+                .into(holder.thumbnail);
     }
 
     @Override
