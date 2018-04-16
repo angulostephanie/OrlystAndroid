@@ -39,7 +39,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         mContext = this;
-        mAuth = FirebaseAuth.getInstance();
+        mAuth = AppData.firebaseAuth;
 
         emailText = findViewById(R.id.email_text);
         passwordText = findViewById(R.id.password_text);
@@ -66,7 +66,7 @@ public class LoginActivity extends AppCompatActivity {
         updateUI();
     }
 
-    public void updateUI() {
+    private void updateUI() {
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
             // if firebase user exists, skip login page, take them to their news feed
@@ -115,19 +115,15 @@ public class LoginActivity extends AppCompatActivity {
         emailText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                isEmailFilled = false;
-                if(s.length() != 0) {
-                    isEmailFilled = true;
-                }
+                isEmailFilled = s.length() != 0;
+
                 updateButtonStatus(isEmailFilled && isPasswordFilled);
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                isEmailFilled = false;
-                if(s.length() != 0) {
-                    isEmailFilled = true;
-                }
+                isEmailFilled = s.length() != 0;
+
                 updateButtonStatus(isEmailFilled && isPasswordFilled);
             }
 
@@ -139,19 +135,15 @@ public class LoginActivity extends AppCompatActivity {
         passwordText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                isPasswordFilled = false;
-                if(s.length() != 0) {
-                    isPasswordFilled  = true;
-                }
+                isPasswordFilled = s.length() != 0;
+
                 updateButtonStatus(isEmailFilled && isPasswordFilled);
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                isPasswordFilled = false;
-                if(s.length() != 0) {
-                    isPasswordFilled  = true;
-                }
+                isPasswordFilled = s.length() != 0;
+
                 updateButtonStatus(isEmailFilled && isPasswordFilled);
             }
 
