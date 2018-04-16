@@ -19,8 +19,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 public class SignUpActivity extends AppCompatActivity {
     private static final String TAG = "SignUpActivity";
@@ -28,7 +26,6 @@ public class SignUpActivity extends AppCompatActivity {
     // entry point of Firebase Auth SDK
     private FirebaseAuth mAuth;
 
-    private DatabaseReference mDatabase;
     private EditText firstNameText;
     private EditText lastNameText;
     private EditText emailText;
@@ -46,8 +43,7 @@ public class SignUpActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up_page);
         mContext = this;
-        mAuth = FirebaseAuth.getInstance();
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mAuth = AppData.firebaseAuth;
 
         firstNameText = findViewById(R.id.first_name_text);
         lastNameText = findViewById(R.id.last_name_text);
@@ -116,27 +112,23 @@ public class SignUpActivity extends AppCompatActivity {
         // add User obj to FirebaseDatabase (this is separate from Firebase Authentication)
         // allows us to store other objs that are related to specific User (items, settings, etc)
         User newUser = new User(first, last, user.getEmail(), user.getUid());
-        mDatabase.child("users").child(user.getUid()).setValue(newUser);
+        AppData.userRootReference.child(user.getUid()).setValue(newUser);
     }
 
     private void addTextListeners() {
         firstNameText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                isFirstFilled= false;
-                if(s.length() != 0) {
-                    isFirstFilled = true;
-                }
+                isFirstFilled = s.length() != 0;
+
                 updateButtonStatus(isFirstFilled && isLastFilled &&
                         isEmailFilled && isPasswordFilled);
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                isFirstFilled= false;
-                if(s.length() != 0) {
-                    isFirstFilled = true;
-                }
+                isFirstFilled = s.length() != 0;
+
                 updateButtonStatus(isFirstFilled && isLastFilled &&
                         isEmailFilled && isPasswordFilled);
             }
@@ -150,20 +142,16 @@ public class SignUpActivity extends AppCompatActivity {
         lastNameText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                isLastFilled = false;
-                if(s.length() != 0) {
-                    isLastFilled = true;
-                }
+                isLastFilled = s.length() != 0;
+
                 updateButtonStatus(isFirstFilled && isLastFilled &&
                         isEmailFilled && isPasswordFilled);
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                isLastFilled = false;
-                if(s.length() != 0) {
-                    isLastFilled = true;
-                }
+                isLastFilled = s.length() != 0;
+
                 updateButtonStatus(isFirstFilled && isLastFilled &&
                         isEmailFilled && isPasswordFilled);
             }
@@ -177,20 +165,16 @@ public class SignUpActivity extends AppCompatActivity {
         emailText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                isEmailFilled = false;
-                if(s.length() != 0) {
-                    isEmailFilled = true;
-                }
+                isEmailFilled = s.length() != 0;
+
                 updateButtonStatus(isFirstFilled && isLastFilled &&isEmailFilled && isPasswordFilled);
 
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                isEmailFilled = false;
-                if(s.length() != 0) {
-                    isEmailFilled = true;
-                }
+                isEmailFilled = s.length() != 0;
+
                 updateButtonStatus(isFirstFilled && isLastFilled &&
                         isEmailFilled && isPasswordFilled);
 
@@ -206,20 +190,16 @@ public class SignUpActivity extends AppCompatActivity {
         passwordText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                isPasswordFilled = false;
-                if(s.length() != 0) {
-                    isPasswordFilled = true;
-                }
+                isPasswordFilled = s.length() != 0;
+
                 updateButtonStatus(isFirstFilled && isLastFilled &&
                         isEmailFilled && isPasswordFilled);
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                isPasswordFilled = false;
-                if(s.length() != 0) {
-                    isPasswordFilled = true;
-                }
+                isPasswordFilled = s.length() != 0;
+
                 updateButtonStatus(isFirstFilled && isLastFilled &&
                         isEmailFilled && isPasswordFilled);
             }

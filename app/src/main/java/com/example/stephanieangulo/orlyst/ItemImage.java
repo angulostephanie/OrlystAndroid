@@ -42,6 +42,10 @@ public class ItemImage {
         bitmap.compress(Bitmap.CompressFormat.JPEG, quality, stream);
         return stream.toByteArray();
     }
+    public byte[] getBytes() {
+        return bytes;
+    }
+
 
 
 }

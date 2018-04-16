@@ -1,5 +1,6 @@
 package com.example.stephanieangulo.orlyst;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -21,14 +22,19 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.Map;
 
 public class PostItemActivity extends AppCompatActivity {
     private static final String TAG = "PostItemActivity";
 
-    private DatabaseReference mUserSellingItemReference;
+    private DatabaseReference mItemReference;
+    private FirebaseStorage mStorage;
+    private StorageReference storageReference;
     private FirebaseUser mUser;
     private FirebaseAuth mAuth;
     private Context mContext;
@@ -45,10 +51,11 @@ public class PostItemActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_item);
         mContext = this;
-        mAuth = FirebaseAuth.getInstance();
+        mAuth = AppData.firebaseAuth;
         mUser = mAuth.getCurrentUser();
-        mUserSellingItemReference = FirebaseDatabase.getInstance().getReference()
-                .child("selling-items").child(mUser.getUid());
+        mItemReference = AppData.getItemReference(mUser.getUid());
+        mStorage = AppData.firebaseStorage;
+        storageReference = mStorage.getReference();
 
         postBtn = findViewById(R.id.post_btn);
         backBtn = findViewById(R.id.back_btn);
@@ -69,7 +76,7 @@ public class PostItemActivity extends AppCompatActivity {
         });
 
     }
-    protected void onPost(View view) {
+    public void onPost(View view) {
         if(postBtn.isEnabled()) {
             System.out.println("Posting image woo");
             String title = titleText.getText().toString();
@@ -89,13 +96,16 @@ public class PostItemActivity extends AppCompatActivity {
 
     }
     private void addItemToDatabase(String title, String description) {
-        DatabaseReference specificSellingItemRef = mUserSellingItemReference.push();
-        String key = specificSellingItemRef.getKey();
-        Item item = new Item(title, description, mUser.getDisplayName(), mUser.getEmail(), key, getImage());
-        Map<String, Object> itemValues = item.toMap();
-        // TODO: figure out how to add bytes[] to firebase (https://firebase.google.com/docs/storage/android/upload-files)
+        DatabaseReference postItemRef = mItemReference.push();
+        String key = postItemRef.getKey();
+        Item item = new Item(title, description, mUser.getDisplayName(),
+                mUser.getEmail(), key, getImage());
 
-        specificSellingItemRef.updateChildren(itemValues).
+        Map<String, Object> itemValues = item.toMap();
+
+        uploadImage(getImage(), key);
+
+        postItemRef.updateChildren(itemValues).
                 addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -118,23 +128,49 @@ public class PostItemActivity extends AppCompatActivity {
             }
         });
     }
+    private void uploadImage(byte[] image, String key) {
+        final ProgressDialog progressDialog = new ProgressDialog(mContext);
+        progressDialog.setTitle("Uploading...");
+        progressDialog.show();
+
+        StorageReference ref = storageReference.child("images/"+ key);
+        ref.putBytes(image)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        progressDialog.dismiss();
+                        Toast.makeText(PostItemActivity.this, "Uploaded", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        progressDialog.dismiss();
+                        Toast.makeText(PostItemActivity.this, "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                        double progress = (100.0*taskSnapshot.getBytesTransferred()/taskSnapshot
+                                .getTotalByteCount());
+                        progressDialog.setMessage("Uploaded "+(int)progress+"%");
+                    }
+                });
+    }
     private void addTextListeners() {
         titleText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                isTitleFilled = false;
-                if(s.length() != 0) {
-                    isTitleFilled = true;
-                }
+                isTitleFilled = s.length() != 0;
+
                 updateButtonStatus(isTitleFilled);
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                isTitleFilled = false;
-                if(s.length() != 0) {
-                    isTitleFilled = true;
-                }
+                isTitleFilled = s.length() != 0;
+
                 updateButtonStatus(isTitleFilled);
             }
 
@@ -155,4 +191,5 @@ public class PostItemActivity extends AppCompatActivity {
             postBtn.setAlpha(.2f);
         }
     }
+
 }
