@@ -253,6 +253,7 @@ public class GalleryFragment extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
+
     private void setSelectedImage(Bitmap bitmap) {
         ItemImage image = new ItemImage(bitmap);
         byte[] bytes = image.convertToBytes(100);

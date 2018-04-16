@@ -58,7 +58,8 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
                 .apply(new RequestOptions()
                 .placeholder(R.drawable.loading_spinner)
                         .fitCenter()
-                        .diskCacheStrategy(DiskCacheStrategy.ALL))
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .fitCenter())
                 .into(holder.thumbnail);
     }
 
