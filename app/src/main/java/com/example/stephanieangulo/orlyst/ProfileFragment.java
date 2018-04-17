@@ -118,6 +118,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         watchlistButton = view.findViewById(R.id.watchlist_btn);
         userItemsButton.setOnClickListener(this);
         watchlistButton.setOnClickListener(this);
+
+        showUserItems();
         return view;
     }
 
@@ -149,22 +151,37 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch(v.getId()){
             case R.id.user_items_btn:
-                Toast.makeText(getContext(), "Your items", Toast.LENGTH_SHORT).show();
-                recyclerView = view.findViewById(R.id.profile_recycler_view);
-
-                itemsList = new Item().getTempData();
-
-                RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-                UserListAdapter adapter = new UserListAdapter(getContext(), itemsList);
-
-                recyclerView.setLayoutManager(mLayoutManager);
-                recyclerView.setItemAnimator(new DefaultItemAnimator());
-                recyclerView.setAdapter(adapter);
-                recyclerView.setNestedScrollingEnabled(false);
+                showUserItems();
                 break;
             case R.id.watchlist_btn:
-                Toast.makeText(getContext(), "Your watchlist", Toast.LENGTH_SHORT).show();
+                showWatchlist();
         }
+    }
+
+    private void showWatchlist() {
+        recyclerView = view.findViewById(R.id.profile_recycler_view);
+        itemsList = new Item().getTempData();  // TODO: only get items that are starred
+
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+        UserListAdapter adapter = new UserListAdapter(getContext(), itemsList);
+
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(adapter);
+        recyclerView.setNestedScrollingEnabled(false);
+    }
+
+    public void showUserItems(){
+        recyclerView = view.findViewById(R.id.profile_recycler_view);
+        itemsList = new Item().getTempData();  // TODO: only get items that belong to the user
+
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+        UserListAdapter adapter = new UserListAdapter(getContext(), itemsList);
+
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(adapter);
+        recyclerView.setNestedScrollingEnabled(false);
     }
 
     /**
