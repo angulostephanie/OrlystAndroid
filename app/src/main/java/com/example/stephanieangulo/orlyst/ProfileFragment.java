@@ -5,15 +5,22 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+
+import java.util.List;
 
 
 /**
@@ -25,12 +32,19 @@ import com.google.firebase.auth.FirebaseAuth;
  * create an instance of this fragment.
  */
 
-public class ProfileFragment extends Fragment {
+public class ProfileFragment extends Fragment implements View.OnClickListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private FirebaseAuth mAuth;
+
+    private Button userItemsButton;
+    private Button watchlistButton;
+    private ListView profileListView;
+    private RecyclerView recyclerView;
+    private List<Item> itemsList;
+    private View view;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -98,7 +112,13 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile, container, false);
+        view = inflater.inflate(R.layout.fragment_profile, container, false);
+
+        userItemsButton = view.findViewById(R.id.user_items_btn);
+        watchlistButton = view.findViewById(R.id.watchlist_btn);
+        userItemsButton.setOnClickListener(this);
+        watchlistButton.setOnClickListener(this);
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -125,6 +145,28 @@ public class ProfileFragment extends Fragment {
         mListener = null;
     }
 
+    @Override
+    public void onClick(View v) {
+        switch(v.getId()){
+            case R.id.user_items_btn:
+                Toast.makeText(getContext(), "Your items", Toast.LENGTH_SHORT).show();
+                recyclerView = view.findViewById(R.id.profile_recycler_view);
+
+                itemsList = new Item().getTempData();
+
+                RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+                UserListAdapter adapter = new UserListAdapter(getContext(), itemsList);
+
+                recyclerView.setLayoutManager(mLayoutManager);
+                recyclerView.setItemAnimator(new DefaultItemAnimator());
+                recyclerView.setAdapter(adapter);
+                recyclerView.setNestedScrollingEnabled(false);
+                break;
+            case R.id.watchlist_btn:
+                Toast.makeText(getContext(), "Your watchlist", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -139,4 +181,5 @@ public class ProfileFragment extends Fragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+
 }
