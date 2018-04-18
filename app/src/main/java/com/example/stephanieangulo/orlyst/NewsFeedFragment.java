@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -103,9 +102,11 @@ public class NewsFeedFragment extends Fragment {
                 new MyRecyclerItemClickListener.OnItemClickListener() {
                     @Override public void onItemClick(View view, int position) {
                         String title = fixedItems.get(position).getItemName();
+                        String description = fixedItems.get(position).getDescription();
                         Log.d(TAG, "Getting detail view of : " + title);
                         Intent itemIntent = new Intent(getActivity(), ItemDetailActivity.class);
                         itemIntent.putExtra("itemTitle", title);
+                        itemIntent.putExtra("itemDescription",description);
                         startActivity(itemIntent);
                     }
                 }));
