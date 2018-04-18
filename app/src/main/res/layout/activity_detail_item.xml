@@ -13,7 +13,6 @@
         android:layout_height="100dp"
         android:layout_alignParentTop="true"
         android:layout_alignStart="@+id/item_description_tv"
-        android:layout_marginStart="11dp"
         android:layout_marginTop="15dp"
         app:srcCompat="@android:color/holo_green_light" />
 
@@ -36,7 +35,7 @@
         android:layout_alignParentStart="true"
         android:layout_below="@+id/detail_item_image"
         android:layout_marginTop="23dp"
-        android:layout_margin="10dp"
+        android:layout_margin="17dp"
         android:text="Item Description" />
 
     <Button
@@ -54,4 +53,13 @@
         android:layout_above="@+id/button2"
         android:layout_centerHorizontal="true"
         android:text="Add to Watchlist" />
+
+    <TextView
+        android:id="@+id/seller_name_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/detail_item_title"
+        android:layout_below="@+id/detail_item_title"
+        android:textStyle="italic"
+        android:text="by Seller Name" />
 </RelativeLayout>

@@ -103,10 +103,12 @@ public class NewsFeedFragment extends Fragment {
                     @Override public void onItemClick(View view, int position) {
                         String title = fixedItems.get(position).getItemName();
                         String description = fixedItems.get(position).getDescription();
+                        String sellerName = fixedItems.get(position).getUser();
                         Log.d(TAG, "Getting detail view of : " + title);
                         Intent itemIntent = new Intent(getActivity(), ItemDetailActivity.class);
                         itemIntent.putExtra("itemTitle", title);
                         itemIntent.putExtra("itemDescription",description);
+                        itemIntent.putExtra("sellerName", sellerName);
                         startActivity(itemIntent);
                     }
                 }));
