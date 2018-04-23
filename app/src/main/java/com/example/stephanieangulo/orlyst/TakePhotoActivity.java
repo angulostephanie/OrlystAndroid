@@ -36,8 +36,8 @@ public class TakePhotoActivity extends AppCompatActivity
         BottomNavigationView navigation = findViewById(R.id.camera_navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        toolbar.setTitle("Library");
-        loadFragment(new GalleryFragment());
+        toolbar.setTitle("Camera");
+        loadFragment(new CameraFragment());
 
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
