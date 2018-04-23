@@ -47,7 +47,6 @@ public class GalleryFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
     private static final String TAG = "GalleryFragment";
 
-
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -62,7 +61,7 @@ public class GalleryFragment extends Fragment {
     private Button nextBtn;
 
     private List<byte[]> images;
-    private final String orderBy = MediaStore.Images.Media._ID;
+    private final String orderBy = MediaStore.Images.Media.DATE_ADDED;
     private final String[] basicProjection = {
             MediaStore.Images.Media.DATA,
             MediaStore.Images.Media._ID
@@ -75,6 +74,15 @@ public class GalleryFragment extends Fragment {
             MediaStore.Images.ImageColumns.MIME_TYPE
     };
     private final Uri imageGalleryLink = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+
+    /*
+    private static final int LIMIT = 8;
+    private static final int PAGE_START = 1;
+
+    private boolean isLoading = false;
+    private boolean isLastPage = false;
+    private int currentPage = PAGE_START;
+    */
 
     public GalleryFragment() {
         // Required empty public constructor
@@ -131,13 +139,44 @@ public class GalleryFragment extends Fragment {
             ItemImage firstImage = new ItemImage(mostRecent);
             Bitmap bitmap = firstImage.decodeToBitmap();
             setSelectedImage(bitmap);
+            mAdapter.setMovies(ItemImage.getAllShownImagePaths(mContext, imageGalleryLink, basicProjection, orderBy));
         }
 
-        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(mContext, 4);
+        final GridLayoutManager gridLayoutManager = new GridLayoutManager(mContext, 4);
+        RecyclerView.LayoutManager mLayoutManager = gridLayoutManager;
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setAdapter(mAdapter);
         recyclerView.addItemDecoration(new GalleryItemDecoration(3, 1, true, getContext()));
         recyclerView.setNestedScrollingEnabled(false);
+
+        /*
+        recyclerView.addOnScrollListener(new PaginationScrollListener(gridLayoutManager) {
+            @Override
+            protected void loadMoreItems() {
+                isLoading = true;
+                currentPage += 1;
+
+                //loadNextPage();
+            }
+            @Override
+            public int getTotalPageCount() {
+                int totalPages = getGallerySize()/LIMIT;
+                if(getGallerySize()%LIMIT != 0)
+                    totalPages+=1;
+                return totalPages;
+            }
+
+            @Override
+            public boolean isLastPage() {
+                return isLastPage;
+            }
+
+            @Override
+            public boolean isLoading() {
+                return isLoading;
+            }
+        });
+        */
 
         recyclerView.addOnItemTouchListener(new MyRecyclerItemClickListener(mContext,
                 new MyRecyclerItemClickListener.OnItemClickListener() {
@@ -147,7 +186,11 @@ public class GalleryFragment extends Fragment {
                 ItemImage image = new ItemImage(images.get(position));
                 Bitmap bitmap = image.decodeToBitmap();
                 setSelectedImage(bitmap);
+
                 Log.d(TAG, "Clicking on this image path" + position);
+                Log.d(TAG, "First visible item position " + gridLayoutManager.findFirstVisibleItemPosition());
+
+                Log.d(TAG, "Last visible item position " + gridLayoutManager.findLastVisibleItemPosition());
             }
         }));
 
@@ -237,11 +280,14 @@ public class GalleryFragment extends Fragment {
         return null;
     }
 
-    private boolean isGalleryEmpty() {
+    private int getGallerySize() {
         Cursor cursor = createCursor(basicProjection, orderBy);
         int size = cursor.getCount();
         cursor.close();
-        return size == 0;
+        return size;
+    }
+    private boolean isGalleryEmpty() {
+        return getGallerySize() == 0;
     }
 
     private Cursor createCursor(String[] projection, String orderBy) {

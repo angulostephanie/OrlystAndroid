@@ -9,14 +9,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHolder>{
+    private static final int ITEM = 0;
+    private static final int LOADING = 1;
+
     private final String orderBy = MediaStore.Images.Media._ID;
     private final String[] projection = {
             MediaStore.Images.Media.DATA,
@@ -26,17 +31,22 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
     private Context context;
     private static List<byte[]> imageGallery;
 
+    private boolean isLoadingAdded = false;
+    private boolean retryPageLoad = false;
+
     public GalleryAdapter(Context context) {
         this.context = context;
-        this.imageGallery = ItemImage.getAllShownImagePaths(context,
-                imageGalleryLink, projection, orderBy);
+        this.imageGallery = new ArrayList<>();
     }
 
     @Override
     public GalleryAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.image_gallery_item, parent, false);
-        return new GalleryAdapter.ViewHolder(itemView);
+        ViewHolder viewHolder = null;
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        View itemView = inflater.inflate(R.layout.gallery_image_item, parent, false);
+        viewHolder = new GalleryAdapter.ViewHolder(itemView);
+
+        return viewHolder;
     }
 
     @Override
@@ -54,18 +64,28 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
 
     @Override
     public int getItemCount() {
-        return imageGallery.size();
+        return  imageGallery == null ? 0 : imageGallery.size();
+    }
+    @Override
+    public int getItemViewType(int position) {
+        return (position == imageGallery.size() - 1 && isLoadingAdded) ? LOADING : ITEM;
     }
 
     public static List<byte[]> getImageGallery() {
         return imageGallery;
     }
 
+    public void setMovies(List<byte[]> imageGallery) {
+        this.imageGallery = imageGallery;
+    }
      class ViewHolder extends RecyclerView.ViewHolder {
-         ImageView thumbnail;
-         ViewHolder(View view) {
+        ProgressBar progressBar;
+        ImageView thumbnail;
+
+        ViewHolder(View view) {
             super(view);
-            thumbnail = view.findViewById(R.id.image_gallery_image_view);
+            thumbnail = view.findViewById(R.id.gallery_item_image_view);
         }
+
     }
 }

@@ -33,6 +33,13 @@
             android:layout_height="match_parent"
             android:layout_below="@+id/selected_image_view"
             android:listSelector="@android:color/darker_gray"/>
+
+        <ProgressBar
+            android:id="@+id/gallery_progress_bar"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/gallery_recycler_view"/>
     </RelativeLayout>
 
 

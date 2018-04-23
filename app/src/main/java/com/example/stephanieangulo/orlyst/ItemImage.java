@@ -20,7 +20,6 @@ public class ItemImage {
     private Bitmap bitmap;
     private String path;
 
-    public ItemImage() {}
     public ItemImage(byte[] bytes) {
         this.bytes = bytes;
     }
@@ -61,9 +60,9 @@ public class ItemImage {
         bitmap.compress(Bitmap.CompressFormat.JPEG, quality, stream);
         return stream.toByteArray();
     }
-    public byte[] getBytes() {
-        return bytes;
-    }
+//    public byte[] getBytes() {
+//        return bytes;
+//    }
 
     public static List<byte[]> getAllShownImagePaths(Context context,
                                                       Uri imageGalleryLink,
@@ -80,12 +79,14 @@ public class ItemImage {
         index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
 
 
-        while (cursor.moveToNext()) {
+        int j = 0;
+        while (cursor.moveToNext() && j < 10) {
             path = cursor.getString(index);
             ItemImage image = new ItemImage(path);
             Bitmap bitmap = image.decodeToBitmap();
             byte[] b = new ItemImage(bitmap).convertToBytes(100);
             list.add(b);
+            j++;
         }
         cursor.close();
 
