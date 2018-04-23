@@ -61,15 +61,8 @@ public class GalleryFragment extends Fragment {
     private Button nextBtn;
 
     private List<byte[]> images;
-<<<<<<< HEAD
-<<<<<<< HEAD
+
     private final String orderBy = MediaStore.Images.Media.DATE_ADDED + " DESC";
-=======
-    private final String orderBy = MediaStore.Images.Media._ID;
->>>>>>> scaled down bitmaps
-=======
-    private final String orderBy = MediaStore.Images.Media.DATE_ADDED;
->>>>>>> Limit gallery to 10 photos, default fragment now is camera, working on pagination
     private final String[] basicProjection = {
             MediaStore.Images.Media.DATA,
             MediaStore.Images.Media._ID
