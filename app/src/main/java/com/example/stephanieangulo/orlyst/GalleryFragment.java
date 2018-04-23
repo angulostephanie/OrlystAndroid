@@ -61,7 +61,7 @@ public class GalleryFragment extends Fragment {
     private Button nextBtn;
 
     private List<byte[]> images;
-    private final String orderBy = MediaStore.Images.Media.DATE_ADDED;
+    private final String orderBy = MediaStore.Images.Media.DATE_ADDED + " DESC";
     private final String[] basicProjection = {
             MediaStore.Images.Media.DATA,
             MediaStore.Images.Media._ID
