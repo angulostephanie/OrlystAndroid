@@ -5,19 +5,24 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.ViewHolder>{
+public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.ViewHolder> implements Filterable{
 
     private Context context;
-    private List<Item> itemsList;
+    private List<Item> mItemsList;
+    private List<Item> originalData;
 
     public NewsFeedAdapter(Context context, List<Item> itemsList) {
         this.context = context;
-        this.itemsList = itemsList;
+        this.mItemsList = itemsList;
+        originalData = itemsList;
     }
 
     @Override
@@ -30,7 +35,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-        final Item item = itemsList.get(position);
+        final Item item = mItemsList.get(position);
         holder.name.setText(item.getItemName());
         holder.description.setText(item.getDescription());
         holder.user.setText(item.getUser());
@@ -38,7 +43,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.ViewHo
 
     @Override
     public int getItemCount() {
-        return itemsList.size();
+        return mItemsList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -52,5 +57,42 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.ViewHo
             user = view.findViewById(R.id.userSellingItem);
             thumbnail = view.findViewById(R.id.itemImageView);
         }
+    }
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                FilterResults results = new FilterResults();
+                if(constraint.length() == 0 ||
+                        constraint ==  null) {
+                    results.values = originalData;
+                    results.count = originalData.size();
+                } else {
+                    List<Item> filteredData = new ArrayList<>();
+                    for(Item item: originalData) {
+                        String parameters = constraint.toString().toLowerCase();
+                        String itemName = item.getItemName().toLowerCase();
+                        String itemDescription = item.getDescription().toLowerCase();
+                        String itemAuthor = item.getUser().toLowerCase();
+                        if(itemName.contains(parameters) || itemDescription.contains(parameters) ||
+                                itemAuthor.contains(parameters)) {
+                            filteredData.add(item);
+                        }
+                    }
+                    results.values = filteredData;
+                    results.count = filteredData.size();
+                }
+
+                return results;
+            }
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                mItemsList = (ArrayList<Item>)results.values;
+                notifyDataSetChanged();
+            }
+        };
     }
 }
