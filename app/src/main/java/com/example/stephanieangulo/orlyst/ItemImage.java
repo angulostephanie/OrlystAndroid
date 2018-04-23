@@ -20,7 +20,6 @@ public class ItemImage {
     private Bitmap bitmap;
     private String path;
 
-    public ItemImage() {}
     public ItemImage(byte[] bytes) {
         this.bytes = bytes;
     }
@@ -93,34 +92,5 @@ public class ItemImage {
 
         return list;
     }
-
-    public static List<byte[]> getAllShownImagePaths(Context context,
-                                                      Uri imageGalleryLink,
-                                                      String[] projection,
-                                                      String orderBy) {
-        List<byte[]> list = new ArrayList<>();
-
-        ContentResolver imageGallery = context.getContentResolver();
-        Cursor cursor = imageGallery.query(imageGalleryLink,
-                projection, null, null, orderBy);
-
-        int index;
-        String path = null;
-        index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
-
-
-        while (cursor.moveToNext()) {
-            path = cursor.getString(index);
-            ItemImage image = new ItemImage(path);
-            Bitmap bitmap = image.decodeToBitmap();
-            byte[] b = new ItemImage(bitmap).convertToBytes(100);
-            list.add(b);
-        }
-        cursor.close();
-
-        return list;
-    }
-
-
 
 }
