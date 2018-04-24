@@ -90,7 +90,8 @@ public class NewsFeedFragment extends Fragment {
         numItemsFound = view.findViewById(R.id.num_items);
         recyclerView = view.findViewById(R.id.feed_recycler_view);
 
-        fixedItems = new Item().getTempData(); // temp data
+
+        fixedItems = Item.getItemsFromDataBase();// temp data
         mAdapter = new NewsFeedAdapter(getActivity(), fixedItems);
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
@@ -105,7 +106,7 @@ public class NewsFeedFragment extends Fragment {
                     @Override public void onItemClick(View view, int position) {
                         String title = fixedItems.get(position).getItemName();
                         String description = fixedItems.get(position).getDescription();
-                        String sellerName = fixedItems.get(position).getUser();
+                        String sellerName = fixedItems.get(position).getAuthor();
                         Log.d(TAG, "Getting detail view of : " + title);
                         Intent itemIntent = new Intent(getActivity(), ItemDetailActivity.class);
                         itemIntent.putExtra("itemTitle", title);
@@ -118,7 +119,7 @@ public class NewsFeedFragment extends Fragment {
         searchEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+                mAdapter.getFilter().filter(s);
             }
 
             @Override

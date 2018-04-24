@@ -53,7 +53,8 @@ public class PostItemActivity extends AppCompatActivity {
         mContext = this;
         mAuth = AppData.firebaseAuth;
         mUser = mAuth.getCurrentUser();
-        mItemReference = AppData.getItemReference(mUser.getUid());
+        //mItemReference = AppData.getItemReference(mUser.getUid());
+        mItemReference = AppData.itemRootReference;
         mStorage = AppData.firebaseStorage;
         storageReference = mStorage.getReference();
 
@@ -99,7 +100,7 @@ public class PostItemActivity extends AppCompatActivity {
         DatabaseReference postItemRef = mItemReference.push();
         String key = postItemRef.getKey();
         Item item = new Item(title, description, mUser.getDisplayName(),
-                mUser.getEmail(), key, getImage());
+                mUser.getEmail(), key);
 
         Map<String, Object> itemValues = item.toMap();
 
