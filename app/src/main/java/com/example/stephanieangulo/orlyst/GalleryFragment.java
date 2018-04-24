@@ -190,6 +190,10 @@ public class GalleryFragment extends Fragment {
 
                 Log.d(TAG, "Clicking on this image path" + position);
                 Log.d(TAG, "First visible item position " + gridLayoutManager.findFirstVisibleItemPosition());
+<<<<<<< HEAD
+=======
+
+>>>>>>> 8cb7331f1773c7a2d10023ce0876fe2734964db1
                 Log.d(TAG, "Last visible item position " + gridLayoutManager.findLastVisibleItemPosition());
             }
         }));
