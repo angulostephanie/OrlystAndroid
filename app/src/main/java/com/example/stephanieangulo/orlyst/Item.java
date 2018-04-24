@@ -1,5 +1,13 @@
 package com.example.stephanieangulo.orlyst;
 
+import android.util.Log;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ServerValue;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,58 +15,63 @@ import java.util.Map;
 
 
 public class Item {
-    private String itemName, description, username, email, key;
-    private byte[] bytes;
+    private static final String TAG = "Item.java";
+    private String itemName, description, author, email, key, timestamp;
+
 
     public Item() {
     }
-    public Item(String name, String description, String user) {
+    public Item(String name, String description, String author) {
         this.itemName = name;
         this.description = description;
-        this.username = user;
+        this.author = author;
     }
-    public Item(String name, String description, String username, String email, String key, byte[] bytes) {
+    public Item(String name, String description, String author, String email, String key) {
         this.itemName = name;
         this.description = description;
-        this.username = username;
+        this.author = author;
         this.email = email;
         this.key = key;
-        this.bytes = bytes;
     }
+
     public void setItemName(String newName) {
-        itemName = newName;
+        this.itemName = newName;
     }
     public void setDescription(String newDescription) {
-        description = newDescription;
+        this.description = newDescription;
     }
+    public void setAuthor(String newAuthor) {
+        this.author = newAuthor;
+    }
+    public void setTimestamp(String newTimestamp) {
+        this.timestamp = newTimestamp;
+    }
+    public void setEmail(String newEmail) {
+        this.email = newEmail;
+    }
+    public void setKey(String newKey) {
+        this.key = newKey;
+    }
+
     public String getItemName() {
         return itemName;
     }
     public String getDescription() {
         return description;
     }
-    public String getUser() {
-        return username;
+    public String getAuthor() {
+        return author;
     }
     public String getEmail() {
         return email;
     }
+    public String getTimestamp() {
+        return timestamp;
+    }
     public String getKey() {
         return key;
     }
-    public byte[] getBytes() {
-        return bytes;
-    }
-//    public byte[] convertListToArray(List<Byte> list) {
-//        Byte[] byteObjects = new Byte[list.size()];
-//        byte[] converted = new byte[list.size()];
-//
-//        int i=0;
-//        for(Byte b: byteObjects)
-//            converted[i++] = b.byteValue();
-//
-//        return converted;
-//    }
+
     public List<Item> getTempData() {
         List<Item> items = new ArrayList<>();
 
@@ -110,22 +123,40 @@ public class Item {
 
         return items;
     }
-    public List<Item> getItemsFromDataBase() {
-        // TODO: pull from firebase HERE.
-        return null;
+    public static List<Item> getItemsFromDataBase() {
+        final List<Item> items = new ArrayList<>();
+        final DatabaseReference itemsRef = AppData.firebaseDatabase.getReference("items");
+
+        itemsRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Iterable<DataSnapshot> dataSnapshots = dataSnapshot.getChildren();
+                for(DataSnapshot data: dataSnapshots) {
+                    String key = data.getKey();
+                    DataSnapshot a = dataSnapshot.child(key);
+                    Item item = a.getValue(Item.class);
+                    items.add(item);
+                    Log.d(TAG, "hello " +item.itemName);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(TAG, databaseError.getDetails());
+            }
+        });
+
+       return items;
     }
+
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
-
-        //Byte[] byteObjectArray = ArrayUtils.toObject(bytes);
-        //List<Byte> list =  Arrays.asList(byteObjectArray);
-
-        result.put("title", itemName);
+        result.put("itemName", itemName);
         result.put("description", description);
-        result.put("author", username);
+        result.put("author", author);
         result.put("email", email);
         result.put("key", key);
-        //result.put("bytes", list);
+        result.put("timestamp", ServerValue.TIMESTAMP.get("timestamp"));
         return result;
     }
 }

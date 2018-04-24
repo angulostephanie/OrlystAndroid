@@ -1,6 +1,10 @@
 package com.example.stephanieangulo.orlyst;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class User {
+    private List<String> allUsers = new ArrayList<>();
     public String first;
     public String last;
     public String email;
@@ -15,5 +19,12 @@ public class User {
         this.last = last;
         this.email = email;
         this.userID = userID;
+    }
+
+    protected void addUsers(String id) {
+        allUsers.add(id);
+    }
+    protected List<String> getAllUsers() {
+        return allUsers;
     }
 }
