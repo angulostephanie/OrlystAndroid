@@ -57,15 +57,6 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.ViewHo
         return mItemsList.size();
     }
 
-//    public StorageReference getStorageReference(String key) {
-//        StorageReference storageRef = AppData.firebaseStorage.getReference();
-//        StorageReference pathRef = storageRef.child("images/");
-//        StorageReference imageRef = pathRef.child(key);
-//
-//
-//        return imageRef;
-//    }
-
      class ViewHolder extends RecyclerView.ViewHolder {
          TextView name, description, user;
          ImageView thumbnail;

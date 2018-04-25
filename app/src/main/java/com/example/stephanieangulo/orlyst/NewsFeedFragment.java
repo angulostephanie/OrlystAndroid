@@ -27,6 +27,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -101,7 +102,7 @@ public class NewsFeedFragment extends Fragment {
         numItemsFound = view.findViewById(R.id.num_items);
         recyclerView = view.findViewById(R.id.feed_recycler_view);
 
-        mItems = getItemsFromDataBase();
+        mItems = fetchItems();
         mAdapter = new NewsFeedAdapter(getActivity(), mItems);
 
         setUpRecyclerView();
@@ -188,19 +189,22 @@ public class NewsFeedFragment extends Fragment {
         recyclerView.addOnItemTouchListener(new MyRecyclerItemClickListener(getActivity(),
                 new MyRecyclerItemClickListener.OnItemClickListener() {
                     @Override public void onItemClick(View view, int position) {
-                        String title = mItems.get(position).getItemName();
-                        String description = mItems.get(position).getDescription();
-                        String sellerName = mItems.get(position).getAuthor();
+                        Item selectedItem = mItems.get(position);
+                        String title = selectedItem.getItemName();
+                        String description = selectedItem.getDescription();
+                        String sellerName = selectedItem.getAuthor();
+                        byte[] jpeg = selectedItem.getBytes();
                         Log.d(TAG, "Getting detail view of : " + title);
                         Intent itemIntent = new Intent(getActivity(), ItemDetailActivity.class);
                         itemIntent.putExtra("itemTitle", title);
                         itemIntent.putExtra("itemDescription",description);
                         itemIntent.putExtra("sellerName", sellerName);
+                        itemIntent.putExtra("bytes", jpeg);
                         startActivity(itemIntent);
                     }
                 }));
     }
-    private List<Item> getItemsFromDataBase() {
+    private List<Item> fetchItems() {
         //TODO: Add progress spinner?
         final List<Item> items = new ArrayList<>();
         final DatabaseReference itemsRef = AppData.firebaseDatabase.getReference("items");
@@ -217,6 +221,7 @@ public class NewsFeedFragment extends Fragment {
                     Log.d(TAG, "hello " +item.getItemName());
                     fetchImage(item);
                 }
+                Collections.reverse(items);
                 mAdapter.notifyDataSetChanged();
             }
             @Override
@@ -227,7 +232,6 @@ public class NewsFeedFragment extends Fragment {
 
         return items;
     }
-
     private void fetchImage(Item item) {
         final Item test = item;
         StorageReference storageRef = AppData.firebaseStorage.getReference();
