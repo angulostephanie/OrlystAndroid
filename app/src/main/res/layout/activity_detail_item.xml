@@ -23,9 +23,9 @@
         android:layout_alignParentEnd="true"
         android:layout_alignTop="@+id/detail_item_image"
         android:layout_toEndOf="@+id/detail_item_image"
-        android:layout_marginLeft="5dp"
+        android:layout_marginStart= "5dp"
         android:textStyle="bold"
-        android:textSize="18dp"
+        android:textSize="18sp"
         android:text="Title of item" />
 
     <TextView

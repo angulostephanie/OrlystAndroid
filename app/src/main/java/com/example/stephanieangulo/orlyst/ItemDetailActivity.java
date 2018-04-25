@@ -46,7 +46,7 @@ public class ItemDetailActivity extends AppCompatActivity {
 
     }
 
-    public void setItemImage(byte[] jpeg) {
+    private void setItemImage(byte[] jpeg) {
         Glide.with(mContext)
                 .load(jpeg)
                 .asBitmap()
