@@ -10,7 +10,7 @@ import java.util.Map;
 public class Item {
     private static final String TAG = "Item.java";
     private String itemName, description, author, email, key, timestamp;
-
+    private byte[] bytes;
 
     public Item() {
     }
@@ -45,6 +45,7 @@ public class Item {
     public void setKey(String newKey) {
         this.key = newKey;
     }
+    public void setBytes(byte[] newBytes) { this.bytes = newBytes; }
 
     public String getItemName() {
         return itemName;
@@ -64,7 +65,7 @@ public class Item {
     public String getKey() {
         return key;
     }
-
+    public byte[] getBytes() { return bytes; }
     public List<Item> getTempData() {
         List<Item> items = new ArrayList<>();
 
@@ -116,6 +117,7 @@ public class Item {
 
         return items;
     }
+
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
         result.put("itemName", itemName);

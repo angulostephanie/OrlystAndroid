@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,10 +18,13 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -211,6 +215,7 @@ public class NewsFeedFragment extends Fragment {
                     Item item = a.getValue(Item.class);
                     items.add(item);
                     Log.d(TAG, "hello " +item.getItemName());
+                    fetchImage(item);
                 }
                 mAdapter.notifyDataSetChanged();
             }
@@ -221,6 +226,26 @@ public class NewsFeedFragment extends Fragment {
         });
 
         return items;
+    }
+
+    private void fetchImage(Item item) {
+        final Item test = item;
+        StorageReference storageRef = AppData.firebaseStorage.getReference();
+        StorageReference pathRef = storageRef.child("images/");
+        StorageReference imageRef = pathRef.child(item.getKey());
+        final long LIMIT = 512 * 512;
+        imageRef.getBytes(LIMIT).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+            @Override
+            public void onSuccess(byte[] bytes) {
+                test.setBytes(bytes);
+                mAdapter.notifyDataSetChanged();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+            }
+        });
     }
 
 }

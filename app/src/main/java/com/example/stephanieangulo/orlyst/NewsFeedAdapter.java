@@ -11,6 +11,8 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,13 +43,28 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.ViewHo
         holder.name.setText(item.getItemName());
         holder.description.setText(item.getDescription());
         holder.user.setText(item.getAuthor());
-        // TODO: add image using glide
+        if(item.getBytes() != null) {
+            Glide.with(context)
+                    .load(item.getBytes())
+                    .asBitmap()
+                    .into(holder.thumbnail);
+
+        }
     }
 
     @Override
     public int getItemCount() {
         return mItemsList.size();
     }
+
+//    public StorageReference getStorageReference(String key) {
+//        StorageReference storageRef = AppData.firebaseStorage.getReference();
+//        StorageReference pathRef = storageRef.child("images/");
+//        StorageReference imageRef = pathRef.child(key);
+//
+//
+//        return imageRef;
+//    }
 
      class ViewHolder extends RecyclerView.ViewHolder {
          TextView name, description, user;

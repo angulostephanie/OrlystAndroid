@@ -16,7 +16,6 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -97,11 +96,10 @@ public class PostItemActivity extends AppCompatActivity {
     }
     private void setThumbnail() {
         Glide.with(mContext)
-                .asBitmap()
                 .load(getImage())
-                .apply(new RequestOptions()
-                        .placeholder(R.drawable.spinner)
-                        .fitCenter())
+                .asBitmap()
+                .placeholder(R.drawable.spinner)
+                .fitCenter()
                 .into(itemImage);
     }
     private void addItemToDatabase(String title, String description) {

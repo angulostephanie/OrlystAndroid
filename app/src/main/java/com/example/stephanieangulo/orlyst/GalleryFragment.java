@@ -26,7 +26,6 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 
 import java.io.File;
 import java.util.List;
@@ -256,12 +255,12 @@ public class GalleryFragment extends Fragment {
     private void setSelectedImage(Bitmap bitmap) {
         ItemImage image = new ItemImage(bitmap);
         byte[] bytes = image.convertToBytes(100);
+
         Glide.with(mContext)
-                .asBitmap()
                 .load(bytes)
-                .apply(new RequestOptions()
-                        .placeholder(R.drawable.spinner)
-                        .fitCenter())
+                .asBitmap()
+                .placeholder(R.drawable.spinner)
+                .fitCenter()
                 .into(selectedImage);
     }
 
