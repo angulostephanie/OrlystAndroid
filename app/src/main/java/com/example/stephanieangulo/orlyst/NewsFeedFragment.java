@@ -17,6 +17,12 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -42,11 +48,11 @@ public class NewsFeedFragment extends Fragment {
 
     private static final String TAG = "NewsFeedFragment";
 
-    RecyclerView recyclerView;
-    EditText searchEditText;
-    TextView numItemsFound;
-    NewsFeedAdapter mAdapter;
-    List<Item> fixedItems;
+    private RecyclerView recyclerView;
+    private EditText searchEditText;
+    private TextView numItemsFound;
+    private NewsFeedAdapter mAdapter;
+    private List<Item> mItems;
 
     public NewsFeedFragment() {
         // Required empty public constructor
@@ -86,52 +92,18 @@ public class NewsFeedFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_news_feed, container, false);
 
+
         searchEditText = view.findViewById(R.id.search);
         numItemsFound = view.findViewById(R.id.num_items);
         recyclerView = view.findViewById(R.id.feed_recycler_view);
 
+        mItems = getItemsFromDataBase();
+        mAdapter = new NewsFeedAdapter(getActivity(), mItems);
 
-        fixedItems = Item.getItemsFromDataBase();// temp data
-        mAdapter = new NewsFeedAdapter(getActivity(), fixedItems);
+        setUpRecyclerView();
+        onNewsFeedItemClick();
+        addTextListeners();
 
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-
-        recyclerView.setLayoutManager(mLayoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setAdapter(mAdapter);
-        recyclerView.setNestedScrollingEnabled(false);
-
-        recyclerView.addOnItemTouchListener(new MyRecyclerItemClickListener(getActivity(),
-                new MyRecyclerItemClickListener.OnItemClickListener() {
-                    @Override public void onItemClick(View view, int position) {
-                        String title = fixedItems.get(position).getItemName();
-                        String description = fixedItems.get(position).getDescription();
-                        String sellerName = fixedItems.get(position).getAuthor();
-                        Log.d(TAG, "Getting detail view of : " + title);
-                        Intent itemIntent = new Intent(getActivity(), ItemDetailActivity.class);
-                        itemIntent.putExtra("itemTitle", title);
-                        itemIntent.putExtra("itemDescription",description);
-                        itemIntent.putExtra("sellerName", sellerName);
-                        startActivity(itemIntent);
-                    }
-                }));
-
-        searchEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                mAdapter.getFilter().filter(s);
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                mAdapter.getFilter().filter(s);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
         return view;
     }
 
@@ -142,6 +114,14 @@ public class NewsFeedFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -173,4 +153,74 @@ public class NewsFeedFragment extends Fragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+
+    private void setUpRecyclerView() {
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity(),
+                LinearLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(mAdapter);
+        recyclerView.setNestedScrollingEnabled(false);
+    }
+    private void addTextListeners() {
+        searchEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                mAdapter.getFilter().filter(s);
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                mAdapter.getFilter().filter(s);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+    }
+    private void onNewsFeedItemClick() {
+        recyclerView.addOnItemTouchListener(new MyRecyclerItemClickListener(getActivity(),
+                new MyRecyclerItemClickListener.OnItemClickListener() {
+                    @Override public void onItemClick(View view, int position) {
+                        String title = mItems.get(position).getItemName();
+                        String description = mItems.get(position).getDescription();
+                        String sellerName = mItems.get(position).getAuthor();
+                        Log.d(TAG, "Getting detail view of : " + title);
+                        Intent itemIntent = new Intent(getActivity(), ItemDetailActivity.class);
+                        itemIntent.putExtra("itemTitle", title);
+                        itemIntent.putExtra("itemDescription",description);
+                        itemIntent.putExtra("sellerName", sellerName);
+                        startActivity(itemIntent);
+                    }
+                }));
+    }
+    private List<Item> getItemsFromDataBase() {
+        //TODO: Add progress spinner?
+        final List<Item> items = new ArrayList<>();
+        final DatabaseReference itemsRef = AppData.firebaseDatabase.getReference("items");
+
+        itemsRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Iterable<DataSnapshot> dataSnapshots = dataSnapshot.getChildren();
+                for(DataSnapshot data: dataSnapshots) {
+                    String key = data.getKey();
+                    DataSnapshot a = dataSnapshot.child(key);
+                    Item item = a.getValue(Item.class);
+                    items.add(item);
+                    Log.d(TAG, "hello " +item.getItemName());
+                }
+                mAdapter.notifyDataSetChanged();
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(TAG, databaseError.getDetails());
+            }
+        });
+
+        return items;
+    }
+
 }

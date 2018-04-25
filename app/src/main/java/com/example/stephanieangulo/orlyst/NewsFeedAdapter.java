@@ -14,7 +14,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.ViewHolder> implements Filterable{
+public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.ViewHolder>
+        implements Filterable  {
     private static final String TAG = "NewsFeedAdapter.java";
     private Context context;
     private List<Item> mItemsList;
@@ -25,6 +26,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.ViewHo
         this.mItemsList = itemsList;
         this.originalData = itemsList;
     }
+
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -39,6 +41,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.ViewHo
         holder.name.setText(item.getItemName());
         holder.description.setText(item.getDescription());
         holder.user.setText(item.getAuthor());
+        // TODO: add image using glide
     }
 
     @Override
@@ -46,11 +49,11 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.ViewHo
         return mItemsList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView name, description, user;
-        public ImageView thumbnail;
+     class ViewHolder extends RecyclerView.ViewHolder {
+         TextView name, description, user;
+         ImageView thumbnail;
 
-        public ViewHolder(View view) {
+         ViewHolder(View view) {
             super(view);
             name = view.findViewById(R.id.itemTitle);
             description = view.findViewById(R.id.itemDescription);
@@ -58,6 +61,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.ViewHo
             thumbnail = view.findViewById(R.id.itemImageView);
         }
     }
+
 
     @Override
     public Filter getFilter() {

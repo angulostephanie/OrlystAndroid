@@ -1,18 +1,11 @@
 package com.example.stephanieangulo.orlyst;
 
-import android.util.Log;
-
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ServerValue;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 
 public class Item {
     private static final String TAG = "Item.java";
@@ -123,32 +116,6 @@ public class Item {
 
         return items;
     }
-    public static List<Item> getItemsFromDataBase() {
-        final List<Item> items = new ArrayList<>();
-        final DatabaseReference itemsRef = AppData.firebaseDatabase.getReference("items");
-
-        itemsRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Iterable<DataSnapshot> dataSnapshots = dataSnapshot.getChildren();
-                for(DataSnapshot data: dataSnapshots) {
-                    String key = data.getKey();
-                    DataSnapshot a = dataSnapshot.child(key);
-                    Item item = a.getValue(Item.class);
-                    items.add(item);
-                    Log.d(TAG, "hello " +item.itemName);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.e(TAG, databaseError.getDetails());
-            }
-        });
-
-       return items;
-    }
-
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
         result.put("itemName", itemName);
