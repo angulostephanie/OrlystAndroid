@@ -26,6 +26,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 
+import org.parceler.Parcels;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -190,16 +192,8 @@ public class NewsFeedFragment extends Fragment {
                 new MyRecyclerItemClickListener.OnItemClickListener() {
                     @Override public void onItemClick(View view, int position) {
                         Item selectedItem = mItems.get(position);
-                        String title = selectedItem.getItemName();
-                        String description = selectedItem.getDescription();
-                        String sellerName = selectedItem.getAuthor();
-                        byte[] jpeg = selectedItem.getBytes();
-                        Log.d(TAG, "Getting detail view of : " + title);
                         Intent itemIntent = new Intent(getActivity(), ItemDetailActivity.class);
-                        itemIntent.putExtra("itemTitle", title);
-                        itemIntent.putExtra("itemDescription",description);
-                        itemIntent.putExtra("sellerName", sellerName);
-                        itemIntent.putExtra("bytes", jpeg);
+                        itemIntent.putExtra("Item", Parcels.wrap(selectedItem));
                         startActivity(itemIntent);
                     }
                 }));

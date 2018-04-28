@@ -106,7 +106,7 @@ public class PostItemActivity extends AppCompatActivity {
         DatabaseReference postItemRef = mItemReference.push();
         String key = postItemRef.getKey();
         Item item = new Item(title, description, mUser.getDisplayName(),
-                mUser.getEmail(), key);
+                mUser.getEmail(), key, mUser.getUid());
 
         Map<String, Object> itemValues = item.toMap();
 

@@ -4,13 +4,18 @@ import android.content.Context;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import org.parceler.Parcels;
+
 public class ItemDetailActivity extends AppCompatActivity {
+    private static final String TAG = ItemDetailActivity.class.getSimpleName();
     private Context mContext;
     private TextView itemTitle;
     private TextView itemDescription;
@@ -29,20 +34,40 @@ public class ItemDetailActivity extends AppCompatActivity {
         itemDescription = findViewById(R.id.item_description_tv);
         itemSeller = findViewById(R.id.seller_name_tv);
         itemImage = findViewById(R.id.detail_item_image);
-        watchlistBtn = findViewById(R.id.watchlist_btn);
-        contactBtn = findViewById(R.id.contact_btn);
+        watchlistBtn = findViewById(R.id.detail_watchlist_btn);
+        contactBtn = findViewById(R.id.detail_contact_btn);
 
-        String title = this.getIntent().getExtras().getString("itemTitle");
-        String description = this.getIntent().getExtras().getString("itemDescription");
-        String seller = this.getIntent().getExtras().getString("sellerName");
-        byte[] jpeg = this.getIntent().getExtras().getByteArray("bytes");
+        Item item = Parcels.unwrap(getIntent().getParcelableExtra("Item"));
 
-        itemTitle.setText(title);
-        itemDescription.setText(description);
-        if(jpeg != null)
-            setItemImage(jpeg);
-        itemSeller.setText("by " + seller);
+        itemTitle.setText(item.getItemName());
+        itemDescription.setText(item.getDescription());
+        if(item.getBytes() != null)
+            setItemImage(item.getBytes());
+        itemSeller.setText("by " + item.getSeller());
         itemSeller.setPaintFlags(Paint.UNDERLINE_TEXT_FLAG);
+
+        watchlistBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "Need to implement add to watchlist function");
+
+            }
+        });
+
+        contactBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "Need to implement add to contact seller function");
+
+            }
+        });
+
+        itemSeller.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "Seller clicked");
+            }
+        });
 
     }
 

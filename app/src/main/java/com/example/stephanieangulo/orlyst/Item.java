@@ -2,27 +2,31 @@ package com.example.stephanieangulo.orlyst;
 
 import com.google.firebase.database.ServerValue;
 
+import org.parceler.Parcel;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Parcel
 public class Item {
     private static final String TAG = "Item.java";
-    private String itemName, description, author, email, key, timestamp;
+    private String itemName, description, seller, email, key, timestamp, sellerID;
     private byte[] bytes;
 
     public Item() {
     }
-    public Item(String name, String description, String author) {
+    public Item(String name, String description, String seller) {
         this.itemName = name;
         this.description = description;
-        this.author = author;
+        this.seller = seller;
     }
-    public Item(String name, String description, String author, String email, String key) {
+    public Item(String name, String description, String seller, String email, String key, String sellerID) {
         this.itemName = name;
         this.description = description;
-        this.author = author;
+        this.seller = seller;
+        this.sellerID = sellerID;
         this.email = email;
         this.key = key;
     }
@@ -33,11 +37,11 @@ public class Item {
     public void setDescription(String newDescription) {
         this.description = newDescription;
     }
-    public void setAuthor(String newAuthor) {
-        this.author = newAuthor;
+    public void setSeller(String newSeller) {
+        this.seller = newSeller;
     }
-    public void setTimestamp(String newTimestamp) {
-        this.timestamp = newTimestamp;
+    public void setSellerID(String newSellerID) {
+        this.sellerID = newSellerID;
     }
     public void setEmail(String newEmail) {
         this.email = newEmail;
@@ -46,6 +50,9 @@ public class Item {
         this.key = newKey;
     }
     public void setBytes(byte[] newBytes) { this.bytes = newBytes; }
+    public void setTimestamp(String newTimestamp) {
+        this.timestamp = newTimestamp;
+    }
 
     public String getItemName() {
         return itemName;
@@ -53,19 +60,21 @@ public class Item {
     public String getDescription() {
         return description;
     }
-    public String getAuthor() {
-        return author;
+    public String getSeller() {
+        return seller;
     }
+    public String getSellerID() { return sellerID; }
     public String getEmail() {
         return email;
-    }
-    public String getTimestamp() {
-        return timestamp;
     }
     public String getKey() {
         return key;
     }
     public byte[] getBytes() { return bytes; }
+    public String getTimestamp() {
+        return timestamp;
+    }
+
     public List<Item> getTempData() {
         List<Item> items = new ArrayList<>();
 
@@ -122,7 +131,8 @@ public class Item {
         HashMap<String, Object> result = new HashMap<>();
         result.put("itemName", itemName);
         result.put("description", description);
-        result.put("author", author);
+        result.put("seller", seller);
+        result.put("sellerID", sellerID);
         result.put("email", email);
         result.put("key", key);
         result.put("timestamp", ServerValue.TIMESTAMP.get("timestamp"));

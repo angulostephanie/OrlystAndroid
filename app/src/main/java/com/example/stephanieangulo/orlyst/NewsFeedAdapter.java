@@ -42,7 +42,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.ViewHo
         final Item item = mItemsList.get(position);
         holder.name.setText(item.getItemName());
         holder.description.setText(item.getDescription());
-        holder.user.setText(item.getAuthor());
+        holder.user.setText(item.getSeller());
         if(item.getBytes() != null) {
             Glide.with(context)
                     .load(item.getBytes())
@@ -88,7 +88,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.ViewHo
                         String parameters = constraint.toString().toLowerCase();
                         String itemName = item.getItemName().toLowerCase();
                         String itemDescription = item.getDescription().toLowerCase();
-                        String itemAuthor = item.getAuthor().toLowerCase();
+                        String itemAuthor = item.getSeller().toLowerCase();
                         if(itemName.contains(parameters) || itemDescription.contains(parameters) ||
                                 itemAuthor.contains(parameters)) {
                             filteredData.add(item);
