@@ -4,10 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,8 +20,17 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.StorageReference;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -37,6 +48,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private  static  final String TAG = "ProfileFragment";
     private FirebaseAuth mAuth;
 
     private Button userItemsButton;
@@ -45,6 +57,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     private RecyclerView recyclerView;
     private List<Item> itemsList;
     private View view;
+    private UserListAdapter adapter;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -159,24 +172,69 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     }
 
     private void showWatchlist() {
-        recyclerView = view.findViewById(R.id.profile_recycler_view);
-        itemsList = new Item().getTempData();  // TODO: only get items that are starred
+        itemsList = fetchItems();  // TODO: only get items that are starred
 
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        UserListAdapter adapter = new UserListAdapter(getContext(), itemsList);
-
-        recyclerView.setLayoutManager(mLayoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setAdapter(adapter);
-        recyclerView.setNestedScrollingEnabled(false);
+        setRecyclerView(itemsList);
     }
 
-    public void showUserItems(){
+    private void showUserItems(){
+        itemsList = fetchItems();  // TODO: only get items that belong to the user
+
+        setRecyclerView(itemsList);
+    }
+    private List<Item> fetchItems() {
+        //TODO: Add progress spinner?
+        final List<Item> items = new ArrayList<>();
+        final DatabaseReference itemsRef = AppData.firebaseDatabase.getReference("items");
+
+        itemsRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Iterable<DataSnapshot> dataSnapshots = dataSnapshot.getChildren();
+                for(DataSnapshot data: dataSnapshots) {
+                    String key = data.getKey();
+                    DataSnapshot a = dataSnapshot.child(key);
+                    Item item = a.getValue(Item.class);
+                    items.add(item);
+                    Log.d(TAG, "hello " +item.getItemName());
+                    fetchImage(item);
+                }
+                Collections.reverse(items);
+                adapter.notifyDataSetChanged();
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(TAG, databaseError.getDetails());
+            }
+        });
+
+        return items;
+    }
+    private void fetchImage(Item item) {
+        final Item test = item;
+        StorageReference storageRef = AppData.firebaseStorage.getReference();
+        StorageReference pathRef = storageRef.child("images/");
+        StorageReference imageRef = pathRef.child(item.getKey());
+        final long LIMIT = 512 * 512;
+        imageRef.getBytes(LIMIT).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+            @Override
+            public void onSuccess(byte[] bytes) {
+                test.setBytes(bytes);
+                adapter.notifyDataSetChanged();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+            }
+        });
+    }
+
+    private void setRecyclerView(List<Item> itemsList){
         recyclerView = view.findViewById(R.id.profile_recycler_view);
-        itemsList = new Item().getTempData();  // TODO: only get items that belong to the user
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        UserListAdapter adapter = new UserListAdapter(getContext(), itemsList);
+        adapter = new UserListAdapter(getContext(), itemsList);
 
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
