@@ -13,6 +13,7 @@ import java.util.Map;
 public class Item {
     private static final String TAG = "Item.java";
     private String itemName, description, seller, email, key, timestamp, sellerID;
+    private boolean onWatchlist;
     private byte[] bytes;
 
     public Item() {
@@ -29,6 +30,17 @@ public class Item {
         this.sellerID = sellerID;
         this.email = email;
         this.key = key;
+    }
+    public Item(Item item, boolean onWatchlist) {
+        this.itemName = item.getItemName();
+        this.description = item.getDescription();
+        this.seller = item.getSeller();
+        this.sellerID = item.getSellerID();
+        this.email = item.getEmail();
+        this.bytes = item.getBytes();
+        this.key = item.getKey();
+        this.timestamp = item.getTimestamp();
+        this.onWatchlist = onWatchlist;
     }
 
     public void setItemName(String newName) {
@@ -48,6 +60,9 @@ public class Item {
     }
     public void setKey(String newKey) {
         this.key = newKey;
+    }
+    public void setOnWatchlist(boolean onWatchlist) {
+        this.onWatchlist = onWatchlist;
     }
     public void setBytes(byte[] newBytes) { this.bytes = newBytes; }
     public void setTimestamp(String newTimestamp) {
@@ -74,6 +89,7 @@ public class Item {
     public String getTimestamp() {
         return timestamp;
     }
+    public boolean isOnWatchlist() { return onWatchlist; }
 
     public List<Item> getTempData() {
         List<Item> items = new ArrayList<>();

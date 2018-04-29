@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -62,8 +63,10 @@ public class NewsFeedFragment extends Fragment {
 
     private Context mContext;
     private NewsFeedAdapter mAdapter;
+    private FirebaseAuth mAuth;
     private List<Item> mItems = new ArrayList<>();
     private List<User> mUsers = new ArrayList<>();
+
 
     public NewsFeedFragment() {
         // Required empty public constructor
@@ -103,7 +106,7 @@ public class NewsFeedFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_news_feed, container, false);
         mContext = getContext();
-
+        mAuth = AppData.firebaseAuth;
         searchEditText = view.findViewById(R.id.search);
         numItemsFound = view.findViewById(R.id.num_items);
         recyclerView = view.findViewById(R.id.feed_recycler_view);
@@ -230,9 +233,13 @@ public class NewsFeedFragment extends Fragment {
                     users.add(user);
                     Log.d(TAG, "item list size " + user.getItems().values().size());
                     for(Item item: user.getItems().values()) {
-                        Log.d(TAG, "getting item " + item.getItemName());
-                        mItems.add(item);
-                        fetchImage(item);
+                        List<String> keys = getAllItemKeys(mItems);
+                        if(!keys.contains(item.getKey())) {
+                            Log.d(TAG, "getting item " + item.getItemName());
+                            mItems.add(item);
+                            // TODO: add booleans on whether or not item is in watchlist
+                            fetchImage(item);
+                        }
                     }
                     Log.d(TAG, "hello " + user.getFirst());
                 }
@@ -246,7 +253,6 @@ public class NewsFeedFragment extends Fragment {
         });
         return users;
     }
-
     private void fetchImage(Item item) {
         final Item itemWithImage = item;
         StorageReference storageRef = AppData.firebaseStorage.getReference();
@@ -267,6 +273,13 @@ public class NewsFeedFragment extends Fragment {
         });
     }
 
+    private List<String> getAllItemKeys(List<Item> items) {
+        List<String> keys = new ArrayList<>();
+        for(Item item: items) {
+            keys.add(item.getKey());
+        }
+        return keys;
+    }
 
 
 }

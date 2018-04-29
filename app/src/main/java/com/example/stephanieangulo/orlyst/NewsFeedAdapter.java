@@ -58,8 +58,9 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.ViewHo
     }
 
      class ViewHolder extends RecyclerView.ViewHolder {
-         TextView name, description, user;
+         TextView name, description, user, onWatchlist;
          ImageView thumbnail;
+
 
          ViewHolder(View view) {
             super(view);
@@ -67,7 +68,9 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.ViewHo
             description = view.findViewById(R.id.itemDescription);
             user = view.findViewById(R.id.userSellingItem);
             thumbnail = view.findViewById(R.id.itemImageView);
+            onWatchlist = view.findViewById(R.id.onWatchlistText);
         }
+
     }
 
 
