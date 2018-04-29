@@ -1,10 +1,14 @@
 package com.example.stephanieangulo.orlyst;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.parceler.Parcel;
 
+import java.util.HashMap;
+import java.util.Map;
+
+@Parcel
 public class User {
-    private List<String> allUsers = new ArrayList<>();
+
+    private Map<String, Item> items = new HashMap<>();
     private String first, last, email, userID;
 
     public User() {
@@ -30,20 +34,31 @@ public class User {
     public void setUserID(String userID) {
         this.userID = userID;
     }
+    public void setItems(Map<String, Item> items) {
+        this.items = items;
+    }
 
     public String getFirst() {
         return first;
     }
-
     public String getLast() {
         return last;
     }
-
     public String getEmail() {
         return email;
     }
-
     public String getUserID() {
         return userID;
+    }
+    public  Map<String, Item> getItems() { return items; }
+
+    public Map<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("first", first);
+        result.put("last", last);
+        result.put("email", email);
+        result.put("userID", userID);
+        result.put("items", items);
+        return result;
     }
 }

@@ -20,6 +20,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 
+import java.util.Map;
+
 public class SignUpActivity extends AppCompatActivity {
     private static final String TAG = "SignUpActivity";
 
@@ -112,7 +114,8 @@ public class SignUpActivity extends AppCompatActivity {
         // add User obj to FirebaseDatabase (this is separate from Firebase Authentication)
         // allows us to store other objs that are related to specific User (items, settings, etc)
         User newUser = new User(first, last, user.getEmail(), user.getUid());
-        AppData.userRootReference.child(user.getUid()).setValue(newUser);
+        Map<String, Object> userValues = newUser.toMap();
+        AppData.userRootReference.child(user.getUid()).setValue(userValues);
     }
 
     private void addTextListeners() {

@@ -29,7 +29,6 @@ import com.google.firebase.storage.StorageReference;
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 
@@ -59,8 +58,8 @@ public class NewsFeedFragment extends Fragment {
     private EditText searchEditText;
     private TextView numItemsFound;
     private NewsFeedAdapter mAdapter;
-    private List<Item> mItems;
-    private List<User> mUsers;
+    private List<Item> mItems = new ArrayList<>();
+    private List<User> mUsers = new ArrayList<>();
 
     public NewsFeedFragment() {
         // Required empty public constructor
@@ -105,8 +104,8 @@ public class NewsFeedFragment extends Fragment {
         numItemsFound = view.findViewById(R.id.num_items);
         recyclerView = view.findViewById(R.id.feed_recycler_view);
 
-        mItems = fetchItems();
         mUsers = fetchUsers();
+
         mAdapter = new NewsFeedAdapter(getActivity(), mItems);
 
         setUpRecyclerView();
@@ -194,60 +193,46 @@ public class NewsFeedFragment extends Fragment {
                 new MyRecyclerItemClickListener.OnItemClickListener() {
                     @Override public void onItemClick(View view, int position) {
                         Item selectedItem = mItems.get(position);
+                        String sellerID = selectedItem.getSellerID();
+                        User selectedUser = null;
+                        for(User user: mUsers) {
+                            if(user.getUserID().equals(sellerID)) {
+                                selectedUser = user;
+                                break;
+                            }
+                        }
                         Intent itemIntent = new Intent(getActivity(), ItemDetailActivity.class);
                         itemIntent.putExtra("Item", Parcels.wrap(selectedItem));
+                        itemIntent.putExtra("User", Parcels.wrap(selectedUser));
                         startActivity(itemIntent);
                     }
                 }));
     }
-    private List<Item> fetchItems() {
-        //TODO: Add progress spinner?
-        final List<Item> items = new ArrayList<>();
-        final DatabaseReference itemsRef = AppData.firebaseDatabase.getReference("items");
-
-        itemsRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Iterable<DataSnapshot> dataSnapshots = dataSnapshot.getChildren();
-                for(DataSnapshot data: dataSnapshots) {
-                    String key = data.getKey();
-                    DataSnapshot a = dataSnapshot.child(key);
-                    Item item = a.getValue(Item.class);
-                    items.add(item);
-                    Log.d(TAG, "hello " +item.getItemName());
-                    fetchImage(item);
-                }
-                Collections.reverse(items);
-                mAdapter.notifyDataSetChanged();
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.e(TAG, databaseError.getDetails());
-            }
-        });
-
-        return items;
-    }
 
     private List<User> fetchUsers() {
         final List<User> users = new ArrayList<>();
-        final DatabaseReference usersRef = AppData.firebaseDatabase.getReference("users");
+        final DatabaseReference userRef = AppData.firebaseDatabase.getReference("users");
 
-        usersRef.addValueEventListener(new ValueEventListener() {
+        userRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Iterable<DataSnapshot> dataSnapshots = dataSnapshot.getChildren();
-                for(DataSnapshot data: dataSnapshots) {
+                for (DataSnapshot data : dataSnapshots) {
                     String key = data.getKey();
                     DataSnapshot a = dataSnapshot.child(key);
                     User user = a.getValue(User.class);
                     users.add(user);
-                    Log.d(TAG, "hello " +user.getFirst());
-                    //fetchImage(user);
+                    Log.d(TAG, "item list size " + user.getItems().values().size());
+                    for(Item item: user.getItems().values()) {
+                        Log.d(TAG, "getting item " + item.getItemName());
+                        mItems.add(item);
+                        fetchImage(item);
+                    }
+                    Log.d(TAG, "hello " + user.getFirst());
                 }
-                Collections.reverse(users);
                 mAdapter.notifyDataSetChanged();
             }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.e(TAG, databaseError.getDetails());
@@ -255,8 +240,9 @@ public class NewsFeedFragment extends Fragment {
         });
         return users;
     }
+
     private void fetchImage(Item item) {
-        final Item test = item;
+        final Item itemWithImage = item;
         StorageReference storageRef = AppData.firebaseStorage.getReference();
         StorageReference pathRef = storageRef.child("images/");
         StorageReference imageRef = pathRef.child(item.getKey());
@@ -264,7 +250,7 @@ public class NewsFeedFragment extends Fragment {
         imageRef.getBytes(LIMIT).addOnSuccessListener(new OnSuccessListener<byte[]>() {
             @Override
             public void onSuccess(byte[] bytes) {
-                test.setBytes(bytes);
+                itemWithImage.setBytes(bytes);
                 mAdapter.notifyDataSetChanged();
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -274,5 +260,7 @@ public class NewsFeedFragment extends Fragment {
             }
         });
     }
+
+
 
 }

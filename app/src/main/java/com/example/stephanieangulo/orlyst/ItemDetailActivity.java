@@ -38,7 +38,9 @@ public class ItemDetailActivity extends AppCompatActivity {
         contactBtn = findViewById(R.id.detail_contact_btn);
 
         Item item = Parcels.unwrap(getIntent().getParcelableExtra("Item"));
+        User user = Parcels.unwrap(getIntent().getParcelableExtra("User"));
 
+        Log.d(TAG, "User email is " + user.getEmail());
         itemTitle.setText(item.getItemName());
         itemDescription.setText(item.getDescription());
         if(item.getBytes() != null)
@@ -77,10 +79,5 @@ public class ItemDetailActivity extends AppCompatActivity {
                 .asBitmap()
                 .into(itemImage);
 
-    }
-
-    private User getUser(String sellerID) {
-
-        return null;
     }
 }
