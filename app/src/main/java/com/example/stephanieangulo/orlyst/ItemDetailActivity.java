@@ -78,4 +78,9 @@ public class ItemDetailActivity extends AppCompatActivity {
                 .into(itemImage);
 
     }
+
+    private User getUser(String sellerID) {
+
+        return null;
+    }
 }
