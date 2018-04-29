@@ -58,6 +58,7 @@ public class NewsFeedFragment extends Fragment {
     private TextView numItemsFound;
     private NewsFeedAdapter mAdapter;
     private List<Item> mItems;
+    private List<User> mUsers;
 
     public NewsFeedFragment() {
         // Required empty public constructor
@@ -103,6 +104,7 @@ public class NewsFeedFragment extends Fragment {
         recyclerView = view.findViewById(R.id.feed_recycler_view);
 
         mItems = fetchItems();
+        mUsers = fetchUsers();
         mAdapter = new NewsFeedAdapter(getActivity(), mItems);
 
         setUpRecyclerView();
@@ -231,6 +233,33 @@ public class NewsFeedFragment extends Fragment {
         });
 
         return items;
+    }
+
+    private List<User> fetchUsers() {
+        final List<User> users = new ArrayList<>();
+        final DatabaseReference usersRef = AppData.firebaseDatabase.getReference("users");
+
+        usersRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Iterable<DataSnapshot> dataSnapshots = dataSnapshot.getChildren();
+                for(DataSnapshot data: dataSnapshots) {
+                    String key = data.getKey();
+                    DataSnapshot a = dataSnapshot.child(key);
+                    User user = a.getValue(User.class);
+                    users.add(user);
+                    Log.d(TAG, "hello " +user.getFirst());
+                    //fetchImage(user);
+                }
+                Collections.reverse(users);
+                mAdapter.notifyDataSetChanged();
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(TAG, databaseError.getDetails());
+            }
+        });
+        return users;
     }
     private void fetchImage(Item item) {
         final Item test = item;

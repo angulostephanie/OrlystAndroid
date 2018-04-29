@@ -5,10 +5,7 @@ import java.util.List;
 
 public class User {
     private List<String> allUsers = new ArrayList<>();
-    public String first;
-    public String last;
-    public String email;
-    public String userID;
+    private String first, last, email, userID;
 
     public User() {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
@@ -21,10 +18,32 @@ public class User {
         this.userID = userID;
     }
 
-    protected void addUsers(String id) {
-        allUsers.add(id);
+    public void setFirst(String first) {
+        this.first = first;
     }
-    protected List<String> getAllUsers() {
-        return allUsers;
+    public void setLast(String last) {
+        this.last = last;
+    }
+    public void setEmail(String email) {
+        this.email = email;
+    }
+    public void setUserID(String userID) {
+        this.userID = userID;
+    }
+
+    public String getFirst() {
+        return first;
+    }
+
+    public String getLast() {
+        return last;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getUserID() {
+        return userID;
     }
 }
