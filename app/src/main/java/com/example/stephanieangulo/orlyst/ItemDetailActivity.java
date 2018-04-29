@@ -1,6 +1,7 @@
 package com.example.stephanieangulo.orlyst;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -38,7 +39,7 @@ public class ItemDetailActivity extends AppCompatActivity {
         contactBtn = findViewById(R.id.detail_contact_btn);
 
         Item item = Parcels.unwrap(getIntent().getParcelableExtra("Item"));
-        User user = Parcels.unwrap(getIntent().getParcelableExtra("User"));
+        final User user = Parcels.unwrap(getIntent().getParcelableExtra("User"));
 
         Log.d(TAG, "User email is " + user.getEmail());
         itemTitle.setText(item.getItemName());
@@ -68,6 +69,10 @@ public class ItemDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "Seller clicked");
+                Intent profileIntent = new Intent(mContext, ProfileActivity.class);
+                //itemIntent.putExtra("Item", Parcels.wrap(selectedItem));
+                profileIntent.putExtra("User", Parcels.wrap(user));
+                startActivity(profileIntent);
             }
         });
 

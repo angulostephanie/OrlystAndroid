@@ -30,6 +30,8 @@
         </activity>
         <activity android:name=".PostItemActivity">
         </activity>
+        <activity android:name=".ProfileActivity">
+        </activity>
     </application>
 
 </manifest>
