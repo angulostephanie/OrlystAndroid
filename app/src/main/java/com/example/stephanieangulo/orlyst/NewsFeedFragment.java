@@ -1,11 +1,13 @@
 package com.example.stephanieangulo.orlyst;
 
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -57,6 +59,8 @@ public class NewsFeedFragment extends Fragment {
     private RecyclerView recyclerView;
     private EditText searchEditText;
     private TextView numItemsFound;
+
+    private Context mContext;
     private NewsFeedAdapter mAdapter;
     private List<Item> mItems = new ArrayList<>();
     private List<User> mUsers = new ArrayList<>();
@@ -98,7 +102,7 @@ public class NewsFeedFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_news_feed, container, false);
-
+        mContext = getContext();
 
         searchEditText = view.findViewById(R.id.search);
         numItemsFound = view.findViewById(R.id.num_items);
@@ -204,7 +208,10 @@ public class NewsFeedFragment extends Fragment {
                         Intent itemIntent = new Intent(getActivity(), ItemDetailActivity.class);
                         itemIntent.putExtra("Item", Parcels.wrap(selectedItem));
                         itemIntent.putExtra("User", Parcels.wrap(selectedUser));
-                        startActivity(itemIntent);
+                        PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, itemIntent, 0);
+                        NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext, "newsfeed");
+                        builder.setContentIntent(pendingIntent);
+                        startActivityForResult(itemIntent, 1);
                     }
                 }));
     }
@@ -212,7 +219,6 @@ public class NewsFeedFragment extends Fragment {
     private List<User> fetchUsers() {
         final List<User> users = new ArrayList<>();
         final DatabaseReference userRef = AppData.firebaseDatabase.getReference("users");
-
         userRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

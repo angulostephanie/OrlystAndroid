@@ -7,59 +7,66 @@
     android:layout_height="match_parent"
     tools:context=".ItemDetailActivity">
 
-    <ImageView
-        android:id="@+id/detail_item_image"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignStart="@+id/item_description_tv"
-        android:layout_marginTop="15dp"
-        app:srcCompat="@android:color/holo_green_light" />
-
-    <TextView
-        android:id="@+id/detail_item_title"
+    <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignTop="@+id/detail_item_image"
-        android:layout_toEndOf="@+id/detail_item_image"
-        android:layout_marginStart= "5dp"
-        android:textStyle="bold"
-        android:textSize="18sp"
-        android:text="Title of item" />
+        android:id="@+id/detail_back_btn"
+        android:src="?attr/actionModeCloseDrawable" />
 
-    <TextView
-        android:id="@+id/item_description_tv"
-        android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/detail_item_image"
-        android:layout_marginTop="23dp"
-        android:layout_margin="17dp"
-        android:text="Item Description" />
+        <ImageView
+            android:id="@+id/detail_item_image"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_below="@+id/detail_back_btn"
+            android:layout_alignStart="@+id/item_description_tv"
+            android:layout_marginTop="15dp"
+            app:srcCompat="@android:color/holo_green_light" />
 
-    <Button
-        android:id="@+id/detail_contact_btn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:text="Contact Seller" />
+        <TextView
+            android:id="@+id/detail_item_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignTop="@+id/detail_item_image"
+            android:layout_toEndOf="@+id/detail_item_image"
+            android:layout_marginStart= "5dp"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:text="Title of item" />
 
-    <Button
-        android:id="@+id/detail_watchlist_btn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/detail_contact_btn"
-        android:layout_centerHorizontal="true"
-        android:text="Add to Watchlist" />
+        <TextView
+            android:id="@+id/item_description_tv"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/detail_item_image"
+            android:layout_marginTop="23dp"
+            android:layout_margin="17dp"
+            android:text="Item Description" />
 
-    <TextView
-        android:id="@+id/seller_name_tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/detail_item_title"
-        android:layout_below="@+id/detail_item_title"
-        android:textStyle="italic"
-        android:text="by Seller Name" />
+        <Button
+            android:id="@+id/detail_contact_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:text="Contact Seller" />
+
+        <Button
+            android:id="@+id/detail_watchlist_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/detail_contact_btn"
+            android:layout_centerHorizontal="true"
+            android:text="Add to Watchlist" />
+
+        <TextView
+            android:id="@+id/seller_name_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/detail_item_title"
+            android:layout_below="@+id/detail_item_title"
+            android:textStyle="italic"
+            android:text="by Seller Name" />
+
 </RelativeLayout>
