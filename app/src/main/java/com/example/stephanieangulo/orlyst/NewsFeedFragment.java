@@ -32,6 +32,8 @@ import com.google.firebase.storage.StorageReference;
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -237,12 +239,15 @@ public class NewsFeedFragment extends Fragment {
                         if(!keys.contains(item.getKey())) {
                             Log.d(TAG, "getting item " + item.getItemName());
                             mItems.add(item);
+                            Log.d(TAG, "Time stamp = " + item.getTimestamp());
                             // TODO: add booleans on whether or not item is in watchlist
                             fetchImage(item);
                         }
                     }
                     Log.d(TAG, "hello " + user.getFirst());
                 }
+                mItems.sort(Comparator.comparing(Item::getTimestamp));
+                Collections.reverse(mItems);
                 mAdapter.notifyDataSetChanged();
             }
 

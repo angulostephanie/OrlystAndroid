@@ -1,10 +1,10 @@
 package com.example.stephanieangulo.orlyst;
 
-import com.google.firebase.database.ServerValue;
-
 import org.parceler.Parcel;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +42,12 @@ public class Item {
         this.timestamp = item.getTimestamp();
         this.onWatchlist = onWatchlist;
     }
-
+    public String createTimestamp() {
+        Calendar calendar = Calendar.getInstance();
+        Date now = calendar.getTime();
+        String timestamp = now.toString();
+        return timestamp;
+    }
     public void setItemName(String newName) {
         this.itemName = newName;
     }
@@ -151,7 +156,7 @@ public class Item {
         result.put("sellerID", sellerID);
         result.put("email", email);
         result.put("key", key);
-        result.put("timestamp", ServerValue.TIMESTAMP.get("timestamp"));
+        result.put("timestamp", createTimestamp());
         return result;
     }
 }
