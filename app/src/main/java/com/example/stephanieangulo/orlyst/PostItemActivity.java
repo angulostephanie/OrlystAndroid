@@ -29,6 +29,7 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class PostItemActivity extends AppCompatActivity {
@@ -45,13 +46,24 @@ public class PostItemActivity extends AppCompatActivity {
     private ImageView itemImage;
     private EditText titleText;
     private EditText descriptionText;
+    private EditText priceText;
     private RadioGroup firstCategory;
     private RadioGroup secondCategory;
 
+    private int category;
     private boolean isTitleFilled;
+    private boolean isPriceFilled;
     private boolean photoUploaded = false;
     private boolean infoUploaded = false;
+    private static Map<Integer, String> categories = new HashMap<Integer, String>() {{
+        put(0, "Books");
+        put(1, "Clothes");
+        put(2, "Electronics");
 
+        put(3, "Supplies");
+        put(4, "Services");
+        put(5, "Other");
+    }};
     private RadioGroup.OnCheckedChangeListener listener1 = new RadioGroup.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -59,6 +71,11 @@ public class PostItemActivity extends AppCompatActivity {
                 secondCategory.setOnCheckedChangeListener(null);
                 secondCategory.clearCheck();
                 secondCategory.setOnCheckedChangeListener(listener2);
+                category = firstCategory.indexOfChild(findViewById
+                        (firstCategory.getCheckedRadioButtonId()));
+
+                Log.d(TAG, "Category = " + category);
+                //int idx = firstCategory.indexOfChild(findViewById(firstCategory.getCheckedRadioButtonId()));
             }
         }
     };
@@ -69,6 +86,10 @@ public class PostItemActivity extends AppCompatActivity {
                 firstCategory.setOnCheckedChangeListener(null);
                 firstCategory.clearCheck();
                 firstCategory.setOnCheckedChangeListener(listener1);
+                category = secondCategory.indexOfChild(findViewById
+                        (secondCategory.getCheckedRadioButtonId())) + 3;
+
+                Log.d(TAG, "Category = " + category);
             }
         }
     };
@@ -89,9 +110,10 @@ public class PostItemActivity extends AppCompatActivity {
         itemImage = findViewById(R.id.post_item_image);
         titleText = findViewById(R.id.post_item_title);
         descriptionText = findViewById(R.id.post_item_description);
+        priceText = findViewById(R.id.post_item_price);
+
         firstCategory = findViewById(R.id.categories1);
         secondCategory = findViewById(R.id.categories2);
-
 
         firstCategory.setOnCheckedChangeListener(listener1);
         secondCategory.setOnCheckedChangeListener(listener2);
@@ -114,7 +136,8 @@ public class PostItemActivity extends AppCompatActivity {
             System.out.println("Posting image woo");
             String title = titleText.getText().toString();
             String description = descriptionText.getText().toString();
-            addItemToDatabase(title, description);
+            String price = priceText.getText().toString();
+            addItemToDatabase(title, description, price);
         }
     }
     private byte[] getImage() {
@@ -131,11 +154,11 @@ public class PostItemActivity extends AppCompatActivity {
                 .fitCenter()
                 .into(itemImage);
     }
-    private void addItemToDatabase(String title, String description) {
+    private void addItemToDatabase(String title, String description, String price) {
         DatabaseReference postItemRef = mUserReference.push(); //mItemReference.push();
         String key = postItemRef.getKey();
         Item item = new Item(title, description, mUser.getDisplayName(),
-                mUser.getEmail(), key, mUser.getUid());
+                mUser.getEmail(), key, mUser.getUid(), categories.get(category), price);
 
         Map<String, Object> itemValues = item.toMap();
 
@@ -208,14 +231,34 @@ public class PostItemActivity extends AppCompatActivity {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 isTitleFilled = s.length() != 0;
 
-                updateButtonStatus(isTitleFilled);
+                updateButtonStatus(isTitleFilled && isPriceFilled);
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 isTitleFilled = s.length() != 0;
 
-                updateButtonStatus(isTitleFilled);
+                updateButtonStatus(isTitleFilled && isPriceFilled);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        priceText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                isPriceFilled = s.length() != 0;
+
+                updateButtonStatus(isTitleFilled && isPriceFilled);
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                isPriceFilled = s.length() != 0;
+
+                updateButtonStatus(isTitleFilled && isPriceFilled);
             }
 
             @Override

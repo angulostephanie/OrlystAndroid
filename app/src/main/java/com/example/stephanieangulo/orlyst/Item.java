@@ -12,7 +12,7 @@ import java.util.Map;
 @Parcel
 public class Item {
     private static final String TAG = "Item.java";
-    private String itemName, description, seller, email, key, timestamp, sellerID;
+    private String itemName, description, seller, email, key, timestamp, sellerID, category, price;
     private boolean onWatchlist;
     private byte[] bytes;
 
@@ -23,13 +23,16 @@ public class Item {
         this.description = description;
         this.seller = seller;
     }
-    public Item(String name, String description, String seller, String email, String key, String sellerID) {
+    public Item(String name, String description, String seller, String email, String key,
+                String sellerID, String category, String price) {
         this.itemName = name;
         this.description = description;
         this.seller = seller;
         this.sellerID = sellerID;
         this.email = email;
         this.key = key;
+        this.category = category;
+        this.price = price;
     }
     public Item(Item item, boolean onWatchlist) {
         this.itemName = item.getItemName();
@@ -39,6 +42,7 @@ public class Item {
         this.email = item.getEmail();
         this.bytes = item.getBytes();
         this.key = item.getKey();
+        this.category = item.getCategory();
         this.timestamp = item.getTimestamp();
         this.onWatchlist = onWatchlist;
     }
@@ -66,9 +70,13 @@ public class Item {
     public void setKey(String newKey) {
         this.key = newKey;
     }
+    public void setCategory(String newCategory) {
+        this.category = newCategory;
+    }
     public void setOnWatchlist(boolean onWatchlist) {
         this.onWatchlist = onWatchlist;
     }
+    public void setPrice(String newPrice) { this.price = newPrice; }
     public void setBytes(byte[] newBytes) { this.bytes = newBytes; }
     public void setTimestamp(String newTimestamp) {
         this.timestamp = newTimestamp;
@@ -90,6 +98,10 @@ public class Item {
     public String getKey() {
         return key;
     }
+    public String getCategory() {
+        return category;
+    }
+    public String getPrice() { return price; }
     public byte[] getBytes() { return bytes; }
     public String getTimestamp() {
         return timestamp;
@@ -156,6 +168,8 @@ public class Item {
         result.put("sellerID", sellerID);
         result.put("email", email);
         result.put("key", key);
+        result.put("category", category);
+        result.put("price", price);
         result.put("timestamp", createTimestamp());
         return result;
     }

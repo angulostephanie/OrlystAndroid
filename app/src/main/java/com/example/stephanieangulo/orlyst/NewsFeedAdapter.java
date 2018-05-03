@@ -41,7 +41,8 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.ViewHo
     public void onBindViewHolder(ViewHolder holder, final int position) {
         final Item item = mItemsList.get(position);
         holder.name.setText(item.getItemName());
-        holder.description.setText(item.getDescription());
+        holder.price.setText("$" + item.getPrice());
+        holder.category.setText(item.getCategory());
         holder.user.setText(item.getSeller());
         if(item.getBytes() != null) {
             Glide.with(context)
@@ -58,14 +59,15 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.ViewHo
     }
 
      class ViewHolder extends RecyclerView.ViewHolder {
-         TextView name, description, user, onWatchlist;
+         TextView name, description, user, onWatchlist, price, category;
          ImageView thumbnail;
 
 
          ViewHolder(View view) {
             super(view);
             name = view.findViewById(R.id.itemTitle);
-            description = view.findViewById(R.id.itemDescription);
+            price = view.findViewById(R.id.itemPrice);
+            category = view.findViewById(R.id.itemCategory);
             user = view.findViewById(R.id.userSellingItem);
             thumbnail = view.findViewById(R.id.itemImageView);
             onWatchlist = view.findViewById(R.id.onWatchlistText);

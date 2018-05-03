@@ -36,30 +36,60 @@
             android:text="Name of item"
             android:textSize="17sp" />
         <TextView
-            android:id="@+id/itemDescription"
+            android:id="@+id/itemPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/itemTitle"
+            android:layout_marginEnd="1dp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="3dp"
+            android:layout_alignStart="@id/itemTitle"
             android:maxLines="3"
-            android:textSize="13sp"
-            android:text="This is the items description" />
+            android:text="Price"
+            android:textStyle="italic"
+            android:textSize="13sp" />
+        <!--<TextView-->
+            <!--android:id="@+id/itemDescription"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_below="@+id/itemPrice"-->
+            <!--android:layout_marginLeft="10dp"-->
+            <!--android:layout_marginRight="10dp"-->
+            <!--android:layout_marginTop="3dp"-->
+            <!--android:maxLines="3"-->
+            <!--android:textSize="13sp"-->
+            <!--android:text="This is the items description" />-->
+
+        <TextView
+            android:id="@+id/itemCategory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/itemPrice"
+            android:layout_marginEnd="1dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="3dp"
+            android:layout_alignStart="@id/itemTitle"
+            android:maxLines="3"
+            android:text="Category"
+            android:textColor="@color/colorAccent"
+            android:textSize="13sp" />
 
         <TextView
             android:id="@+id/userSellingItem"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/itemDescription"
+            android:layout_below="@+id/itemCategory"
             android:layout_marginEnd="1dp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="3dp"
-            android:layout_alignStart="@id/itemDescription"
+            android:layout_alignStart="@id/itemTitle"
             android:maxLines="3"
             android:text="Name of user selling"
             android:textSize="13sp" />
+
         <TextView
             android:id="@+id/onWatchlistText"
             android:layout_width="wrap_content"
@@ -69,7 +99,7 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="3dp"
-            android:layout_alignStart="@id/itemDescription"
+            android:layout_alignStart="@id/itemTitle"
             android:maxLines="3"
             android:text=""
             android:textSize="13sp" />
