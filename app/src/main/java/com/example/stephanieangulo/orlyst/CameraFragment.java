@@ -154,11 +154,11 @@ public class CameraFragment extends Fragment {
             @Override
             public void callback(CameraKitImage cameraKitImage) {
                 cameraListener.onImage(cameraKitImage);
-                Bitmap bitmap = ItemImage.scaleDownBitmap(cameraKitImage.getBitmap());
-                byte[] jpeg = new ItemImage(bitmap).convertToBytes(100);
-
-                Intent intent = new Intent(getContext(), PostItemActivity.class);
-                intent.putExtra("bytes", jpeg);
+                Bitmap bitmap = cameraKitImage.getBitmap();
+                bitmap = ItemImage.scaleDownBitmap(bitmap);
+                ItemImage image = new ItemImage(bitmap);
+                Intent intent = new Intent(mContext, PostItemActivity.class);
+                intent.putExtra("bytes", image.convertToBytes(100));
                 startActivity(intent);
             }
         });

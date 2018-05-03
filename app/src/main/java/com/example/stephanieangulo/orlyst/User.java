@@ -9,7 +9,9 @@ import java.util.Map;
 public class User {
     private Map<String, Item> items = new HashMap<>();
     private Map<String, Item> watchlist = new HashMap<>();
-    private String first, last, email, userID;
+    private Map<String, User> usersInterested = new HashMap<>();
+    private byte[] bytes;
+    private String first, last, email, userID, profilePicture;
 
     public User() {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
@@ -40,6 +42,8 @@ public class User {
     public void setWatchlist(Map<String, Item> watchlist) {
         this.watchlist = watchlist;
     }
+    public void setProfilePicture(String profilePicture) { this.profilePicture = profilePicture;}
+    public void setBytes(byte[] bytes) { this.bytes = bytes;}
 
     public String getFirst() {
         return first;
@@ -53,8 +57,10 @@ public class User {
     public String getUserID() {
         return userID;
     }
-    public  Map<String, Item> getItems() { return items; }
-    public  Map<String, Item> getWatchlist() { return watchlist; }
+    public Map<String, Item> getItems() { return items; }
+    public Map<String, Item> getWatchlist() { return watchlist; }
+    public String getProfilePicture() { return profilePicture; }
+    public byte[] getBytes() { return bytes; }
 
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
@@ -64,6 +70,7 @@ public class User {
         result.put("userID", userID);
         result.put("items", items);
         result.put("watchlist", watchlist);
+        result.put("profilePicture", profilePicture);
         return result;
     }
 }

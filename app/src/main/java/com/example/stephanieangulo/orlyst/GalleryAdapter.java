@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import com.bumptech.glide.Glide;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,15 +50,11 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull GalleryAdapter.ViewHolder holder, final int position) {
         final byte[] bytes = imageGallery.get(position);
-//        Glide.with(context)
-//                .
-//                .load(bytes)
-//                .apply(new RequestOptions()
-//                .placeholder(R.drawable.loading_spinner)
-//                        .fitCenter()
-//                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-//                        .fitCenter())
-//                .into(holder.thumbnail);
+        Glide.with(context)
+                .load(bytes)
+                .asBitmap()
+                .placeholder(R.drawable.spinner)
+                .into(holder.thumbnail);
     }
 
     @Override

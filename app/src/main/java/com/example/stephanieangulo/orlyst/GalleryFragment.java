@@ -204,9 +204,8 @@ public class GalleryFragment extends Fragment {
                 Bitmap originalBitmap = (((BitmapDrawable)selectedImage.getDrawable()).getBitmap());
                 Bitmap bitmap = ItemImage.scaleDownBitmap(originalBitmap);
                 ItemImage image = new ItemImage(bitmap);
-                byte[] jpeg = image.convertToBytes(100);
                 Intent intent = new Intent(mContext, PostItemActivity.class);
-                intent.putExtra("bytes", jpeg);
+                intent.putExtra("bytes", image.convertToBytes(100));
                 startActivity(intent);
             }
         });

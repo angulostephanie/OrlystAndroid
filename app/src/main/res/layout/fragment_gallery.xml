@@ -19,13 +19,14 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:textColor="@android:color/holo_blue_dark"
             android:textStyle="bold" />
+
         <ImageView
             android:id="@+id/selected_image_view"
-            android:layout_below="@+id/next_btn"
             android:layout_width="match_parent"
             android:layout_height="350dp"
+            android:layout_below="@+id/next_btn"
             android:layout_centerHorizontal="true"
-            android:src="@android:color/holo_purple" />
+            android:src="@drawable/loading_spinner" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/gallery_recycler_view"

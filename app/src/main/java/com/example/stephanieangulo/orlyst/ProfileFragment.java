@@ -17,7 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -31,6 +31,7 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -49,15 +50,21 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private  static  final String TAG = "ProfileFragment";
-    private FirebaseAuth mAuth;
 
+    private FirebaseAuth mAuth;
+    private User mUser = new User();
+
+    private Context mContext;
+    private RecyclerView recyclerView;
+    private UserListAdapter mAdapter;
+    private TextView mUsername;
     private Button userItemsButton;
     private Button watchlistButton;
-    private ListView profileListView;
-    private RecyclerView recyclerView;
-    private List<Item> itemsList;
-    private View view;
-    private UserListAdapter adapter;
+
+    private List<Item> mItems = new ArrayList<>();
+    private List<Item> mWatchlist = new ArrayList<>();
+    private boolean onUserItems = true;
+
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -107,14 +114,13 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if(id == R.id.edit_profile){
-            Toast.makeText(getContext(),"Lol you can't edit your profile yet sorry", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext,"Lol you can't edit your profile yet sorry", Toast.LENGTH_SHORT).show();
             return true;
         } else if(id == R.id.settings) {
-            Toast.makeText(getContext(), "Lol you can't go to your settings yet sorry", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "Lol you can't go to your settings yet sorry", Toast.LENGTH_SHORT).show();
         } else if(id == R.id.log_out) {
-            mAuth = FirebaseAuth.getInstance();
             mAuth.signOut();
-            Intent loginIntent = new Intent(getContext(), LoginActivity.class);
+            Intent loginIntent = new Intent(mContext, LoginActivity.class);
             startActivity(loginIntent);
         }
 
@@ -125,14 +131,24 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        view = inflater.inflate(R.layout.fragment_profile, container, false);
+        View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
         userItemsButton = view.findViewById(R.id.user_items_btn);
         watchlistButton = view.findViewById(R.id.watchlist_btn);
+        recyclerView = view.findViewById(R.id.f_profile_recycler_view);
+
+        mContext = getContext();
+        mUsername = view.findViewById(R.id.your_username);
+        mAdapter = new UserListAdapter(mContext, mItems);
+        mAuth = FirebaseAuth.getInstance();
+
+
         userItemsButton.setOnClickListener(this);
         watchlistButton.setOnClickListener(this);
 
-        showUserItems();
+        fetchUser();
+        setRecyclerView();
+
         return view;
     }
 
@@ -164,51 +180,59 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch(v.getId()){
             case R.id.user_items_btn:
-                showUserItems();
+                onUserItems = true;
+                updateRecyclerView();
                 break;
             case R.id.watchlist_btn:
-                showWatchlist();
+                onUserItems = false;
+                updateRecyclerView();
         }
     }
 
-    private void showWatchlist() {
-        itemsList = fetchItems();  // TODO: only get items that are starred
-
-        setRecyclerView(itemsList);
-    }
-
-    private void showUserItems(){
-        itemsList = fetchItems();  // TODO: only get items that belong to the user
-
-        setRecyclerView(itemsList);
-    }
-    private List<Item> fetchItems() {
-        //TODO: Add progress spinner?
-        final List<Item> items = new ArrayList<>();
-        final DatabaseReference itemsRef = AppData.firebaseDatabase.getReference("items");
-
-        itemsRef.addValueEventListener(new ValueEventListener() {
+    private void fetchUser() {
+        final DatabaseReference userRef = AppData.firebaseDatabase.getReference("users")
+                .child(mAuth.getCurrentUser().getUid());
+        userRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Iterable<DataSnapshot> dataSnapshots = dataSnapshot.getChildren();
-                for(DataSnapshot data: dataSnapshots) {
-                    String key = data.getKey();
-                    DataSnapshot a = dataSnapshot.child(key);
-                    Item item = a.getValue(Item.class);
-                    items.add(item);
-                    Log.d(TAG, "hello " +item.getItemName());
-                    fetchImage(item);
-                }
-                Collections.reverse(items);
-                adapter.notifyDataSetChanged();
+                User foundUser = dataSnapshot.getValue(User.class);
+
+                Log.d(TAG, "User found --> " + foundUser.getFirst());
+                mItems = new ArrayList<>(foundUser.getItems().values());
+                mWatchlist = new ArrayList<>(foundUser.getWatchlist().values());
+                mUser = foundUser;
+                Log.d(TAG, "User has " + mItems.size() + " items");
+                Log.d(TAG, "User has " + mWatchlist.size() + " itemson their watchlist");
+                mItems.sort(Comparator.comparing(Item::getTimestamp));
+                mWatchlist.sort(Comparator.comparing(Item::getTimestamp));
+
+                Collections.reverse(mItems);
+                Collections.reverse(mWatchlist);
+                mUsername.setText(foundUser.getFirst() + " " + foundUser.getLast());
+
+                updateRecyclerView();
+                Log.d(TAG,"Adapter count = " +mAdapter.getItemCount());
+                Log.d(TAG, "Adapter? " + mAdapter + " " + (mAdapter == null));
+                fetchDisplayedImages(true);
+
+
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.e(TAG, databaseError.getDetails());
             }
         });
-
-        return items;
+    }
+    private void fetchDisplayedImages(boolean onUserItems) {
+        if(onUserItems) {
+            Log.d(TAG, "Fetching user items' images");
+            for(Item item: mItems)
+                fetchImage(item);
+        } else {
+            Log.d(TAG, "Fetching user watchlist' images");
+            for(Item item: mWatchlist)
+                fetchImage(item);
+        }
     }
     private void fetchImage(Item item) {
         final Item test = item;
@@ -220,7 +244,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onSuccess(byte[] bytes) {
                 test.setBytes(bytes);
-                adapter.notifyDataSetChanged();
+                mAdapter.notifyDataSetChanged();
+                Log.d(TAG, "successfully got the image!");
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -229,17 +254,26 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
             }
         });
     }
-
-    private void setRecyclerView(List<Item> itemsList){
-        recyclerView = view.findViewById(R.id.profile_recycler_view);
-
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        adapter = new UserListAdapter(getContext(), itemsList);
+    private void setRecyclerView(){
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity(),
+                LinearLayoutManager.VERTICAL, false);
 
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setAdapter(adapter);
+        recyclerView.setAdapter(mAdapter);
         recyclerView.setNestedScrollingEnabled(false);
+    }
+    private void updateRecyclerView() {
+        if(onUserItems) {
+            mAdapter = new UserListAdapter(mContext, mItems);
+            fetchDisplayedImages(true);
+        } else {
+            mAdapter = new UserListAdapter(mContext, mWatchlist);
+            fetchDisplayedImages(false);
+        }
+
+        setRecyclerView();
+        mAdapter.notifyDataSetChanged();
     }
 
     /**

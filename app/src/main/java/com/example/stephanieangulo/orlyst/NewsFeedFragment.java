@@ -277,7 +277,6 @@ public class NewsFeedFragment extends Fragment {
             }
         });
     }
-
     private List<String> getAllItemKeys(List<Item> items) {
         List<String> keys = new ArrayList<>();
         for(Item item: items) {

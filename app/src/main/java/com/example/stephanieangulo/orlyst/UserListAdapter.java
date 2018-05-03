@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.List;
 
 /**
@@ -36,6 +38,13 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
         final Item item = itemsList.get(position);
         holder.name.setText(item.getItemName());
         holder.description.setText(item.getDescription());
+        if(item.getBytes() != null) {
+            Glide.with(context)
+                    .load(item.getBytes())
+                    .asBitmap()
+                    .placeholder(R.drawable.spinner)
+                    .into(holder.thumbnail);
+        }
     }
 
     @Override

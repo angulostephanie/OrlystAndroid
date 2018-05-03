@@ -47,8 +47,8 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.ViewHo
             Glide.with(context)
                     .load(item.getBytes())
                     .asBitmap()
+                    .placeholder(R.drawable.spinner)
                     .into(holder.thumbnail);
-
         }
     }
 

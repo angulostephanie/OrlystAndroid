@@ -8,18 +8,22 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
 
+import org.parceler.Parcel;
+
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 // A helper class to put all image related functions in one place. :)
+@Parcel
 public class ItemImage {
-    private static final int MAX_WIDTH = 400;
-    private static final int MAX_HEIGHT = 400;
+    private static final int MAX_WIDTH = 1000;
+    private static final int MAX_HEIGHT = 1000;
     private byte[] bytes;
     private Bitmap bitmap;
     private String path;
 
+    public ItemImage() {}
     public ItemImage(byte[] bytes) {
         this.bytes = bytes;
     }
