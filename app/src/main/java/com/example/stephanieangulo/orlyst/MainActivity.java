@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        toolbar.setTitle("NewsFeed");
+        toolbar.setTitle("");
         loadFragment(new NewsFeedFragment());
     }
 
@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity
             Fragment fragment;
             switch (item.getItemId()) {
                 case R.id.navigation_newsfeed:
-                    toolbar.setTitle("NewsFeed");
+                    toolbar.setTitle("");
                     fragment = new NewsFeedFragment();
                     loadFragment(fragment);
                     return true;

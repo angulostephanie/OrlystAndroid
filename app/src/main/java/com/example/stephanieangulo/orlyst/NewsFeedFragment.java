@@ -1,6 +1,7 @@
 package com.example.stephanieangulo.orlyst;
 
 import android.app.PendingIntent;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -11,14 +12,13 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.SearchView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -60,8 +60,6 @@ public class NewsFeedFragment extends Fragment {
     private static final String TAG = "NewsFeedFragment";
 
     private RecyclerView recyclerView;
-    private EditText searchEditText;
-    private TextView numItemsFound;
 
     private Context mContext;
     private NewsFeedAdapter mAdapter;
@@ -95,22 +93,45 @@ public class NewsFeedFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        setHasOptionsMenu(true);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
     }
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.news_feed_search, menu);
+        SearchManager searchManager =
+                (SearchManager) getContext().getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView =
+                (SearchView) menu.findItem(R.id.app_bar_search).getActionView();
+        searchView.setSearchableInfo(
+                searchManager.getSearchableInfo(getActivity().getComponentName()));
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                mAdapter.getFilter().filter(query);
+                return false;
+            }
 
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                mAdapter.getFilter().filter(newText);
+                return false;
+            }
+        });
+
+    }
+    
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_news_feed, container, false);
         mContext = getContext();
         mAuth = AppData.firebaseAuth;
-        searchEditText = view.findViewById(R.id.search);
-        numItemsFound = view.findViewById(R.id.num_items);
+
         recyclerView = view.findViewById(R.id.feed_recycler_view);
 
         mUsers = fetchUsers();
@@ -119,7 +140,6 @@ public class NewsFeedFragment extends Fragment {
 
         setUpRecyclerView();
         onNewsFeedItemClick();
-        addTextListeners();
 
         return view;
     }
@@ -179,24 +199,7 @@ public class NewsFeedFragment extends Fragment {
         recyclerView.setAdapter(mAdapter);
         recyclerView.setNestedScrollingEnabled(false);
     }
-    private void addTextListeners() {
-        searchEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                mAdapter.getFilter().filter(s);
-            }
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                mAdapter.getFilter().filter(s);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-    }
     private void onNewsFeedItemClick() {
         recyclerView.addOnItemTouchListener(new MyRecyclerItemClickListener(getActivity(),
                 new MyRecyclerItemClickListener.OnItemClickListener() {

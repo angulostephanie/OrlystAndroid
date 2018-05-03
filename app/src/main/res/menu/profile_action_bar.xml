@@ -10,8 +10,7 @@
         android:title="Settings"
         android:orderInCategory="1"
         android:icon="@mipmap/ic_more_vert_black_24dp"
-        app:showAsAction="ifRoom"
-        >
+        app:showAsAction="ifRoom">
 
         <menu>
 
