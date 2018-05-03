@@ -30,9 +30,9 @@
 
     <ImageView
         android:id="@+id/post_item_image"
-        android:layout_width="350dp"
-        android:layout_height="350dp"
-        android:layout_below="@+id/post_btn"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_below="@+id/back_btn"
         android:layout_centerHorizontal="true"
         app:srcCompat="@android:color/holo_orange_light" />
 
@@ -46,16 +46,95 @@
         android:hint="Title of item"
         android:inputType="textPersonName"
         android:layout_marginTop="5dp" />
+
+    <EditText
+        android:id="@+id/post_item_price"
+        android:layout_width="119dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/post_item_description"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="57dp"
+        android:ems="10"
+        android:hint="Price"
+        android:inputType="numberDecimal" />
+
     <EditText
         android:id="@+id/post_item_description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/post_item_title"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="5dp"
         android:ems="10"
         android:hint="Description of item"
-        android:inputType="textPersonName"
-        android:layout_marginTop="5dp" />
+        android:inputType="textPersonName" />
+
+    <RadioGroup
+        android:id="@+id/categories1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/post_item_price"
+        android:layout_centerHorizontal="true"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/booksBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="2dp"
+            android:layout_weight="1"
+            android:text="Book" />
+
+        <RadioButton
+            android:id="@+id/clothesBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="2dp"
+            android:layout_weight="1"
+            android:text="Clothes" />
+
+        <RadioButton
+            android:id="@+id/electronicsBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="2dp"
+            android:layout_weight="1"
+            android:text="Electronics" />
+    </RadioGroup>
+    <RadioGroup
+        android:id="@+id/categories2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/categories1"
+        android:layout_centerHorizontal="true"
+        android:orientation="horizontal">
+        <RadioButton
+            android:id="@+id/suppliesBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="2dp"
+            android:layout_weight="1"
+            android:text="Supplies" />
+
+        <RadioButton
+            android:id="@+id/servicesBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="2dp"
+            android:layout_weight="1"
+            android:text="Services" />
+
+        <RadioButton
+            android:id="@+id/otherBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="2dp"
+            android:layout_weight="1"
+            android:text="Other" />
+    </RadioGroup>
+
+
+
 
 
 </RelativeLayout>

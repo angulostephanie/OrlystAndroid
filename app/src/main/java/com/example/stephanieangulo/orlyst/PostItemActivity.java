@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -44,10 +45,33 @@ public class PostItemActivity extends AppCompatActivity {
     private ImageView itemImage;
     private EditText titleText;
     private EditText descriptionText;
+    private RadioGroup firstCategory;
+    private RadioGroup secondCategory;
 
     private boolean isTitleFilled;
     private boolean photoUploaded = false;
     private boolean infoUploaded = false;
+
+    private RadioGroup.OnCheckedChangeListener listener1 = new RadioGroup.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(RadioGroup group, int checkedId) {
+            if (checkedId != -1) {
+                secondCategory.setOnCheckedChangeListener(null);
+                secondCategory.clearCheck();
+                secondCategory.setOnCheckedChangeListener(listener2);
+            }
+        }
+    };
+    private RadioGroup.OnCheckedChangeListener listener2 = new RadioGroup.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(RadioGroup group, int checkedId) {
+            if (checkedId != -1) {
+                firstCategory.setOnCheckedChangeListener(null);
+                firstCategory.clearCheck();
+                firstCategory.setOnCheckedChangeListener(listener1);
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +89,12 @@ public class PostItemActivity extends AppCompatActivity {
         itemImage = findViewById(R.id.post_item_image);
         titleText = findViewById(R.id.post_item_title);
         descriptionText = findViewById(R.id.post_item_description);
+        firstCategory = findViewById(R.id.categories1);
+        secondCategory = findViewById(R.id.categories2);
+
+
+        firstCategory.setOnCheckedChangeListener(listener1);
+        secondCategory.setOnCheckedChangeListener(listener2);
 
         updateButtonStatus(false);
         addTextListeners();
