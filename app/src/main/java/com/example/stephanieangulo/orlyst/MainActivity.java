@@ -4,7 +4,6 @@ package com.example.stephanieangulo.orlyst;
 //import android.app.Fragment;
 
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -47,11 +46,6 @@ public class MainActivity extends AppCompatActivity
                     toolbar.setTitle("");
                     fragment = new NewsFeedFragment();
                     loadFragment(fragment);
-                    return true;
-                case R.id.navigation_sell:
-                    Intent intent = new Intent(mContext, TakePhotoActivity.class);
-                    intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    startActivity(intent);
                     return true;
                 case R.id.navigation_profile:
                     toolbar.setTitle("Profile");

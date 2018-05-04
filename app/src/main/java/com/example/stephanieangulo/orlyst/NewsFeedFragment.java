@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -66,6 +67,7 @@ public class NewsFeedFragment extends Fragment {
     private FirebaseAuth mAuth;
     private List<Item> mItems = new ArrayList<>();
     private List<User> mUsers = new ArrayList<>();
+    private FloatingActionButton addBtn;
 
 
     public NewsFeedFragment() {
@@ -133,13 +135,14 @@ public class NewsFeedFragment extends Fragment {
         mAuth = AppData.firebaseAuth;
 
         recyclerView = view.findViewById(R.id.feed_recycler_view);
-
+        addBtn = view.findViewById(R.id.fabAdd);
         mUsers = fetchUsers();
 
         mAdapter = new NewsFeedAdapter(getActivity(), mItems);
 
         setUpRecyclerView();
         onNewsFeedItemClick();
+        onAddButtonClick();
 
         return view;
     }
@@ -223,7 +226,17 @@ public class NewsFeedFragment extends Fragment {
                     }
                 }));
     }
-
+    private void onAddButtonClick() {
+        addBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "FAB clicked!");
+                Intent intent = new Intent(mContext, TakePhotoActivity.class);
+                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                startActivity(intent);
+            }
+        });
+    }
     private List<User> fetchUsers() {
         final List<User> users = new ArrayList<>();
         final DatabaseReference userRef = AppData.firebaseDatabase.getReference("users");
