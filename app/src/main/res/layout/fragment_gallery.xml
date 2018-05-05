@@ -32,6 +32,7 @@
             android:id="@+id/gallery_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:clipToPadding="true"
             android:layout_below="@+id/selected_image_view"
             android:listSelector="@android:color/darker_gray"/>
 

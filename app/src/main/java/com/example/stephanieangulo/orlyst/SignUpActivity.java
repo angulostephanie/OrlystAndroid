@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -24,7 +25,7 @@ import java.util.Map;
 
 public class SignUpActivity extends AppCompatActivity {
     private static final String TAG = "SignUpActivity";
-
+    private static final String OXY_EMAIL = "@oxy.edu";
     // entry point of Firebase Auth SDK
     private FirebaseAuth mAuth;
 
@@ -33,6 +34,7 @@ public class SignUpActivity extends AppCompatActivity {
     private EditText emailText;
     private EditText passwordText;
     private Button signUpBtn;
+    private Button backBtn;
     private Context mContext;
 
     private boolean isFirstFilled = false;
@@ -52,10 +54,75 @@ public class SignUpActivity extends AppCompatActivity {
         emailText = findViewById(R.id.new_email_text);
         passwordText = findViewById(R.id.new_password_text);
         signUpBtn = findViewById(R.id.sign_up_btn);
+        backBtn = findViewById(R.id.back_btn);
 
         updateButtonStatus(false);
         addTextListeners();
+        setupFloatingLabelErrors();
 
+    }
+
+    private void setupFloatingLabelErrors() {
+        final TextInputLayout floatingEmailLabel = findViewById(R.id.email_text_input_layout);
+        floatingEmailLabel.getEditText().addTextChangedListener(new TextWatcher() {
+            // ...
+            @Override
+            public void onTextChanged(CharSequence text, int start, int count, int after) {
+                //@oxy.edu 8
+                int length = text.length();
+                String email = text.toString();
+                if(length > 8) {
+                    if(!email.substring(length - 8).equals(OXY_EMAIL)) {
+                        floatingEmailLabel.setError(getString(R.string.email_alert));
+                        floatingEmailLabel.setErrorEnabled(true);
+                    } else {
+                        floatingEmailLabel.setErrorEnabled(false);
+                    }
+                } else {
+                    floatingEmailLabel.setErrorEnabled(false);
+                }
+            }
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count,
+                                          int after) {
+                // TODO Auto-generated method stub
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        final TextInputLayout floatingPasswordLabel = findViewById(R.id.password_text_input_layout);
+        floatingPasswordLabel.getEditText().addTextChangedListener(new TextWatcher() {
+            // ...
+            @Override
+            public void onTextChanged(CharSequence text, int start, int count, int after) {
+                int length = text.length();
+                String password = text.toString();
+                if(length > 0 && length < 6) {
+                    floatingPasswordLabel.setError(getString(R.string.password_length_alert));
+                    floatingPasswordLabel.setErrorEnabled(true);
+                } else {
+                    floatingPasswordLabel.setErrorEnabled(false);
+                }
+            }
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count,
+                                          int after) {
+                // TODO Auto-generated method stub
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+    }
+
+    public void onSignUpBack(View view) {
+        Intent intent =  new Intent(mContext, LoginActivity.class);
+        startActivity(intent);
     }
     public void onSignUp(View view) {
         // only let users click sign up when button status is enabled
