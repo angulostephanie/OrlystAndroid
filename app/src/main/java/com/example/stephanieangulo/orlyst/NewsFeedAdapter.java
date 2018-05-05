@@ -29,14 +29,12 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.ViewHo
         this.originalData = itemsList;
     }
 
-
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.newsfeed_item, parent, false);
         return new ViewHolder(itemView);
     }
-
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
         final Item item = mItemsList.get(position);
@@ -52,7 +50,6 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.ViewHo
                     .into(holder.thumbnail);
         }
     }
-
     @Override
     public int getItemCount() {
         return mItemsList.size();
@@ -74,7 +71,6 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.ViewHo
         }
 
     }
-
 
     @Override
     public Filter getFilter() {

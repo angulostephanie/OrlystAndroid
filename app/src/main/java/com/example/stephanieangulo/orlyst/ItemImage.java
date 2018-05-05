@@ -17,8 +17,8 @@ import java.util.List;
 // A helper class to put all image related functions in one place. :)
 @Parcel
 public class ItemImage {
-    private static final int MAX_WIDTH = 1000;
-    private static final int MAX_HEIGHT = 1000;
+    private static final int MAX_WIDTH = 600;
+    private static final int MAX_HEIGHT = 600;
     private byte[] bytes;
     private Bitmap bitmap;
     private String path;

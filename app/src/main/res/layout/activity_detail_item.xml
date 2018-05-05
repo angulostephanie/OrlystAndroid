@@ -8,65 +8,89 @@
     tools:context=".ItemDetailActivity">
 
     <ImageButton
+        android:id="@+id/detail_back_btn"
+        style="@android:style/Widget.DeviceDefault.Light.ImageButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/detail_back_btn"
+        android:contentDescription="@string/back_button"
+        android:paddingBottom="10dp"
         android:src="?attr/actionModeCloseDrawable" />
 
-        <ImageView
-            android:id="@+id/detail_item_image"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_below="@+id/detail_back_btn"
-            android:layout_alignStart="@+id/item_description_tv"
-            android:layout_marginTop="15dp"
-            app:srcCompat="@android:color/holo_green_light" />
+    <ImageView
+        android:id="@+id/detail_item_image"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_marginBottom="5dp"
+        android:layout_below="@id/detail_back_btn"
+        android:layout_centerHorizontal="true"
+        android:contentDescription="@string/image_of_item_being_sold"
+        app:srcCompat="@android:color/holo_green_light" />
 
-        <TextView
-            android:id="@+id/detail_item_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignTop="@+id/detail_item_image"
-            android:layout_toEndOf="@+id/detail_item_image"
-            android:layout_marginStart= "5dp"
-            android:textStyle="bold"
-            android:textSize="18sp"
-            android:text="Title of item" />
+    <TextView
+        android:id="@+id/detail_item_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginBottom="5dp"
+        android:layout_below="@+id/detail_item_image"
+        android:text="@string/title_of_item"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+    <TextView
+        android:id="@+id/item_description_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        android:layout_marginBottom="5dp"
+        android:layout_below="@+id/seller_name_tv"
+        android:layout_alignStart="@id/detail_item_title"
+        android:text="@string/item_description" />
 
-        <TextView
-            android:id="@+id/item_description_tv"
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/detail_item_image"
-            android:layout_marginTop="23dp"
-            android:layout_margin="17dp"
-            android:text="Item Description" />
+    <TextView
+        android:id="@+id/seller_name_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/detail_item_title"
+        android:layout_marginStart="6dp"
+        android:textSize="15sp"
+        android:layout_toEndOf="@+id/detail_item_title"
+        android:text="@string/by_seller_name"
+        android:textStyle="italic" />
 
-        <Button
-            android:id="@+id/detail_contact_btn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true"
-            android:text="Contact Seller" />
+    <TextView
+        android:id="@+id/this_item_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/item_description_tv"
+        android:layout_alignStart="@id/detail_item_title"
+        android:layout_marginRight="8dp"
+        android:text="Price"
+        android:textStyle="italic" />
 
-        <Button
-            android:id="@+id/detail_watchlist_btn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/detail_contact_btn"
-            android:layout_centerHorizontal="true"
-            android:text="Add to Watchlist" />
+    <TextView
+        android:id="@+id/this_item_category"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/item_description_tv"
+        android:layout_toEndOf="@id/this_item_price"
+        android:textColor="@color/bottomNavigation"
+        android:text="Category"
+        android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/seller_name_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignStart="@+id/detail_item_title"
-            android:layout_below="@+id/detail_item_title"
-            android:textStyle="italic"
-            android:text="by Seller Name" />
+    <Button
+        android:id="@+id/detail_contact_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:text="@string/contact_seller" />
+
+    <Button
+        android:id="@+id/detail_watchlist_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/detail_contact_btn"
+        android:layout_centerHorizontal="true"
+        android:text="@string/add_to_watchlist" />
 
 </RelativeLayout>

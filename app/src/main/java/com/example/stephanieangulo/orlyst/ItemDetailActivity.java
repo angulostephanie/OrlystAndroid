@@ -27,6 +27,8 @@ import org.parceler.Parcels;
 
 public class ItemDetailActivity extends AppCompatActivity {
     private static final String TAG = ItemDetailActivity.class.getSimpleName();
+    private static final String EDIT_TEXT = "EDIT YOUR ITEM";
+    private static final String DELETE_TEXT = "DELETE YOUR ITEM";
     private Context mContext;
     private FirebaseUser mUser;
     private FirebaseAuth mAuth;
@@ -36,6 +38,8 @@ public class ItemDetailActivity extends AppCompatActivity {
     private TextView itemTitle;
     private TextView itemDescription;
     private TextView itemSeller;
+    private TextView itemCategory;
+    private TextView itemPrice;
     private ImageView itemImage;
     private ImageButton backBtn;
     private Button watchlistBtn;
@@ -54,6 +58,8 @@ public class ItemDetailActivity extends AppCompatActivity {
         itemDescription = findViewById(R.id.item_description_tv);
         itemSeller = findViewById(R.id.seller_name_tv);
         itemImage = findViewById(R.id.detail_item_image);
+        itemCategory = findViewById(R.id.this_item_category);
+        itemPrice = findViewById(R.id.this_item_price);
         watchlistBtn = findViewById(R.id.detail_watchlist_btn);
         contactBtn = findViewById(R.id.detail_contact_btn);
         backBtn = findViewById(R.id.detail_back_btn);
@@ -66,6 +72,7 @@ public class ItemDetailActivity extends AppCompatActivity {
 
 
         setUpDetailPage();
+        updateButtonText();
         onAddToWatchlist();
         onItemSellerName();
 
@@ -89,6 +96,12 @@ public class ItemDetailActivity extends AppCompatActivity {
 
 
     }
+    private void updateButtonText() {
+        if(userSeller.getUserID().equals(mUser.getUid())) {
+            watchlistBtn.setText(EDIT_TEXT);
+            contactBtn.setText(DELETE_TEXT);
+        }
+    }
     private void setUpDetailPage() {
         Log.d(TAG, "User email is " + userSeller.getEmail());
         itemTitle.setText(displayedItem.getItemName());
@@ -97,6 +110,9 @@ public class ItemDetailActivity extends AppCompatActivity {
             setItemImage(displayedItem.getBytes());
         itemSeller.setText("by " + displayedItem.getSeller());
         itemSeller.setPaintFlags(Paint.UNDERLINE_TEXT_FLAG);
+        itemPrice.setText("$" + displayedItem.getPrice());
+        itemCategory.setText(displayedItem.getCategory());
+
     }
     private void setItemImage(byte[] jpeg) {
         Glide.with(mContext)
@@ -109,10 +125,13 @@ public class ItemDetailActivity extends AppCompatActivity {
         watchlistBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DatabaseReference watchlistRef = AppData.firebaseDatabase.getReference("users")
-                        .child(mUser.getUid()).child("watchlist").child(displayedItem.getKey());
-                addItemToWatchlist(itemRef, watchlistRef);
-
+                if(watchlistBtn.getText().toString().equals(EDIT_TEXT)) {
+                    Log.d(TAG, "This is your item!");
+                } else {
+                    DatabaseReference watchlistRef = AppData.firebaseDatabase.getReference("users")
+                            .child(mUser.getUid()).child("watchlist").child(displayedItem.getKey());
+                    addItemToWatchlist(itemRef, watchlistRef);
+                }
             }
         });
     }

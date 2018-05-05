@@ -23,4 +23,11 @@
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="sign_up">Sign Up</string>
+    <string name="contact_seller">Contact Seller</string>
+    <string name="add_to_watchlist">Add to Watchlist</string>
+    <string name="item_description">Item Description</string>
+    <string name="image_of_item_being_sold">Image of item being sold</string>
+    <string name="title_of_item">Title of item</string>
+    <string name="back_button">Back Button</string>
+    <string name="by_seller_name">by Seller Name</string>
 </resources>
