@@ -24,7 +24,8 @@
         android:layout_below="@id/detail_back_btn"
         android:layout_centerHorizontal="true"
         android:contentDescription="@string/image_of_item_being_sold"
-        app:srcCompat="@android:color/holo_green_light" />
+        android:background="@android:color/transparent"
+        app:srcCompat="@drawable/loading_spinner" />
 
     <TextView
         android:id="@+id/detail_item_title"

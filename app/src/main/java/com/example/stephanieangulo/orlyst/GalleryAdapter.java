@@ -50,11 +50,17 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull GalleryAdapter.ViewHolder holder, final int position) {
         final byte[] bytes = imageGallery.get(position);
-        Glide.with(context)
-                .load(bytes)
-                .asBitmap()
-                .placeholder(R.drawable.spinner)
-                .into(holder.thumbnail);
+        if(bytes != null) {
+            Glide.with(context)
+                    .load(bytes)
+                    .asBitmap()
+                    .placeholder(R.drawable.loading_spinner)
+                    .into(holder.thumbnail);
+        } else {
+            Glide.with(context)
+                    .load(R.drawable.image_not_found)
+                    .into(holder.thumbnail);
+        }
     }
 
     @Override

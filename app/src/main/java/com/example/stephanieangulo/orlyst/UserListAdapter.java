@@ -2,6 +2,7 @@ package com.example.stephanieangulo.orlyst;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import java.util.List;
  */
 
 public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHolder> {
+    private static final String TAG = "UserListAdapter";
     private Context context;
     private List<Item> itemsList;
 
@@ -40,12 +42,16 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
         holder.price.setText("$" + item.getPrice());
         holder.category.setText(item.getCategory());
         holder.user.setText(item.getSeller());
+        Log.d(TAG, "Image found? " + item.isImageFound());
         if(item.getBytes() != null) {
             Glide.with(context)
                     .load(item.getBytes())
                     .asBitmap()
-                    .placeholder(R.drawable.spinner)
+                    .placeholder(R.drawable.loading_spinner)
                     .into(holder.thumbnail);
+        }
+        if(!item.isImageFound()) {
+            holder.thumbnail.setImageResource(R.drawable.image_not_found);
         }
     }
 

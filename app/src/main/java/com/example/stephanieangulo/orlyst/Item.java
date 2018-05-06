@@ -14,6 +14,7 @@ public class Item {
     private static final String TAG = "Item.java";
     private String itemName, description, seller, email, key, timestamp, sellerID, category, price;
     private boolean onWatchlist;
+    private boolean isImageFound = true;
     private byte[] bytes;
 
     public Item() {
@@ -76,6 +77,7 @@ public class Item {
     public void setOnWatchlist(boolean onWatchlist) {
         this.onWatchlist = onWatchlist;
     }
+    public void setImageFound(boolean isImageFound) { this.isImageFound = isImageFound; }
     public void setPrice(String newPrice) { this.price = newPrice; }
     public void setBytes(byte[] newBytes) { this.bytes = newBytes; }
     public void setTimestamp(String newTimestamp) {
@@ -107,6 +109,7 @@ public class Item {
         return timestamp;
     }
     public boolean isOnWatchlist() { return onWatchlist; }
+    public boolean isImageFound() { return isImageFound; }
 
     public List<Item> getTempData() {
         List<Item> items = new ArrayList<>();
