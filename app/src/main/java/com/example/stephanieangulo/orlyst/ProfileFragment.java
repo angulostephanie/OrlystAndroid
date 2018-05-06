@@ -38,7 +38,9 @@ import org.parceler.Parcels;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -73,6 +75,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     private List<Item> mWatchlist = new ArrayList<>();
     private List<User> mUsers = new ArrayList<>();
     private List<Item> itemsDisplay = new ArrayList<>();
+    private Map<String, Item> watchlistCurrentUser = new HashMap<>();
     private boolean onUserItems = true;
 
 
@@ -309,10 +312,11 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                         if(selectedUser != null && userCurrent != null)
                             break;
                     }
+                    watchlistCurrentUser = userCurrent.getWatchlist();
                     Intent itemIntent = new Intent(getActivity(), ItemDetailActivity.class);
                     itemIntent.putExtra("Item", Parcels.wrap(selectedItem));
                     itemIntent.putExtra("userSeller", Parcels.wrap(selectedUser));
-                    itemIntent.putExtra("userCurrent", Parcels.wrap(userCurrent));
+                    itemIntent.putExtra("watchlistCurrentUser", Parcels.wrap(watchlistCurrentUser));
                     PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, itemIntent, 0);
                     NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext, "profile");
                     builder.setContentIntent(pendingIntent);

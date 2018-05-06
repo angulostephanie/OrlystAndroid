@@ -191,7 +191,7 @@ public class ItemDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 addItemToWatchlist(itemRef, watchlistRef);
-                setUpWatchlistBtn();
+                setUpRemoveWatchListBtn();
             }
         });
     }
