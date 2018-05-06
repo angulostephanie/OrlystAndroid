@@ -1,5 +1,6 @@
 package com.example.stephanieangulo.orlyst;
 
+import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -9,7 +10,6 @@ import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -77,13 +77,10 @@ public class ItemDetailActivity extends AppCompatActivity {
         onItemSellerName();
 
 
-        backBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent backIntent = new Intent();
-                setResult(RESULT_OK, backIntent);
-                finish();
-            }
+        backBtn.setOnClickListener(v -> {
+            Intent backIntent = new Intent();
+            setResult(Activity.RESULT_CANCELED, backIntent);
+            finish();
         });
 
     }
@@ -98,35 +95,23 @@ public class ItemDetailActivity extends AppCompatActivity {
 
     private void updateButtonsIfOwned(){
         watchlistBtn.setText(EDIT_TEXT);
-        watchlistBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(mContext, "Edit function not working yet sorry :(", Toast.LENGTH_SHORT).show();
-                Log.d("hi", "hi");
-            }
+        watchlistBtn.setOnClickListener(v -> {
+            Toast.makeText(mContext, "Edit function not working yet sorry :(", Toast.LENGTH_SHORT).show();
+            Log.d("hi", "hi");
         });
 
         contactBtn.setText(DELETE_TEXT);
-        contactBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(mContext, "Item deletion not working yet sorry :(", Toast.LENGTH_SHORT).show();
-            }
-        });
+        contactBtn.setOnClickListener(v ->
+                Toast.makeText(mContext, "Item deletion not working yet sorry :(", Toast.LENGTH_SHORT).show());
     }
 
     private void updateButtonsIfNotOwned(){
         onAddToWatchlist();
 
-        contactBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(mContext, "Contacting seller", Toast.LENGTH_SHORT).show();
-                String[] emailAddress = new String[1];
-                emailAddress[0] = displayedItem.getEmail();
-                composeEmail(emailAddress, displayedItem.getSeller(), userSeller.getFirst(), displayedItem.getItemName());
-
-            }
+        contactBtn.setOnClickListener(v -> {
+            String[] emailAddress = new String[1];
+            emailAddress[0] = displayedItem.getEmail();
+            composeEmail(emailAddress, displayedItem.getSeller(), userSeller.getFirst(), displayedItem.getItemName());
         });
     }
 
@@ -162,49 +147,40 @@ public class ItemDetailActivity extends AppCompatActivity {
 
     }
     private void onAddToWatchlist() {
-        watchlistBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(watchlistBtn.getText().toString().equals(EDIT_TEXT)) {
-                    Log.d(TAG, "This is your item!");
-                } else {
-                    DatabaseReference watchlistRef = AppData.firebaseDatabase.getReference("users")
-                            .child(mUser.getUid()).child("watchlist").child(displayedItem.getKey());
-                    addItemToWatchlist(itemRef, watchlistRef);
-                }
+        watchlistBtn.setOnClickListener(v -> {
+            if(watchlistBtn.getText().toString().equals(EDIT_TEXT)) {
+                Log.d(TAG, "This is your item!");
+            } else {
+                DatabaseReference watchlistRef = AppData.firebaseDatabase.getReference("users")
+                        .child(mUser.getUid()).child("watchlist").child(displayedItem.getKey());
+                addItemToWatchlist(itemRef, watchlistRef);
             }
         });
     }
     private void onItemSellerName() {
-        itemSeller.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "Seller clicked");
+        itemSeller.setOnClickListener(v -> {
+            Log.d(TAG, "Seller clicked");
 
-                Intent profileIntent = new Intent(mContext, ProfileActivity.class);
-                profileIntent.putExtra("User", Parcels.wrap(userSeller));
-                PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, profileIntent, 0);
-                NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext, "profile");
-                builder.setContentIntent(pendingIntent);
-                startActivityForResult(profileIntent, 1);
-            }
+            Intent profileIntent = new Intent(mContext, ProfileActivity.class);
+            profileIntent.putExtra("User", Parcels.wrap(userSeller));
+            PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, profileIntent, 0);
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext, "profile");
+            builder.setContentIntent(pendingIntent);
+            startActivityForResult(profileIntent, 1);
         });
     }
     private void addItemToWatchlist(DatabaseReference fromPath, final DatabaseReference toPath) {
         fromPath.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                toPath.setValue(dataSnapshot.getValue(), new DatabaseReference.CompletionListener() {
-                    @Override
-                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                        if(databaseError != null) {
-                            Log.e(TAG, databaseError.getMessage());
-                        } else {
-                            Log.d(TAG, "successfully added to watchlist!");
-                            Toast.makeText(ItemDetailActivity.this,
-                                    "Added this item to your list :)", Toast.LENGTH_SHORT).show();
+                toPath.setValue(dataSnapshot.getValue(), (databaseError, databaseReference) -> {
+                    if(databaseError != null) {
+                        Log.e(TAG, databaseError.getMessage());
+                    } else {
+                        Log.d(TAG, "successfully added to watchlist!");
+                        Toast.makeText(ItemDetailActivity.this,
+                                "Added this item to your list :)", Toast.LENGTH_SHORT).show();
 
-                        }
                     }
                 });
             }

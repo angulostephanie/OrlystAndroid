@@ -37,7 +37,9 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
     public void onBindViewHolder(UserListAdapter.ViewHolder holder, final int position) {
         final Item item = itemsList.get(position);
         holder.name.setText(item.getItemName());
-        holder.description.setText(item.getDescription());
+        holder.price.setText("$" + item.getPrice());
+        holder.category.setText(item.getCategory());
+        holder.user.setText(item.getSeller());
         if(item.getBytes() != null) {
             Glide.with(context)
                     .load(item.getBytes())
@@ -47,20 +49,24 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
         }
     }
 
+
     @Override
     public int getItemCount() {
         return itemsList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView name, description;
+        public TextView name, description, price, category, user, onWatchlist;
         public ImageView thumbnail;
 
         public ViewHolder(View view) {
             super(view);
             name = view.findViewById(R.id.itemTitle);
-            description = view.findViewById(R.id.itemDescription);
+            price = view.findViewById(R.id.itemPrice);
+            category = view.findViewById(R.id.itemCategory);
+            user = view.findViewById(R.id.userSellingItem);
             thumbnail = view.findViewById(R.id.itemImageView);
+            onWatchlist = view.findViewById(R.id.onWatchlistText);
         }
     }
 }
