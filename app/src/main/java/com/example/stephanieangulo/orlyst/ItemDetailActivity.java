@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -19,12 +20,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.StorageReference;
 
 import org.parceler.Parcels;
 
@@ -44,6 +48,7 @@ public class ItemDetailActivity extends AppCompatActivity {
     private DatabaseReference itemRef;
     private DatabaseReference watchlistRef;
     private DatabaseReference peopleWatchingRef;
+    private StorageReference imageRef;
     private Item displayedItem;
     private User userSeller;
     private Map<String, Item> watchlistCurrentUser = new HashMap<>();
@@ -86,6 +91,7 @@ public class ItemDetailActivity extends AppCompatActivity {
         displayedItem = Parcels.unwrap(getIntent().getParcelableExtra("Item"));
         userSeller = Parcels.unwrap(getIntent().getParcelableExtra("userSeller"));
         watchlistCurrentUser = Parcels.unwrap(getIntent().getParcelableExtra("watchlistCurrentUser"));
+
         //fromNewsfeed = intent.getBooleanExtra("fromNewsfeed", false);
         //fromProfile = intent.getBooleanExtra("fromProfile", false);
 
@@ -95,6 +101,7 @@ public class ItemDetailActivity extends AppCompatActivity {
                 .child(mUser.getUid()).child("watchlist").child(displayedItem.getKey());
         peopleWatchingRef = AppData.firebaseDatabase.getReference("users")
                 .child(userSeller.getUserID()).child("items").child(displayedItem.getKey()).child("peopleWatching");
+        imageRef = AppData.firebaseStorage.getReference().child("images/").child(displayedItem.getKey());
 
 
         toolbar.setLogo(R.drawable.small_orlyst_logo);
@@ -229,6 +236,8 @@ public class ItemDetailActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent deleteItemIntent = new Intent();
                 itemRef.removeValue();
+                deleteImage();
+
                 removeItemFromWatchLists();
 
                 Toast.makeText(mContext, "Item deleted", Toast.LENGTH_SHORT).show();
@@ -239,6 +248,21 @@ public class ItemDetailActivity extends AppCompatActivity {
         });
     }
 
+    private void deleteImage(){
+        imageRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                // File deleted successfully
+                Toast.makeText(mContext, "Item deleted", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Uh-oh, an error occurred!
+                Toast.makeText(mContext, "Error", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
     private void removeItemFromWatchLists(){
                 List<User> peopleWatchingUsers = fetchPeopleWatching();
                 // remove item from their watchlist
