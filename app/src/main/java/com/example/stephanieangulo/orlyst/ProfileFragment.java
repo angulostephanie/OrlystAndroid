@@ -1,11 +1,13 @@
 package com.example.stephanieangulo.orlyst;
 
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -28,6 +30,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
+
+import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -63,6 +67,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 
     private List<Item> mItems = new ArrayList<>();
     private List<Item> mWatchlist = new ArrayList<>();
+    private List<User> mUsers = new ArrayList<>();
+    private List<Item> itemsDisplay = new ArrayList<>();
     private boolean onUserItems = true;
 
 
@@ -131,6 +137,9 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        mUsers = fetchUsers();
+
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
@@ -263,20 +272,91 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(mAdapter);
         recyclerView.setNestedScrollingEnabled(false);
+        onProfileItemClick();
     }
     private void updateRecyclerView() {
         if(onUserItems) {
-            mAdapter = new UserListAdapter(mContext, mItems);
+            itemsDisplay = mItems;
+            mAdapter = new UserListAdapter(mContext, itemsDisplay);
             fetchDisplayedImages(true);
         } else {
-            mAdapter = new UserListAdapter(mContext, mWatchlist);
+            itemsDisplay = mWatchlist;
+            mAdapter = new UserListAdapter(mContext, itemsDisplay);
             fetchDisplayedImages(false);
         }
 
         setRecyclerView();
         mAdapter.notifyDataSetChanged();
+        onProfileItemClick();
     }
 
+    private void onProfileItemClick() {
+        recyclerView.addOnItemTouchListener(new MyRecyclerItemClickListener(getActivity(),
+                (view, position) -> {
+                    Item selectedItem = itemsDisplay.get(position);
+                    String sellerID = selectedItem.getSellerID();
+                    User selectedUser = null;
+                    for (User user : mUsers) {
+                        if (user.getUserID().equals(sellerID)) {
+                            selectedUser = user;
+                            break;
+                        }
+                    }
+                    Intent itemIntent = new Intent(getActivity(), ItemDetailActivity.class);
+                    itemIntent.putExtra("Item", Parcels.wrap(selectedItem));
+                    itemIntent.putExtra("User", Parcels.wrap(selectedUser));
+                    PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, itemIntent, 0);
+                    NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext, "profile");
+                    builder.setContentIntent(pendingIntent);
+                    startActivityForResult(itemIntent, 1);
+                }));
+    }
+
+    private List<User> fetchUsers() {
+        final List<User> users = new ArrayList<>();
+        final DatabaseReference userRef = AppData.firebaseDatabase.getReference("users");
+        userRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Iterable<DataSnapshot> dataSnapshots = dataSnapshot.getChildren();
+                for (DataSnapshot data : dataSnapshots) {
+                    String key = data.getKey();
+                    DataSnapshot a = dataSnapshot.child(key);
+                    User user = a.getValue(User.class);
+                    users.add(user);
+                    Log.d(TAG, "item list size " + user.getItems().values().size());
+                    for(Item item: user.getItems().values()) {
+                        List<String> keys = getAllItemKeys(mItems);
+                        if(!keys.contains(item.getKey())) {
+                            Log.d(TAG, "getting item " + item.getItemName());
+                            mItems.add(item);
+                            Log.d(TAG, "Time stamp = " + item.getTimestamp());
+                            // TODO: add booleans on whether or not item is in watchlist
+                            fetchImage(item);
+                        }
+                    }
+                    Log.d(TAG, "hello " + user.getFirst());
+                }
+                mItems.sort(Comparator.comparing(Item::getTimestamp));
+                Collections.reverse(mItems);
+                mAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(TAG, databaseError.getDetails());
+            }
+        });
+        return users;
+    }
+
+    private List<String> getAllItemKeys(List<Item> items) {
+        List<String> keys = new ArrayList<>();
+        for(Item item: items) {
+            keys.add(item.getKey());
+        }
+        return keys;
+    }
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
