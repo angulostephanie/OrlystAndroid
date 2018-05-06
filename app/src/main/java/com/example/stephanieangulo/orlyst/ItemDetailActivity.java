@@ -82,7 +82,6 @@ public class ItemDetailActivity extends AppCompatActivity {
         updateButtons();
         onItemSellerName();
 
-
         backBtn.setOnClickListener(v -> {
             Intent backIntent = new Intent();
             setResult(Activity.RESULT_CANCELED, backIntent);
@@ -113,6 +112,7 @@ public class ItemDetailActivity extends AppCompatActivity {
 
     private void setUpContactBtn(){
         bottomBtn.setOnClickListener(v -> {
+
             String[] emailAddress = new String[1];
             emailAddress[0] = displayedItem.getEmail();
             composeEmail(emailAddress, displayedItem.getSeller(), userSeller.getFirst(), displayedItem.getItemName());
