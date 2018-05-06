@@ -28,7 +28,9 @@ import com.google.firebase.database.ValueEventListener;
 
 import org.parceler.Parcels;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ItemDetailActivity extends AppCompatActivity {
@@ -45,6 +47,7 @@ public class ItemDetailActivity extends AppCompatActivity {
     private Item displayedItem;
     private User userSeller;
     private Map<String, Item> watchlistCurrentUser = new HashMap<>();
+    private List<Item> mItems = new ArrayList<>();
     private TextView itemTitle;
     private TextView itemDescription;
     private TextView itemSeller;
@@ -209,7 +212,7 @@ public class ItemDetailActivity extends AppCompatActivity {
         topBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                
+
                 watchlistRef.removeValue();
                 userWatchingRef.removeValue();
                 setUpAddWatchListBtn();
@@ -223,12 +226,75 @@ public class ItemDetailActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent deleteItemIntent = new Intent();
                 itemRef.removeValue();
+
+                // get peopleWatchlist and remove this item from the watchlists
+                removeItemFromWatchLists();
+
                 Toast.makeText(mContext, "Item deleted", Toast.LENGTH_SHORT).show();
                 setResult(Activity.RESULT_OK, deleteItemIntent);
                 finish();
                 //startActivity(deleteItemIntent);
             }
         });
+    }
+
+    private void removeItemFromWatchLists(){
+        peopleWatchingRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // get the users
+                List<User> peopleWatchingUsers = fetchPeopleWatching();
+                // remove item from their watchlist
+                for(User user : peopleWatchingUsers){
+                    user.getWatchlist().remove(displayedItem.getKey());
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private List<User> fetchPeopleWatching() {
+        final List<User> users = new ArrayList<>();
+        peopleWatchingRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Iterable<DataSnapshot> dataSnapshots = dataSnapshot.getChildren();
+                for (DataSnapshot data : dataSnapshots) {
+                    String key = data.getKey();
+                    DataSnapshot a = dataSnapshot.child(key);
+                    User user = a.getValue(User.class);
+                    users.add(user);
+                    Log.d(TAG, "item list size " + user.getItems().values().size());
+                    for (Item item : user.getItems().values()) {
+                        List<String> keys = getAllItemKeys(mItems);
+                        if (!keys.contains(item.getKey())) {
+                            Log.d(TAG, "getting item " + item.getItemName());
+                            mItems.add(item);
+                            Log.d(TAG, "Time stamp = " + item.getTimestamp());
+                        }
+                    }
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(TAG, databaseError.getDetails());
+            }
+        });
+        return users;
+    }
+
+    private List<String> getAllItemKeys(List<Item> items) {
+        List<String> keys = new ArrayList<>();
+        for(Item item: items) {
+            keys.add(item.getKey());
+        }
+        return keys;
     }
 
     private void addItemToPeopleWatching(DatabaseReference fromPath, final DatabaseReference toPath) {
