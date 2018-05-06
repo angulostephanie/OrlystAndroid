@@ -90,8 +90,9 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.ViewHo
                         String itemName = item.getItemName().toLowerCase();
                         String itemDescription = item.getDescription().toLowerCase();
                         String itemAuthor = item.getSeller().toLowerCase();
+                        String itemCategory = item.getCategory().toLowerCase();
                         if(itemName.contains(parameters) || itemDescription.contains(parameters) ||
-                                itemAuthor.contains(parameters)) {
+                                itemAuthor.contains(parameters)|| itemCategory.contains(parameters)) {
                             filteredData.add(item);
                         }
                     }
