@@ -1,5 +1,6 @@
 package com.example.stephanieangulo.orlyst;
 
+import android.app.Activity;
 import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.Context;
@@ -51,6 +52,7 @@ public class NewsFeedFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final int FROM_NEWSFEED_RESULT_CODE = 123;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -218,12 +220,25 @@ public class NewsFeedFragment extends Fragment {
                     Intent itemIntent = new Intent(getActivity(), ItemDetailActivity.class);
                     itemIntent.putExtra("Item", Parcels.wrap(selectedItem));
                     itemIntent.putExtra("User", Parcels.wrap(selectedUser));
-                    itemIntent.putExtra("fromNewsfeed", true);
                     PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, itemIntent, 0);
                     NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext, "newsfeed");
                     builder.setContentIntent(pendingIntent);
-                    startActivityForResult(itemIntent, 1);
+                    startActivityForResult(itemIntent, FROM_NEWSFEED_RESULT_CODE);
                 }));
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == FROM_NEWSFEED_RESULT_CODE) {
+            if(resultCode == Activity.RESULT_OK){
+                Intent refreshIntent = new Intent(mContext, MainActivity.class);
+                startActivity(refreshIntent);
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                //Write your code if there's no result
+            }
+        }
     }
 
 

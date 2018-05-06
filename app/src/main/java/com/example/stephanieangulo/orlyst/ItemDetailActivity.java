@@ -100,8 +100,6 @@ public class ItemDetailActivity extends AppCompatActivity {
         }
     }
 
-
-
     private void setUpEditBtn(){
         topBtn.setText(EDIT_TEXT);
         topBtn.setOnClickListener(v -> {
@@ -180,11 +178,12 @@ public class ItemDetailActivity extends AppCompatActivity {
         bottomBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent deleteItemIntent = new Intent(mContext, MainActivity.class);
+                Intent deleteItemIntent = new Intent();
                 itemRef.removeValue();
                 Toast.makeText(mContext, "Item deleted", Toast.LENGTH_SHORT).show();
+                setResult(Activity.RESULT_OK, deleteItemIntent);
                 finish();
-                startActivity(deleteItemIntent);
+                //startActivity(deleteItemIntent);
             }
         });
     }

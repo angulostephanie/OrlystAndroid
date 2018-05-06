@@ -4,6 +4,7 @@ package com.example.stephanieangulo.orlyst;
 //import android.app.Fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -32,8 +33,16 @@ public class MainActivity extends AppCompatActivity
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        toolbar.setTitle("");
-        loadFragment(new NewsFeedFragment());
+        Intent intent = getIntent();
+        int RESULT_CODE = intent.getIntExtra("RESULT_CODE", 0);
+        if(RESULT_CODE == 234){
+            loadFragment(new ProfileFragment());
+        } else {
+            toolbar.setTitle("");
+            loadFragment(new NewsFeedFragment());
+        }
+
+
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener

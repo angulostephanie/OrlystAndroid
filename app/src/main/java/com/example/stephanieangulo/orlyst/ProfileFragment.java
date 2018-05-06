@@ -1,5 +1,6 @@
 package com.example.stephanieangulo.orlyst;
 
+import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -54,6 +55,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private  static  final String TAG = "ProfileFragment";
+    private static final int FROM_PROFILE_RESULT_CODE = 234;
 
     private FirebaseAuth mAuth;
     private User mUser = new User();
@@ -158,6 +160,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 
         fetchUser();
         setRecyclerView();
+        onProfileItemClick();
 
         return view;
     }
@@ -272,7 +275,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(mAdapter);
         recyclerView.setNestedScrollingEnabled(false);
-        onProfileItemClick();
     }
     private void updateRecyclerView() {
         if(onUserItems) {
@@ -287,7 +289,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 
         setRecyclerView();
         mAdapter.notifyDataSetChanged();
-        onProfileItemClick();
     }
 
     private void onProfileItemClick() {
@@ -302,15 +303,31 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                             break;
                         }
                     }
-                    Intent itemIntent = new Intent(getActivity(), ItemDetailActivity.class);
+                    Intent itemIntent = new Intent(mContext, ItemDetailActivity.class);
                     itemIntent.putExtra("Item", Parcels.wrap(selectedItem));
                     itemIntent.putExtra("User", Parcels.wrap(selectedUser));
                     itemIntent.putExtra("fromProfile", true);
                     PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, itemIntent, 0);
                     NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext, "profile");
                     builder.setContentIntent(pendingIntent);
-                    startActivityForResult(itemIntent, 1);
+                    startActivityForResult(itemIntent, FROM_PROFILE_RESULT_CODE);
                 }));
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == FROM_PROFILE_RESULT_CODE) {
+            if(resultCode == Activity.RESULT_OK){
+                Intent refreshIntent = new Intent(mContext, MainActivity.class);
+                refreshIntent.putExtra("RESULT_CODE", FROM_PROFILE_RESULT_CODE);
+                startActivity(refreshIntent);
+
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                //Write your code if there's no result
+            }
+        }
     }
 
     private List<User> fetchUsers() {
