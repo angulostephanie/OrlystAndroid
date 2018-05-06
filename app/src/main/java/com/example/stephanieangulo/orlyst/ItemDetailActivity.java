@@ -158,6 +158,9 @@ public class ItemDetailActivity extends AppCompatActivity {
         itemDescription.setText(displayedItem.getDescription());
         if(displayedItem.getBytes() != null)
             setItemImage(displayedItem.getBytes());
+        if(!displayedItem.isImageFound()) {
+            itemImage.setImageResource(R.drawable.image_not_found);
+        }
         itemSeller.setText("by " + displayedItem.getSeller());
         itemSeller.setPaintFlags(Paint.UNDERLINE_TEXT_FLAG);
         itemPrice.setText("$" + displayedItem.getPrice());

@@ -22,8 +22,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SearchView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -293,7 +295,7 @@ public class NewsFeedFragment extends Fragment {
                 }
                 mItems.sort(Comparator.comparing(Item::getTimestamp));
                 Collections.reverse(mItems);
-                mAdapter.notifyDataSetChanged();
+                //mAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -313,12 +315,17 @@ public class NewsFeedFragment extends Fragment {
             @Override
             public void onSuccess(byte[] bytes) {
                 itemWithImage.setBytes(bytes);
-                mAdapter.notifyDataSetChanged();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-
+                Log.d(TAG, "Fetching image failed :/ " + e.getMessage());
+                itemWithImage.setImageFound(false);
+            }
+        }).addOnCompleteListener(new OnCompleteListener<byte[]>() {
+            @Override
+            public void onComplete(@NonNull Task<byte[]> task) {
+                mAdapter.notifyDataSetChanged();
             }
         });
     }

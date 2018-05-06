@@ -16,6 +16,7 @@
         android:layout_marginBottom="6dp"
         android:layout_marginStart="6dp"
         android:layout_marginTop="6dp"
+        android:background="@android:color/transparent"
         android:scaleType="fitCenter"
         app:srcCompat="@drawable/loading_spinner"
         android:contentDescription="@string/item_image" />

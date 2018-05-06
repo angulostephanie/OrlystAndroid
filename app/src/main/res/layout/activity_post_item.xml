@@ -44,7 +44,8 @@
             android:layout_height="250dp"
             android:layout_below="@+id/back_btn"
             android:layout_centerHorizontal="true"
-            app:srcCompat="@android:color/holo_orange_light"
+            android:background="@android:color/transparent"
+            app:srcCompat="@drawable/loading_spinner"
             android:contentDescription="@string/item_image" />
 
         <EditText
