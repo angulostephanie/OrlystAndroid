@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -19,6 +20,7 @@ import java.util.List;
 public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHolder> {
     private Context context;
     private List<Item> itemsList;
+    private Boolean itemSold;
 
     public UserListAdapter(Context context, List<Item> list){
         this.context = context;
@@ -40,6 +42,8 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
         holder.price.setText("$" + item.getPrice());
         holder.category.setText(item.getCategory());
         holder.user.setText(item.getSeller());
+
+
         if(item.getBytes() != null) {
             Glide.with(context)
                     .load(item.getBytes())
@@ -47,6 +51,9 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
                     .placeholder(R.drawable.spinner)
                     .into(holder.thumbnail);
         }
+        //if(itemSold)
+           // holder.layout.getBackground().setAlpha(128);
+
     }
 
 
@@ -58,15 +65,18 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
     public class ViewHolder extends RecyclerView.ViewHolder {
         public TextView name, description, price, category, user, onWatchlist;
         public ImageView thumbnail;
+        public RelativeLayout layout;
 
         public ViewHolder(View view) {
             super(view);
+            layout = view.findViewById(R.id.item_layout);
             name = view.findViewById(R.id.itemTitle);
             price = view.findViewById(R.id.itemPrice);
             category = view.findViewById(R.id.itemCategory);
             user = view.findViewById(R.id.userSellingItem);
             thumbnail = view.findViewById(R.id.itemImageView);
             onWatchlist = view.findViewById(R.id.onWatchlistText);
+
         }
     }
 }
