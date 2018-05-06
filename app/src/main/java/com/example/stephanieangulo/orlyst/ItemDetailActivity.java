@@ -4,6 +4,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Paint;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -72,17 +73,8 @@ public class ItemDetailActivity extends AppCompatActivity {
 
 
         setUpDetailPage();
-        updateButtonText();
-        onAddToWatchlist();
+        updateButtons();
         onItemSellerName();
-
-        contactBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "Need to implement add to contact seller function");
-
-            }
-        });
 
 
         backBtn.setOnClickListener(new View.OnClickListener() {
@@ -94,14 +86,62 @@ public class ItemDetailActivity extends AppCompatActivity {
             }
         });
 
-
     }
-    private void updateButtonText() {
+
+    private void updateButtons() {
         if(userSeller.getUserID().equals(mUser.getUid())) {
-            watchlistBtn.setText(EDIT_TEXT);
-            contactBtn.setText(DELETE_TEXT);
+            updateButtonsIfOwned();
+        } else {
+            updateButtonsIfNotOwned();
         }
     }
+
+    private void updateButtonsIfOwned(){
+        watchlistBtn.setText(EDIT_TEXT);
+        watchlistBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(mContext, "Edit function not working yet sorry :(", Toast.LENGTH_SHORT).show();
+                Log.d("hi", "hi");
+            }
+        });
+
+        contactBtn.setText(DELETE_TEXT);
+        contactBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(mContext, "Item deletion not working yet sorry :(", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void updateButtonsIfNotOwned(){
+        onAddToWatchlist();
+
+        contactBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(mContext, "Contacting seller", Toast.LENGTH_SHORT).show();
+                String[] emailAddress = new String[1];
+                emailAddress[0] = displayedItem.getEmail();
+                composeEmail(emailAddress, displayedItem.getSeller(), userSeller.getFirst(), displayedItem.getItemName());
+
+            }
+        });
+    }
+
+    private void composeEmail(String[] address, String sellerName, String buyerName, String itemName){
+        Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
+        emailIntent.setData(Uri.parse("mailto:"));
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, address);
+        emailIntent.putExtra(Intent.EXTRA_TEXT, "Hey " + sellerName + ", ");
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "[ORLYST] " + buyerName + " is contacting you about " + itemName);
+        if (emailIntent.resolveActivity(getPackageManager()) != null) {
+            startActivity(emailIntent);
+        }
+
+    }
+
     private void setUpDetailPage() {
         Log.d(TAG, "User email is " + userSeller.getEmail());
         itemTitle.setText(displayedItem.getItemName());
