@@ -3,6 +3,7 @@ package com.example.stephanieangulo.orlyst;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -31,6 +32,7 @@ public class ProfileActivity extends AppCompatActivity {
     private Button sellerItemsBtn;
     private Button sellerWatchlistBtn;
     private Context mContext;
+    private ActionBar toolbar;
     private boolean onSellerItems;
 
     @Override
@@ -45,6 +47,9 @@ public class ProfileActivity extends AppCompatActivity {
         sellerItemsBtn = findViewById(R.id.sellers_items);
         sellerWatchlistBtn = findViewById(R.id.sellers_watchlist);
 
+        toolbar = getSupportActionBar();
+        toolbar.setTitle("");
+        
         onSellerItems = true;
         mContext = this;
         mDisplayedSeller = Parcels.unwrap(getIntent().getParcelableExtra("User"));
@@ -55,9 +60,13 @@ public class ProfileActivity extends AppCompatActivity {
         mAdapter = new UserListAdapter(mContext,
                 new ArrayList<>(mDisplayedSeller.getItems().values()));
 
+        toolbar.setLogo(R.drawable.small_orlyst_logo);
+        toolbar.setDisplayUseLogoEnabled(true);
+        toolbar.setDisplayShowHomeEnabled(true);
         setUpProfilePage();
         setRecyclerView();
         updateRecyclerView();
+
         backBtn.setOnClickListener(v -> {
             Intent backIntent = new Intent();
             setResult(RESULT_OK, backIntent);

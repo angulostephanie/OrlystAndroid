@@ -65,7 +65,9 @@ public class ItemDetailActivity extends AppCompatActivity {
         mAuth = AppData.firebaseAuth;
         mUser = mAuth.getCurrentUser();
         intent = getIntent();
+
         toolbar = getSupportActionBar();
+        toolbar.setTitle("");
 
         itemTitle = findViewById(R.id.detail_item_title);
         itemDescription = findViewById(R.id.item_description_tv);

@@ -111,6 +111,7 @@ public class PostItemActivity extends AppCompatActivity {
         mStorage = AppData.firebaseStorage;
         storageReference = mStorage.getReference();
         toolbar = getSupportActionBar();
+        toolbar.setTitle("");
 
         postBtn = findViewById(R.id.post_btn);
         backBtn = findViewById(R.id.back_btn);
@@ -128,7 +129,7 @@ public class PostItemActivity extends AppCompatActivity {
         toolbar.setLogo(R.drawable.small_orlyst_logo);
         toolbar.setDisplayUseLogoEnabled(true);
         toolbar.setDisplayShowHomeEnabled(true);
-        
+
         updateButtonStatus(false);
         addTextListeners();
         setTouchListeners(findViewById(R.id.post_item_view));
