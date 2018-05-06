@@ -20,9 +20,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -72,6 +74,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     private TextView mUsername;
     private Button userItemsButton;
     private Button watchlistButton;
+    private ImageView profileImageView;
 
     private List<Item> mItems = new ArrayList<>();
     private List<Item> mWatchlist = new ArrayList<>();
@@ -155,6 +158,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         userItemsButton = view.findViewById(R.id.user_items_btn);
         watchlistButton = view.findViewById(R.id.watchlist_btn);
         recyclerView = view.findViewById(R.id.f_profile_recycler_view);
+        profileImageView = view.findViewById(R.id.your_profile_photo);
 
         mContext = getContext();
         mUsername = view.findViewById(R.id.your_username);
@@ -169,6 +173,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         fetchUser();
         setRecyclerView();
         onProfileItemClick();
+        onProfileImageClick();
 
         return view;
     }
@@ -210,6 +215,17 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    private void onProfileImageClick() {
+        profileImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "Profile image has been clicked!");
+                Intent intent = new Intent(getActivity(), TakePhotoActivity.class);
+                intent.putExtra("profilePhoto", true);
+                startActivity(intent);
+            }
+        });
+    }
     private void fetchUser() {
         final DatabaseReference userRef = AppData.firebaseDatabase.getReference("users")
                 .child(mAuth.getCurrentUser().getUid());
@@ -224,6 +240,11 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 mUser = foundUser;
                 Log.d(TAG, "User has " + mItems.size() + " items");
                 Log.d(TAG, "User has " + mWatchlist.size() + " itemson their watchlist");
+
+                if(mUser.getProfilePicture() != null)
+                    fetchProfilePhoto(mUser.getProfilePicture());
+                else
+                    profileImageView.setImageResource(R.drawable.add_prof_image);
                 mItems.sort(Comparator.comparing(Item::getTimestamp));
                 mWatchlist.sort(Comparator.comparing(Item::getTimestamp));
 
@@ -360,20 +381,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                     User user = a.getValue(User.class);
                     users.add(user);
                     Log.d(TAG, "item list size " + user.getItems().values().size());
-                    for(Item item: user.getItems().values()) {
-                        List<String> keys = getAllItemKeys(mItems);
-                        if(!keys.contains(item.getKey())) {
-                            Log.d(TAG, "getting item " + item.getItemName());
-                            mItems.add(item);
-                            Log.d(TAG, "Time stamp = " + item.getTimestamp());
-                            // TODO: add booleans on whether or not item is in watchlist
-                            fetchImage(item);
-                        }
-                    }
                     Log.d(TAG, "hello " + user.getFirst());
                 }
-                mItems.sort(Comparator.comparing(Item::getTimestamp));
-                Collections.reverse(mItems);
                 mAdapter.notifyDataSetChanged();
             }
 
@@ -384,13 +393,39 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         });
         return users;
     }
+    private void fetchProfilePhoto(String key) {
+        StorageReference storageRef = AppData.firebaseStorage.getReference();
+        StorageReference pathRef = storageRef.child("images/");
+        StorageReference imageRef = pathRef.child(key);
+        final long LIMIT = 512 * 512;
+        imageRef.getBytes(LIMIT).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+            @Override
+            public void onSuccess(byte[] bytes) {
 
-    private List<String> getAllItemKeys(List<Item> items) {
-        List<String> keys = new ArrayList<>();
-        for(Item item: items) {
-            keys.add(item.getKey());
-        }
-        return keys;
+                Log.d(TAG, "successfully got the image!");
+                loadProfilePicture(bytes);
+                mAdapter.notifyDataSetChanged();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d(TAG, "No profile pic sady");
+                //test.setImageFound(false);
+
+            }
+        }).addOnCompleteListener(new OnCompleteListener<byte[]>() {
+            @Override
+            public void onComplete(@NonNull Task<byte[]> task) {
+
+            }
+        });
+    }
+    private void loadProfilePicture(byte[] bytes) {
+        Glide.with(mContext)
+                .load(bytes)
+                .asBitmap()
+                .placeholder(R.drawable.loading_spinner)
+                .into(profileImageView);
     }
     /**
      * This interface must be implemented by activities that contain this

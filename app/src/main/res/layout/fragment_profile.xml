@@ -19,7 +19,7 @@
 
 
             <ImageView
-                android:id="@+id/imageView"
+                android:id="@+id/your_profile_photo"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_alignParentStart="true"
@@ -28,6 +28,7 @@
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="12dp"
                 android:src="@drawable/add_prof_image"
+                android:scaleType="centerCrop"
                 android:clickable="true"
                 android:focusable="false"
                 android:contentDescription="@string/profile_pic" />
@@ -36,10 +37,10 @@
                 android:id="@+id/your_username"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/imageView"
+                android:layout_alignTop="@+id/your_profile_photo"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="12dp"
-                android:layout_toEndOf="@+id/imageView"
+                android:layout_toEndOf="@+id/your_profile_photo"
                 android:text="@string/user_name"
                 android:textStyle="bold" />
 

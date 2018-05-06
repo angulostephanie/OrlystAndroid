@@ -22,8 +22,9 @@ public class TakePhotoActivity extends AppCompatActivity
     private static final String TAG = "TakePhotoActivity";
     private ActionBar toolbar;
     private Context mContext;
-    Button cancelBtn;
-    Button nextBtn;
+    private static boolean takingProfilePhoto = false;
+    private Button cancelBtn;
+    private Button nextBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +37,9 @@ public class TakePhotoActivity extends AppCompatActivity
         BottomNavigationView navigation = findViewById(R.id.camera_navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
+        //currentUser = Parcels.unwrap(getIntent().getParcelableExtra("watchlistCurrentUser"));
+        takingProfilePhoto = this.getIntent().getBooleanExtra("profilePhoto", false);
+
         toolbar.setLogo(R.drawable.small_orlyst_logo);
         toolbar.setDisplayUseLogoEnabled(true);
         toolbar.setDisplayShowHomeEnabled(true);
@@ -46,7 +50,7 @@ public class TakePhotoActivity extends AppCompatActivity
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "returning back to main activity (news feed)");
+                Log.d(TAG, "returning back to where it came from (hopefully)");
                 Intent intent = new Intent(mContext, MainActivity.class);
                 startActivity(intent);
             }
@@ -76,6 +80,9 @@ public class TakePhotoActivity extends AppCompatActivity
         }
     };
 
+    public static boolean isTakingProfilePhoto() {
+        return takingProfilePhoto;
+    }
     private void loadFragment(Fragment fragment) {
         // load fragment
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();

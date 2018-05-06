@@ -45,6 +45,7 @@ public class PostItemActivity extends AppCompatActivity {
     private StorageReference storageReference;
     private FirebaseUser mUser;
     private FirebaseAuth mAuth;
+
     private Context mContext;
     private Button postBtn;
     private Button backBtn;
