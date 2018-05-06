@@ -10,8 +10,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
@@ -69,7 +70,7 @@ public class SignUpActivity extends AppCompatActivity {
         updateButtonStatus(false);
         addTextListeners();
         setupFloatingLabelErrors();
-        addFocusListeners();
+        setTouchListeners(findViewById(R.id.sign_up_view));
 
     }
 
@@ -304,56 +305,25 @@ public class SignUpActivity extends AppCompatActivity {
             }
         });
     }
-    private void addFocusListeners() {
-        firstNameText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    Log.d(TAG, "Email has NO focus");
-                    hideKeyboard(v);
-                } else {
-                    getWindow().setSoftInputMode(WindowManager.LayoutParams
-                            .SOFT_INPUT_STATE_VISIBLE|WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-                }
-            }
-        });
-        lastNameText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    Log.d(TAG, "Password has NO focus");
-                    hideKeyboard(v);
-                } else {
-                    getWindow().setSoftInputMode(WindowManager.LayoutParams
-                            .SOFT_INPUT_STATE_VISIBLE|WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-                }
-            }
-        });
-        emailText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    Log.d(TAG, "Email has NO focus");
-                    hideKeyboard(v);
-                } else {
-                    getWindow().setSoftInputMode(WindowManager.LayoutParams
-                            .SOFT_INPUT_STATE_VISIBLE|WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-                }
-            }
-        });
-        passwordText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    Log.d(TAG, "Password has NO focus");
-                    hideKeyboard(v);
-                } else {
-                    getWindow().setSoftInputMode(WindowManager.LayoutParams
-                            .SOFT_INPUT_STATE_VISIBLE|WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+    public void setTouchListeners(View view) {
 
+        // Set up touch listener for non-text box views to hide keyboard.
+        if (!(view instanceof EditText)) {
+            view.setOnTouchListener(new View.OnTouchListener() {
+                public boolean onTouch(View v, MotionEvent event) {
+                    hideKeyboard(view);
+                    return false;
                 }
+            });
+        }
+
+        //If a layout container, iterate over children and seed recursion.
+        if (view instanceof ViewGroup) {
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+                View innerView = ((ViewGroup) view).getChildAt(i);
+                setTouchListeners(innerView);
             }
-        });
+        }
     }
     private void showError() {
         Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);

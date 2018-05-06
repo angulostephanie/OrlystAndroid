@@ -3,6 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/login_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clickable="true"
@@ -12,6 +13,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/mini_relative_layout"
         android:clickable="true"
         android:focusable="true"
         android:focusableInTouchMode="true">
@@ -63,15 +65,15 @@
             android:layout_centerHorizontal="true"
             android:layout_below="@id/mission_statement"
             android:layout_marginTop="20dp"
-            android:layout_marginBottom="10dp">
-            <EditText
+            android:layout_marginBottom="10dp"
+            android:hint="@string/email_hint">
+            <android.support.design.widget.TextInputEditText
                 android:id="@+id/email_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/mission_statement"
                 android:layout_centerHorizontal="true"
                 android:ems="10"
-                android:hint="@string/email_hint"
                 android:inputType="textEmailAddress"
                 android:singleLine="true" />
         </android.support.design.widget.TextInputLayout>
@@ -86,17 +88,17 @@
             android:layout_marginLeft="45dp"
             android:layout_marginRight="45dp"
             android:layout_marginTop="10dp"
+            android:hint="@string/password_hint"
             app:passwordToggleDrawable="@android:drawable/ic_menu_view"
             app:passwordToggleEnabled="true">
 
-            <EditText
+            <android.support.design.widget.TextInputEditText
                 android:id="@+id/password_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/email_text"
                 android:layout_centerHorizontal="true"
                 android:ems="10"
-                android:hint="@string/password_hint"
                 android:inputType="textPassword"
                 android:singleLine="true" />
         </android.support.design.widget.TextInputLayout>

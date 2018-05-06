@@ -10,8 +10,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -123,7 +124,7 @@ public class PostItemActivity extends AppCompatActivity {
 
         updateButtonStatus(false);
         addTextListeners();
-        addFocusListeners();
+        setTouchListeners(findViewById(R.id.post_item_view));
         setThumbnail();
 
         backBtn.setOnClickListener(new View.OnClickListener() {
@@ -275,42 +276,25 @@ public class PostItemActivity extends AppCompatActivity {
             }
         });
     }
-    private void addFocusListeners() {
-        titleText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    hideKeyboard(v);
-                } else {
-                    getWindow().setSoftInputMode(WindowManager.LayoutParams
-                            .SOFT_INPUT_STATE_VISIBLE|WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+    public void setTouchListeners(View view) {
 
+        // Set up touch listener for non-text box views to hide keyboard.
+        if (!(view instanceof EditText)) {
+            view.setOnTouchListener(new View.OnTouchListener() {
+                public boolean onTouch(View v, MotionEvent event) {
+                    hideKeyboard(view);
+                    return false;
                 }
-            }
-        });
-        descriptionText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    hideKeyboard(v);
-                } else {
-                    getWindow().setSoftInputMode(WindowManager.LayoutParams
-                            .SOFT_INPUT_STATE_VISIBLE|WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-                }
-            }
-        });
-        priceText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    hideKeyboard(v);
-                } else {
-                    getWindow().setSoftInputMode(WindowManager.LayoutParams
-                            .SOFT_INPUT_STATE_VISIBLE|WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+            });
+        }
 
-                }
+        //If a layout container, iterate over children and seed recursion.
+        if (view instanceof ViewGroup) {
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+                View innerView = ((ViewGroup) view).getChildAt(i);
+                setTouchListeners(innerView);
             }
-        });
+        }
     }
     private void updateButtonStatus(boolean filled) {
         if(filled) {

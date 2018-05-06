@@ -11,8 +11,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
@@ -57,8 +58,7 @@ public class LoginActivity extends AppCompatActivity {
 
         updateButtonStatus(false);
         addTextListeners();
-        addFocusListeners();
-
+        setTouchListeners(findViewById(R.id.login_view));
         signUpPageBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -181,6 +181,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
+
             }
         });
         final TextInputLayout floatingEmailLabel = findViewById(R.id.user_email_text_input_layout);
@@ -208,40 +209,30 @@ public class LoginActivity extends AppCompatActivity {
             floatingPasswordLabel.setErrorEnabled(true);
         }
     }
-    private void addFocusListeners() {
-        emailText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    Log.d(TAG, "Email has NO focus");
-                    hideKeyboard(v);
-                } else {
-                    getWindow().setSoftInputMode(WindowManager.LayoutParams
-                            .SOFT_INPUT_STATE_VISIBLE|WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-
-                    Log.d(TAG, "Email does have focus");
-                }
-            }
-        });
-        passwordText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    Log.d(TAG, "Password has NO focus");
-                    hideKeyboard(v);
-                } else {
-                    getWindow().setSoftInputMode(WindowManager.LayoutParams
-                            .SOFT_INPUT_STATE_VISIBLE|WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-
-                    Log.d(TAG, "Password does have focus");
-                }
-            }
-        });
-    }
     private void showError() {
         Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
         emailText.startAnimation(shake);
         passwordText.startAnimation(shake);
+    }
+    public void setTouchListeners(View view) {
+
+        // Set up touch listener for non-text box views to hide keyboard.
+        if (!(view instanceof EditText)) {
+            view.setOnTouchListener(new View.OnTouchListener() {
+                public boolean onTouch(View v, MotionEvent event) {
+                    hideKeyboard(view);
+                    return false;
+                }
+            });
+        }
+
+        //If a layout container, iterate over children and seed recursion.
+        if (view instanceof ViewGroup) {
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+                View innerView = ((ViewGroup) view).getChildAt(i);
+                setTouchListeners(innerView);
+            }
+        }
     }
     private void updateButtonStatus(boolean filled) {
         if(filled) {
