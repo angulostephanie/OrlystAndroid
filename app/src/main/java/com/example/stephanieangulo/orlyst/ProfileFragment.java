@@ -26,6 +26,7 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -59,6 +60,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 
     private FirebaseAuth mAuth;
     private User mUser = new User();
+    private FirebaseUser currentUser;
 
     private Context mContext;
     private RecyclerView recyclerView;
@@ -153,6 +155,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         mUsername = view.findViewById(R.id.your_username);
         mAdapter = new UserListAdapter(mContext, mItems);
         mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
 
 
         userItemsButton.setOnClickListener(this);
@@ -297,16 +300,19 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                     Item selectedItem = itemsDisplay.get(position);
                     String sellerID = selectedItem.getSellerID();
                     User selectedUser = null;
-                    for (User user : mUsers) {
-                        if (user.getUserID().equals(sellerID)) {
+                    User userCurrent = null;
+                    for(User user: mUsers) {
+                        if(user.getUserID().equals(currentUser.getUid()))
+                            userCurrent = user;
+                        if(user.getUserID().equals(sellerID))
                             selectedUser = user;
+                        if(selectedUser != null && userCurrent != null)
                             break;
-                        }
                     }
-                    Intent itemIntent = new Intent(mContext, ItemDetailActivity.class);
+                    Intent itemIntent = new Intent(getActivity(), ItemDetailActivity.class);
                     itemIntent.putExtra("Item", Parcels.wrap(selectedItem));
-                    itemIntent.putExtra("User", Parcels.wrap(selectedUser));
-                    itemIntent.putExtra("fromProfile", true);
+                    itemIntent.putExtra("userSeller", Parcels.wrap(selectedUser));
+                    itemIntent.putExtra("userCurrent", Parcels.wrap(userCurrent));
                     PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, itemIntent, 0);
                     NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext, "profile");
                     builder.setContentIntent(pendingIntent);

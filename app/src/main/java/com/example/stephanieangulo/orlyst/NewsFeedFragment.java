@@ -25,6 +25,7 @@ import android.widget.SearchView;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -67,6 +68,7 @@ public class NewsFeedFragment extends Fragment {
     private Context mContext;
     private NewsFeedAdapter mAdapter;
     private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
     private List<Item> mItems = new ArrayList<>();
     private List<User> mUsers = new ArrayList<>();
     private FloatingActionButton addBtn;
@@ -139,6 +141,7 @@ public class NewsFeedFragment extends Fragment {
         recyclerView = view.findViewById(R.id.feed_recycler_view);
         addBtn = view.findViewById(R.id.fabAdd);
         mUsers = fetchUsers();
+        currentUser = mAuth.getCurrentUser();
 
         mAdapter = new NewsFeedAdapter(getActivity(), mItems);
 
@@ -211,15 +214,19 @@ public class NewsFeedFragment extends Fragment {
                     Item selectedItem = mItems.get(position);
                     String sellerID = selectedItem.getSellerID();
                     User selectedUser = null;
+                    User userCurrent = null;
                     for(User user: mUsers) {
-                        if(user.getUserID().equals(sellerID)) {
+                        if(user.getUserID().equals(currentUser.getUid()))
+                            userCurrent = user;
+                        if(user.getUserID().equals(sellerID))
                             selectedUser = user;
+                        if(selectedUser != null && userCurrent != null)
                             break;
-                        }
                     }
                     Intent itemIntent = new Intent(getActivity(), ItemDetailActivity.class);
                     itemIntent.putExtra("Item", Parcels.wrap(selectedItem));
-                    itemIntent.putExtra("User", Parcels.wrap(selectedUser));
+                    itemIntent.putExtra("userSeller", Parcels.wrap(selectedUser));
+                    itemIntent.putExtra("userCurrent", Parcels.wrap(userCurrent));
                     PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, itemIntent, 0);
                     NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext, "newsfeed");
                     builder.setContentIntent(pendingIntent);
