@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -40,6 +41,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private boolean isEmailFilled = false;
     private boolean isPasswordFilled = false;
+    private boolean invalidCreds = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,8 +66,6 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(signUpPageIntent);
             }
         });
-
-
     }
 
     @Override
@@ -103,6 +103,7 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                     @Override
                     public void onSuccess(AuthResult authResult) {
+                        invalidCreds = false;
                         FirebaseUser user = authResult.getUser();
                         Log.d(TAG, "signInWithEmail:success, welcome " + user.getEmail());
                         startActivity(newsFeedIntent);
@@ -113,6 +114,8 @@ public class LoginActivity extends AppCompatActivity {
                         if(e instanceof FirebaseAuthInvalidCredentialsException) {
                             Log.d(TAG, "YEEEEEEEET");
                             showError();
+                            invalidCreds = true;
+                            setupFloatingLabelErrors();
                         }
                         Log.d(TAG, "Error " + e.getClass());
                     }
@@ -159,6 +162,51 @@ public class LoginActivity extends AppCompatActivity {
 
             }
         });
+    }
+    private void setupFloatingLabelErrors() {
+        final TextInputLayout floatingPasswordLabel = findViewById(R.id.user_password_text_input_layout);
+        floatingPasswordLabel.getEditText().addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence text, int start, int count, int after) {
+                if(text.toString().length() > 0) {
+                    invalidCreds = false;
+                    floatingPasswordLabel.setErrorEnabled(false);
+                }
+            }
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count,
+                                          int after) {
+                // TODO Auto-generated method stub
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+        final TextInputLayout floatingEmailLabel = findViewById(R.id.user_email_text_input_layout);
+        floatingEmailLabel.getEditText().addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence text, int start, int count, int after) {
+                if(text.toString().length() > 0) {
+                    invalidCreds = false;
+                    floatingPasswordLabel.setErrorEnabled(false);
+                }
+            }
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count,
+                                          int after) {
+                // TODO Auto-generated method stub
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        if(invalidCreds) {
+            floatingPasswordLabel.setError(getString(R.string.invalid_creds));
+            floatingPasswordLabel.setErrorEnabled(true);
+        }
     }
     private void addFocusListeners() {
         emailText.setOnFocusChangeListener(new View.OnFocusChangeListener() {

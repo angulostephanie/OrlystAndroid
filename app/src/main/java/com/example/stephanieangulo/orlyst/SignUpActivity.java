@@ -50,6 +50,7 @@ public class SignUpActivity extends AppCompatActivity {
     private boolean isLastFilled = false;
     private boolean isEmailFilled = false;
     private boolean isPasswordFilled = false;
+    private boolean userAlreadyExists = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +107,7 @@ public class SignUpActivity extends AppCompatActivity {
                 if(e instanceof FirebaseAuthUserCollisionException) {
                     Log.d(TAG, "User already exists in DB!");
                     showError();
+                    userAlreadyExists = true;
                 }
                 Log.w(TAG, "createUserWithEmail:failure" + e.getMessage());
                 Toast.makeText(mContext, "Authentication failed.",
@@ -122,6 +124,7 @@ public class SignUpActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence text, int start, int count, int after) {
                 //@oxy.edu 8
+                userAlreadyExists = false;
                 int length = text.length();
                 String email = text.toString();
                 if(length > 8) {
@@ -152,7 +155,7 @@ public class SignUpActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence text, int start, int count, int after) {
                 int length = text.length();
-                String password = text.toString();
+                userAlreadyExists = false;
                 if(length > 0 && length < 6) {
                     floatingPasswordLabel.setError(getString(R.string.password_length_alert));
                     floatingPasswordLabel.setErrorEnabled(true);
@@ -171,6 +174,10 @@ public class SignUpActivity extends AppCompatActivity {
 
             }
         });
+        if(userAlreadyExists) {
+            floatingEmailLabel.setError(getString(R.string.user_exists));
+            floatingEmailLabel.setErrorEnabled(true);
+        }
     }
     private void writeNewUser(FirebaseUser user, String first, String last) {
         // make a UserProfile, needed for Firebase Authentication
@@ -212,6 +219,7 @@ public class SignUpActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                userAlreadyExists = false;
                 isFirstFilled = s.length() != 0;
 
                 updateButtonStatus(isFirstFilled && isLastFilled &&
@@ -235,6 +243,7 @@ public class SignUpActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                userAlreadyExists = false;
                 isLastFilled = s.length() != 0;
 
                 updateButtonStatus(isFirstFilled && isLastFilled &&
