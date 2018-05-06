@@ -32,7 +32,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="55dp"
             android:fontFamily="sans-serif-smallcaps"
-            android:text="Create an Orlyst Account"
+            android:text="@string/create_an_orlyst_account"
             android:textAllCaps="true"
             android:textColor="@android:color/black"
             android:textSize="45sp"

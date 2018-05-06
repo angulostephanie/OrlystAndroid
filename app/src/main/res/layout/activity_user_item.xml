@@ -16,7 +16,8 @@
         android:layout_marginStart="6dp"
         android:layout_marginTop="6dp"
         android:scaleType="fitCenter"
-        app:srcCompat="@drawable/loading_spinner" />
+        app:srcCompat="@drawable/loading_spinner"
+        android:contentDescription="@string/item_image" />
 
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -33,7 +34,7 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="3dp"
-            android:text="Name of item"
+            android:text="@string/name_of_item"
             android:textSize="17sp" />
         <TextView
             android:id="@+id/itemPrice"
@@ -46,7 +47,7 @@
             android:layout_marginTop="3dp"
             android:layout_alignStart="@id/itemTitle"
             android:maxLines="3"
-            android:text="Price"
+            android:text="@string/price"
             android:textStyle="italic"
             android:textSize="13sp" />
         <!--<TextView-->
@@ -72,7 +73,7 @@
             android:layout_marginTop="3dp"
             android:layout_alignStart="@id/itemTitle"
             android:maxLines="3"
-            android:text="Category"
+            android:text="@string/category"
             android:textColor="@color/colorAccent"
             android:textSize="13sp" />
 
@@ -87,7 +88,7 @@
             android:layout_marginTop="3dp"
             android:layout_alignStart="@id/itemTitle"
             android:maxLines="3"
-            android:text="Name of user selling"
+            android:text="@string/name_of_user_selling"
             android:textSize="13sp" />
 
         <TextView

@@ -21,7 +21,7 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:fontFamily="sans-serif-smallcaps"
-            android:text="Back"
+            android:text="@string/back"
             android:textColor="@android:color/black"
             android:textStyle="bold" />
 
@@ -33,7 +33,7 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
             android:fontFamily="sans-serif-smallcaps"
-            android:text="Post"
+            android:text="@string/post"
             android:onClick="onPost"
             android:textColor="@android:color/holo_blue_dark"
             android:textStyle="bold" />
@@ -44,7 +44,8 @@
             android:layout_height="250dp"
             android:layout_below="@+id/back_btn"
             android:layout_centerHorizontal="true"
-            app:srcCompat="@android:color/holo_orange_light" />
+            app:srcCompat="@android:color/holo_orange_light"
+            android:contentDescription="@string/item_image" />
 
         <EditText
             android:id="@+id/post_item_title"
@@ -53,7 +54,7 @@
             android:layout_below="@+id/post_item_image"
             android:layout_centerHorizontal="true"
             android:ems="10"
-            android:hint="Title of item"
+            android:hint="@string/title_of_item"
             android:inputType="textPersonName"
             android:layout_marginTop="5dp" />
 
@@ -65,7 +66,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="57dp"
             android:ems="10"
-            android:hint="Price"
+            android:hint="@string/price"
             android:inputType="numberDecimal" />
 
         <EditText
@@ -76,7 +77,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="5dp"
             android:ems="10"
-            android:hint="Description of item"
+            android:hint="@string/description_of_item"
             android:inputType="textPersonName" />
 
         <RadioGroup
@@ -93,7 +94,7 @@
                 android:layout_height="wrap_content"
                 android:padding="2dp"
                 android:layout_weight="1"
-                android:text="Books" />
+                android:text="@string/books" />
 
             <RadioButton
                 android:id="@+id/clothesBtn"
@@ -101,7 +102,7 @@
                 android:layout_height="wrap_content"
                 android:padding="2dp"
                 android:layout_weight="1"
-                android:text="Clothes" />
+                android:text="@string/clothes" />
 
             <RadioButton
                 android:id="@+id/electronicsBtn"
@@ -109,7 +110,7 @@
                 android:layout_height="wrap_content"
                 android:padding="2dp"
                 android:layout_weight="1"
-                android:text="Electronics" />
+                android:text="@string/electronics" />
         </RadioGroup>
         <RadioGroup
             android:id="@+id/categories2"
@@ -124,7 +125,7 @@
                 android:layout_height="wrap_content"
                 android:padding="2dp"
                 android:layout_weight="1"
-                android:text="Supplies" />
+                android:text="@string/supplies" />
 
             <RadioButton
                 android:id="@+id/servicesBtn"
@@ -132,7 +133,7 @@
                 android:layout_height="wrap_content"
                 android:padding="2dp"
                 android:layout_weight="1"
-                android:text="Services" />
+                android:text="@string/services" />
 
             <RadioButton
                 android:id="@+id/otherBtn"
@@ -141,7 +142,7 @@
                 android:padding="2dp"
                 android:layout_weight="1"
                 android:checked="true"
-                android:text="Other" />
+                android:text="@string/other" />
         </RadioGroup>
     </RelativeLayout>
 </ScrollView>

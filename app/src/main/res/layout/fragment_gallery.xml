@@ -26,7 +26,8 @@
             android:layout_height="350dp"
             android:layout_below="@+id/next_btn"
             android:layout_centerHorizontal="true"
-            android:src="@drawable/loading_spinner" />
+            android:src="@drawable/loading_spinner"
+            android:contentDescription="@string/selected_gallery_image" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/gallery_recycler_view"

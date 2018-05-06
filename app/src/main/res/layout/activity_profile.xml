@@ -33,7 +33,7 @@
                 android:layout_alignTop="@+id/seller_profile_image"
                 android:layout_marginStart="20dp"
                 android:layout_toEndOf="@+id/seller_profile_image"
-                android:text="Seller's Name"
+                android:text="@string/seller_s_name"
                 android:textStyle="bold" />
 
         </RelativeLayout>
@@ -48,14 +48,14 @@
                 android:id="@+id/sellers_items"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Their Items"
+                android:text="@string/their_items"
                 android:layout_weight="1" />
 
             <Button
                 android:id="@+id/sellers_watchlist"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Watchlist"
+                android:text="@string/watchlist"
                 android:layout_weight="1" />
 
         </LinearLayout>

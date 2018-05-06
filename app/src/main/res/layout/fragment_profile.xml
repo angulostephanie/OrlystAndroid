@@ -26,7 +26,8 @@
                 android:layout_alignParentTop="true"
                 android:layout_marginStart="12dp"
                 android:layout_marginTop="12dp"
-                android:src="@mipmap/ic_launcher" />
+                android:src="@mipmap/ic_launcher"
+                android:contentDescription="@string/profile_pic" />
 
             <TextView
                 android:id="@+id/your_username"
@@ -35,7 +36,7 @@
                 android:layout_alignTop="@+id/imageView"
                 android:layout_marginStart="20dp"
                 android:layout_toEndOf="@+id/imageView"
-                android:text="User Name"
+                android:text="@string/user_name"
                 android:textStyle="bold" />
 
         </RelativeLayout>
@@ -50,14 +51,14 @@
                 android:id="@+id/user_items_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="My Items"
+                android:text="@string/my_items"
                 android:layout_weight="1" />
 
             <Button
                 android:id="@+id/watchlist_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Watchlist"
+                android:text="@string/watchlist"
                 android:layout_weight="1" />
 
         </LinearLayout>
