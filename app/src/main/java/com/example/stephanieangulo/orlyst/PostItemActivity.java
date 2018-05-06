@@ -1,5 +1,6 @@
 package com.example.stephanieangulo.orlyst;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +11,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -120,6 +123,7 @@ public class PostItemActivity extends AppCompatActivity {
 
         updateButtonStatus(false);
         addTextListeners();
+        addFocusListeners();
         setThumbnail();
 
         backBtn.setOnClickListener(new View.OnClickListener() {
@@ -225,6 +229,10 @@ public class PostItemActivity extends AppCompatActivity {
             startActivity(intent);
         }
     }
+    private void hideKeyboard(View view) {
+        InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
     private void addTextListeners() {
         titleText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -264,6 +272,43 @@ public class PostItemActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
 
+            }
+        });
+    }
+    private void addFocusListeners() {
+        titleText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                } else {
+                    getWindow().setSoftInputMode(WindowManager.LayoutParams
+                            .SOFT_INPUT_STATE_VISIBLE|WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+
+                }
+            }
+        });
+        descriptionText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                } else {
+                    getWindow().setSoftInputMode(WindowManager.LayoutParams
+                            .SOFT_INPUT_STATE_VISIBLE|WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+                }
+            }
+        });
+        priceText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                } else {
+                    getWindow().setSoftInputMode(WindowManager.LayoutParams
+                            .SOFT_INPUT_STATE_VISIBLE|WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+
+                }
             }
         });
     }

@@ -1,5 +1,6 @@
 package com.example.stephanieangulo.orlyst;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,14 +11,21 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 
@@ -26,6 +34,7 @@ import java.util.Map;
 public class SignUpActivity extends AppCompatActivity {
     private static final String TAG = "SignUpActivity";
     private static final String OXY_EMAIL = "@oxy.edu";
+
     // entry point of Firebase Auth SDK
     private FirebaseAuth mAuth;
 
@@ -59,9 +68,53 @@ public class SignUpActivity extends AppCompatActivity {
         updateButtonStatus(false);
         addTextListeners();
         setupFloatingLabelErrors();
+        addFocusListeners();
 
     }
 
+    public void onSignUpBack(View view) {
+        Intent intent =  new Intent(mContext, LoginActivity.class);
+        startActivity(intent);
+    }
+    public void onSignUp(View view) {
+        // only let users click sign up when button status is enabled
+        if(signUpBtn.isEnabled()) {
+            signUp();
+        } else {
+            Log.d(TAG, "can't click on sign up, complete all fields!");
+        }
+    }
+    private void signUp() {
+        final String firstName = firstNameText.getText().toString();
+        final String lastName = lastNameText.getText().toString();
+        String email = emailText.getText().toString();
+        String password = passwordText.getText().toString();
+
+        final Intent newsFeedIntent = new Intent(mContext, MainActivity.class);
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                    @Override
+                    public void onSuccess(AuthResult authResult) {
+                        Log.d(TAG, "createUserWithEmail:success");
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        writeNewUser(user, firstName, lastName);
+                        startActivity(newsFeedIntent);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                if(e instanceof FirebaseAuthUserCollisionException) {
+                    Log.d(TAG, "User already exists in DB!");
+                    showError();
+                }
+                Log.w(TAG, "createUserWithEmail:failure" + e.getMessage());
+                Toast.makeText(mContext, "Authentication failed.",
+                        Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+    }
     private void setupFloatingLabelErrors() {
         final TextInputLayout floatingEmailLabel = findViewById(R.id.email_text_input_layout);
         floatingEmailLabel.getEditText().addTextChangedListener(new TextWatcher() {
@@ -119,47 +172,6 @@ public class SignUpActivity extends AppCompatActivity {
             }
         });
     }
-
-    public void onSignUpBack(View view) {
-        Intent intent =  new Intent(mContext, LoginActivity.class);
-        startActivity(intent);
-    }
-    public void onSignUp(View view) {
-        // only let users click sign up when button status is enabled
-        if(signUpBtn.isEnabled()) {
-            signUp();
-        } else {
-            Log.d(TAG, "can't click on sign up, complete all fields!");
-        }
-    }
-    private void signUp() {
-        final String firstName = firstNameText.getText().toString();
-        final String lastName = lastNameText.getText().toString();
-        String email = emailText.getText().toString();
-        String password = passwordText.getText().toString();
-
-        final Intent newsFeedIntent = new Intent(mContext, MainActivity.class);
-        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    // Sign in success, update UI with the signed-in user's information
-                    Log.d(TAG, "createUserWithEmail:success");
-                    FirebaseUser user = mAuth.getCurrentUser();
-                    writeNewUser(user, firstName, lastName);
-                    startActivity(newsFeedIntent);
-                } else {
-                    // If sign in fails, display a message to the user.
-                    // TODO: if email already exists in database (FirebaseAuthUserCollisionException)
-                    Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                    Toast.makeText(mContext, "Authentication failed.",
-                            Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-    }
-
     private void writeNewUser(FirebaseUser user, String first, String last) {
         // make a UserProfile, needed for Firebase Authentication
         UserProfileChangeRequest newProfile = new UserProfileChangeRequest.Builder()
@@ -184,7 +196,10 @@ public class SignUpActivity extends AppCompatActivity {
         Map<String, Object> userValues = newUser.toMap();
         AppData.userRootReference.child(user.getUid()).setValue(userValues);
     }
-
+    private void hideKeyboard(View view) {
+        InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
     private void addTextListeners() {
         firstNameText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -280,7 +295,64 @@ public class SignUpActivity extends AppCompatActivity {
             }
         });
     }
+    private void addFocusListeners() {
+        firstNameText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    Log.d(TAG, "Email has NO focus");
+                    hideKeyboard(v);
+                } else {
+                    getWindow().setSoftInputMode(WindowManager.LayoutParams
+                            .SOFT_INPUT_STATE_VISIBLE|WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+                }
+            }
+        });
+        lastNameText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    Log.d(TAG, "Password has NO focus");
+                    hideKeyboard(v);
+                } else {
+                    getWindow().setSoftInputMode(WindowManager.LayoutParams
+                            .SOFT_INPUT_STATE_VISIBLE|WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+                }
+            }
+        });
+        emailText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    Log.d(TAG, "Email has NO focus");
+                    hideKeyboard(v);
+                } else {
+                    getWindow().setSoftInputMode(WindowManager.LayoutParams
+                            .SOFT_INPUT_STATE_VISIBLE|WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+                }
+            }
+        });
+        passwordText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    Log.d(TAG, "Password has NO focus");
+                    hideKeyboard(v);
+                } else {
+                    getWindow().setSoftInputMode(WindowManager.LayoutParams
+                            .SOFT_INPUT_STATE_VISIBLE|WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
+                }
+            }
+        });
+    }
+    private void showError() {
+        Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
+        firstNameText.startAnimation(shake);
+        lastNameText.startAnimation(shake);
+        emailText.startAnimation(shake);
+        passwordText.startAnimation(shake);
+    }
     private void updateButtonStatus(boolean filled) {
         if(filled) {
             signUpBtn.setClickable(true);

@@ -1,141 +1,146 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent" android:layout_height="match_parent">
-
-    <Button
-        android:id="@+id/back_btn"
-        style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="wrap_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clickable="true"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:fontFamily="sans-serif-smallcaps"
-        android:text="Back"
-        android:textColor="@android:color/black"
-        android:textStyle="bold" />
-
-    <Button
-        android:id="@+id/post_btn"
-        style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        android:fontFamily="sans-serif-smallcaps"
-        android:text="Post"
-        android:onClick="onPost"
-        android:textColor="@android:color/holo_blue_dark"
-        android:textStyle="bold" />
-
-    <ImageView
-        android:id="@+id/post_item_image"
-        android:layout_width="250dp"
-        android:layout_height="250dp"
-        android:layout_below="@+id/back_btn"
-        android:layout_centerHorizontal="true"
-        app:srcCompat="@android:color/holo_orange_light" />
-
-    <EditText
-        android:id="@+id/post_item_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/post_item_image"
-        android:layout_centerHorizontal="true"
-        android:ems="10"
-        android:hint="Title of item"
-        android:inputType="textPersonName"
-        android:layout_marginTop="5dp" />
-
-    <EditText
-        android:id="@+id/post_item_price"
-        android:layout_width="119dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/post_item_description"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="57dp"
-        android:ems="10"
-        android:hint="Price"
-        android:inputType="numberDecimal" />
-
-    <EditText
-        android:id="@+id/post_item_description"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/post_item_title"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="5dp"
-        android:ems="10"
-        android:hint="Description of item"
-        android:inputType="textPersonName" />
-
-    <RadioGroup
-        android:id="@+id/categories1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/post_item_price"
-        android:layout_centerHorizontal="true"
-        android:orientation="horizontal">
-
-        <RadioButton
-            android:id="@+id/booksBtn"
+        android:clickable="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+        <Button
+            android:id="@+id/back_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="2dp"
-            android:layout_weight="1"
-            android:text="Books" />
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:fontFamily="sans-serif-smallcaps"
+            android:text="Back"
+            android:textColor="@android:color/black"
+            android:textStyle="bold" />
 
-        <RadioButton
-            android:id="@+id/clothesBtn"
+        <Button
+            android:id="@+id/post_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="2dp"
-            android:layout_weight="1"
-            android:text="Clothes" />
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:fontFamily="sans-serif-smallcaps"
+            android:text="Post"
+            android:onClick="onPost"
+            android:textColor="@android:color/holo_blue_dark"
+            android:textStyle="bold" />
 
-        <RadioButton
-            android:id="@+id/electronicsBtn"
+        <ImageView
+            android:id="@+id/post_item_image"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:layout_below="@+id/back_btn"
+            android:layout_centerHorizontal="true"
+            app:srcCompat="@android:color/holo_orange_light" />
+
+        <EditText
+            android:id="@+id/post_item_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="2dp"
-            android:layout_weight="1"
-            android:text="Electronics" />
-    </RadioGroup>
-    <RadioGroup
-        android:id="@+id/categories2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/categories1"
-        android:layout_centerHorizontal="true"
-        android:orientation="horizontal">
-        <RadioButton
-            android:id="@+id/suppliesBtn"
+            android:layout_below="@+id/post_item_image"
+            android:layout_centerHorizontal="true"
+            android:ems="10"
+            android:hint="Title of item"
+            android:inputType="textPersonName"
+            android:layout_marginTop="5dp" />
+
+        <EditText
+            android:id="@+id/post_item_price"
+            android:layout_width="119dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/post_item_description"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="57dp"
+            android:ems="10"
+            android:hint="Price"
+            android:inputType="numberDecimal" />
+
+        <EditText
+            android:id="@+id/post_item_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="2dp"
-            android:layout_weight="1"
-            android:text="Supplies" />
+            android:layout_below="@+id/post_item_title"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"
+            android:ems="10"
+            android:hint="Description of item"
+            android:inputType="textPersonName" />
 
-        <RadioButton
-            android:id="@+id/servicesBtn"
+        <RadioGroup
+            android:id="@+id/categories1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="2dp"
-            android:layout_weight="1"
-            android:text="Services" />
+            android:layout_below="@+id/post_item_price"
+            android:layout_centerHorizontal="true"
+            android:orientation="horizontal">
 
-        <RadioButton
-            android:id="@+id/otherBtn"
+            <RadioButton
+                android:id="@+id/booksBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="2dp"
+                android:layout_weight="1"
+                android:text="Books" />
+
+            <RadioButton
+                android:id="@+id/clothesBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="2dp"
+                android:layout_weight="1"
+                android:text="Clothes" />
+
+            <RadioButton
+                android:id="@+id/electronicsBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="2dp"
+                android:layout_weight="1"
+                android:text="Electronics" />
+        </RadioGroup>
+        <RadioGroup
+            android:id="@+id/categories2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="2dp"
-            android:layout_weight="1"
-            android:checked="true"
-            android:text="Other" />
-    </RadioGroup>
+            android:layout_below="@+id/categories1"
+            android:layout_centerHorizontal="true"
+            android:orientation="horizontal">
+            <RadioButton
+                android:id="@+id/suppliesBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="2dp"
+                android:layout_weight="1"
+                android:text="Supplies" />
 
+            <RadioButton
+                android:id="@+id/servicesBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="2dp"
+                android:layout_weight="1"
+                android:text="Services" />
 
-
-
-
-</RelativeLayout>
+            <RadioButton
+                android:id="@+id/otherBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="2dp"
+                android:layout_weight="1"
+                android:checked="true"
+                android:text="Other" />
+        </RadioGroup>
+    </RelativeLayout>
+</ScrollView>

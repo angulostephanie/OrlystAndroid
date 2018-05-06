@@ -15,36 +15,29 @@
         android:hardwareAccelerated="true"
         android:largeHeap="true">
         <activity
-            android:name=".MainActivity"
-            android:windowSoftInputMode="adjustPan|adjustResize">
+            android:name=".MainActivity">
         </activity>
         <activity
-            android:name=".SignUpActivity"
-            android:windowSoftInputMode="adjustPan|adjustResize">
+            android:name=".SignUpActivity">
         </activity>
         <activity
-            android:name=".LoginActivity"
-            android:windowSoftInputMode="adjustPan|adjustResize">
+            android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".ItemDetailActivity"
-            android:windowSoftInputMode="adjustPan|adjustResize">
+            android:name=".ItemDetailActivity">
         </activity>
         <activity
-            android:name=".TakePhotoActivity"
-            android:windowSoftInputMode="adjustPan|adjustResize">
+            android:name=".TakePhotoActivity">
         </activity>
         <activity
-            android:name=".PostItemActivity"
-            android:windowSoftInputMode="adjustPan|adjustResize">
+            android:name=".PostItemActivity">
         </activity>
         <activity
-            android:name=".ProfileActivity"
-            android:windowSoftInputMode="adjustPan|adjustResize">
+            android:name=".ProfileActivity">
         </activity>
     </application>
 

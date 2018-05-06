@@ -1,5 +1,7 @@
 package com.example.stephanieangulo.orlyst;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,16 +11,21 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseUser;
 
+@SuppressLint("ClickableViewAccessibility")
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
 
@@ -48,6 +55,7 @@ public class LoginActivity extends AppCompatActivity {
 
         updateButtonStatus(false);
         addTextListeners();
+        addFocusListeners();
 
         signUpPageBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,7 +73,12 @@ public class LoginActivity extends AppCompatActivity {
         super.onStart();
         updateUI();
     }
-
+    public void onLogin(View view) {
+        // only let users click sign up when button status is enabled
+        if(loginBtn.isEnabled()) {
+            login();
+        }
+    }
     private void updateUI() {
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
@@ -78,39 +91,33 @@ public class LoginActivity extends AppCompatActivity {
             Log.d(TAG, "No user signed in");
         }
     }
-
-    public void onLogin(View view) {
-        // only let users click sign up when button status is enabled
-        if(loginBtn.isEnabled()) {
-            login();
-        }
+    private void hideKeyboard(View view) {
+        InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
-
     private void login() {
         String email = emailText.getText().toString();
         String password = passwordText.getText().toString();
         final Intent newsFeedIntent = new Intent(mContext, MainActivity.class);
         mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                     @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithEmail:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            startActivity(newsFeedIntent);
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            // TODO: make password box red when password incorrect? (firebaseAuthInvalidCredentialsException)
-                            // TODO: allow user to request password change after 3 incorrect tries?
-                            Log.w(TAG, "signInWithEmail:failure", task.getException());
-                            Toast.makeText(mContext, "Login failed.",
-                                    Toast.LENGTH_SHORT).show();
+                    public void onSuccess(AuthResult authResult) {
+                        FirebaseUser user = authResult.getUser();
+                        Log.d(TAG, "signInWithEmail:success, welcome " + user.getEmail());
+                        startActivity(newsFeedIntent);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        if(e instanceof FirebaseAuthInvalidCredentialsException) {
+                            Log.d(TAG, "YEEEEEEEET");
+                            showError();
                         }
+                        Log.d(TAG, "Error " + e.getClass());
                     }
                 });
     }
-
     private void addTextListeners() {
         emailText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -153,7 +160,41 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
+    private void addFocusListeners() {
+        emailText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    Log.d(TAG, "Email has NO focus");
+                    hideKeyboard(v);
+                } else {
+                    getWindow().setSoftInputMode(WindowManager.LayoutParams
+                            .SOFT_INPUT_STATE_VISIBLE|WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
+                    Log.d(TAG, "Email does have focus");
+                }
+            }
+        });
+        passwordText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    Log.d(TAG, "Password has NO focus");
+                    hideKeyboard(v);
+                } else {
+                    getWindow().setSoftInputMode(WindowManager.LayoutParams
+                            .SOFT_INPUT_STATE_VISIBLE|WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+
+                    Log.d(TAG, "Password does have focus");
+                }
+            }
+        });
+    }
+    private void showError() {
+        Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
+        emailText.startAnimation(shake);
+        passwordText.startAnimation(shake);
+    }
     private void updateButtonStatus(boolean filled) {
         if(filled) {
             loginBtn.setClickable(true);
