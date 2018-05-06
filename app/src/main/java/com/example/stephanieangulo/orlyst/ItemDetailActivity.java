@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -76,7 +77,6 @@ public class ItemDetailActivity extends AppCompatActivity {
         updateButtons();
         onItemSellerName();
 
-
         backBtn.setOnClickListener(v -> {
             Intent backIntent = new Intent();
             setResult(Activity.RESULT_CANCELED, backIntent);
@@ -107,7 +107,6 @@ public class ItemDetailActivity extends AppCompatActivity {
 
     private void updateButtonsIfNotOwned(){
         onAddToWatchlist();
-
         contactBtn.setOnClickListener(v -> {
             String[] emailAddress = new String[1];
             emailAddress[0] = displayedItem.getEmail();
