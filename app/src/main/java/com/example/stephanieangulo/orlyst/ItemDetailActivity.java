@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -48,6 +49,7 @@ public class ItemDetailActivity extends AppCompatActivity {
     private Button topBtn;
     private Button bottomBtn;
     private Intent intent;
+    private ActionBar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +60,7 @@ public class ItemDetailActivity extends AppCompatActivity {
         mAuth = AppData.firebaseAuth;
         mUser = mAuth.getCurrentUser();
         intent = getIntent();
+        toolbar = getSupportActionBar();
 
         itemTitle = findViewById(R.id.detail_item_title);
         itemDescription = findViewById(R.id.item_description_tv);
@@ -77,6 +80,10 @@ public class ItemDetailActivity extends AppCompatActivity {
         itemRef = AppData.firebaseDatabase.getReference("users")
                 .child(userSeller.getUserID()).child("items").child(displayedItem.getKey());
 
+
+        toolbar.setLogo(R.drawable.small_orlyst_logo);
+        toolbar.setDisplayUseLogoEnabled(true);
+        toolbar.setDisplayShowHomeEnabled(true);
 
         setUpDetailPage();
         updateButtons();

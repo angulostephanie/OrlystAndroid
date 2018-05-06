@@ -33,6 +33,9 @@ public class MainActivity extends AppCompatActivity
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
+        toolbar.setLogo(R.drawable.small_orlyst_logo);
+        toolbar.setDisplayUseLogoEnabled(true);
+        toolbar.setDisplayShowHomeEnabled(true);
         Intent intent = getIntent();
         int RESULT_CODE = intent.getIntExtra("RESULT_CODE", 0);
         if(RESULT_CODE == 234){

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -51,6 +52,7 @@ public class PostItemActivity extends AppCompatActivity {
     private EditText titleText;
     private EditText descriptionText;
     private EditText priceText;
+    private ActionBar toolbar;
     private RadioGroup firstCategory;
     private RadioGroup secondCategory;
 
@@ -108,6 +110,7 @@ public class PostItemActivity extends AppCompatActivity {
         mUserReference = AppData.getItemReference(mUser.getUid());
         mStorage = AppData.firebaseStorage;
         storageReference = mStorage.getReference();
+        toolbar = getSupportActionBar();
 
         postBtn = findViewById(R.id.post_btn);
         backBtn = findViewById(R.id.back_btn);
@@ -122,6 +125,10 @@ public class PostItemActivity extends AppCompatActivity {
         firstCategory.setOnCheckedChangeListener(listener1);
         secondCategory.setOnCheckedChangeListener(listener2);
 
+        toolbar.setLogo(R.drawable.small_orlyst_logo);
+        toolbar.setDisplayUseLogoEnabled(true);
+        toolbar.setDisplayShowHomeEnabled(true);
+        
         updateButtonStatus(false);
         addTextListeners();
         setTouchListeners(findViewById(R.id.post_item_view));
