@@ -37,7 +37,9 @@ import org.parceler.Parcels;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -71,6 +73,7 @@ public class NewsFeedFragment extends Fragment {
     private FirebaseUser currentUser;
     private List<Item> mItems = new ArrayList<>();
     private List<User> mUsers = new ArrayList<>();
+    private Map<String, Item> watchlistCurrentUser = new HashMap<>();
     private FloatingActionButton addBtn;
 
 
@@ -142,6 +145,7 @@ public class NewsFeedFragment extends Fragment {
         addBtn = view.findViewById(R.id.fabAdd);
         mUsers = fetchUsers();
         currentUser = mAuth.getCurrentUser();
+
 
         mAdapter = new NewsFeedAdapter(getActivity(), mItems);
 
@@ -223,10 +227,12 @@ public class NewsFeedFragment extends Fragment {
                         if(selectedUser != null && userCurrent != null)
                             break;
                     }
+
+                    watchlistCurrentUser = userCurrent.getWatchlist();
                     Intent itemIntent = new Intent(getActivity(), ItemDetailActivity.class);
                     itemIntent.putExtra("Item", Parcels.wrap(selectedItem));
                     itemIntent.putExtra("userSeller", Parcels.wrap(selectedUser));
-                    itemIntent.putExtra("userCurrent", Parcels.wrap(userCurrent));
+                    itemIntent.putExtra("watchlistCurrentUser", Parcels.wrap(watchlistCurrentUser));
                     PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, itemIntent, 0);
                     NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext, "newsfeed");
                     builder.setContentIntent(pendingIntent);

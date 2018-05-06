@@ -27,6 +27,9 @@ import com.google.firebase.database.ValueEventListener;
 
 import org.parceler.Parcels;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ItemDetailActivity extends AppCompatActivity {
     private static final String TAG = ItemDetailActivity.class.getSimpleName();
     private static final int ITEM_DELETE_RESULT_CODE = 3;
@@ -36,8 +39,10 @@ public class ItemDetailActivity extends AppCompatActivity {
     private FirebaseUser mUser;
     private FirebaseAuth mAuth;
     private DatabaseReference itemRef;
+    private DatabaseReference watchlistRef;
     private Item displayedItem;
     private User userSeller;
+    private Map<String, Item> watchlistCurrentUser = new HashMap<>();
     private TextView itemTitle;
     private TextView itemDescription;
     private TextView itemSeller;
@@ -70,12 +75,15 @@ public class ItemDetailActivity extends AppCompatActivity {
         backBtn = findViewById(R.id.detail_back_btn);
 
         displayedItem = Parcels.unwrap(getIntent().getParcelableExtra("Item"));
-        userSeller = Parcels.unwrap(getIntent().getParcelableExtra("User"));
+        userSeller = Parcels.unwrap(getIntent().getParcelableExtra("userSeller"));
+        watchlistCurrentUser = Parcels.unwrap(getIntent().getParcelableExtra("watchlistCurrentUser"));
         //fromNewsfeed = intent.getBooleanExtra("fromNewsfeed", false);
         //fromProfile = intent.getBooleanExtra("fromProfile", false);
 
         itemRef = AppData.firebaseDatabase.getReference("users")
                 .child(userSeller.getUserID()).child("items").child(displayedItem.getKey());
+        watchlistRef = AppData.firebaseDatabase.getReference("users")
+                .child(mUser.getUid()).child("watchlist").child(displayedItem.getKey());
 
 
         setUpDetailPage();
@@ -162,17 +170,35 @@ public class ItemDetailActivity extends AppCompatActivity {
         });
     }
     private void setUpWatchlistBtn() {
-        topBtn.setOnClickListener(v -> {
-            if(topBtn.getText().toString().equals(EDIT_TEXT)) {
-                Log.d(TAG, "This is your item!");
+            if(watchlistCurrentUser.containsKey(displayedItem.getKey())) {
+                setUpRemoveWatchListBtn();
             } else {
-                DatabaseReference watchlistRef = AppData.firebaseDatabase.getReference("users")
-                        .child(mUser.getUid()).child("watchlist").child(displayedItem.getKey());
+                setUpAddWatchListBtn();
+            }
+    }
+
+    private void setUpAddWatchListBtn(){
+        topBtn.setText("ADD TO WATCHLIST");
+        topBtn.setOnClickListener(null);
+        topBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 addItemToWatchlist(itemRef, watchlistRef);
+                setUpWatchlistBtn();
             }
         });
     }
-
+    private void setUpRemoveWatchListBtn(){
+        topBtn.setText("REMOVE FROM WATCHLIST");
+        topBtn.setOnClickListener(null);
+        topBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                watchlistRef.removeValue();
+                setUpAddWatchListBtn();
+            }
+        });
+    }
     private void setUpDeleteButton(){
         bottomBtn.setText(DELETE_TEXT);
         bottomBtn.setOnClickListener(new View.OnClickListener() {
@@ -190,9 +216,11 @@ public class ItemDetailActivity extends AppCompatActivity {
 
      private void addItemToWatchlist(DatabaseReference fromPath, final DatabaseReference toPath) {
         fromPath.addListenerForSingleValueEvent(new ValueEventListener() {
+
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 toPath.setValue(dataSnapshot.getValue(), (databaseError, databaseReference) -> {
+
                     if(databaseError != null) {
                         Log.e(TAG, databaseError.getMessage());
                     } else {
