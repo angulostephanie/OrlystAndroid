@@ -36,6 +36,10 @@ public class TakePhotoActivity extends AppCompatActivity
         BottomNavigationView navigation = findViewById(R.id.camera_navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
+        toolbar.setLogo(R.drawable.small_orlyst_logo);
+        toolbar.setDisplayUseLogoEnabled(true);
+        toolbar.setDisplayShowHomeEnabled(true);
+
         toolbar.setTitle("Camera");
         loadFragment(new CameraFragment());
 
