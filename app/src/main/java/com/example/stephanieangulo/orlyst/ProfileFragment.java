@@ -305,6 +305,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                     Intent itemIntent = new Intent(getActivity(), ItemDetailActivity.class);
                     itemIntent.putExtra("Item", Parcels.wrap(selectedItem));
                     itemIntent.putExtra("User", Parcels.wrap(selectedUser));
+                    itemIntent.putExtra("fromProfile", true);
                     PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, itemIntent, 0);
                     NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext, "profile");
                     builder.setContentIntent(pendingIntent);

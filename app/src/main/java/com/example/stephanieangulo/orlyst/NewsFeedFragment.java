@@ -218,12 +218,15 @@ public class NewsFeedFragment extends Fragment {
                     Intent itemIntent = new Intent(getActivity(), ItemDetailActivity.class);
                     itemIntent.putExtra("Item", Parcels.wrap(selectedItem));
                     itemIntent.putExtra("User", Parcels.wrap(selectedUser));
+                    itemIntent.putExtra("fromNewsfeed", true);
                     PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, itemIntent, 0);
                     NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext, "newsfeed");
                     builder.setContentIntent(pendingIntent);
                     startActivityForResult(itemIntent, 1);
                 }));
     }
+
+
     private void onAddButtonClick() {
         addBtn.setOnClickListener(new View.OnClickListener() {
             @Override
