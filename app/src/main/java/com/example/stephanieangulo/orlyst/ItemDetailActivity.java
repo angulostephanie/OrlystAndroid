@@ -229,8 +229,6 @@ public class ItemDetailActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent deleteItemIntent = new Intent();
                 itemRef.removeValue();
-
-                // get peopleWatchlist and remove this item from the watchlists
                 removeItemFromWatchLists();
 
                 Toast.makeText(mContext, "Item deleted", Toast.LENGTH_SHORT).show();
@@ -242,22 +240,11 @@ public class ItemDetailActivity extends AppCompatActivity {
     }
 
     private void removeItemFromWatchLists(){
-        peopleWatchingRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // get the users
                 List<User> peopleWatchingUsers = fetchPeopleWatching();
                 // remove item from their watchlist
-                for(User user : peopleWatchingUsers){
+                for(User user : peopleWatchingUsers) {
                     user.getWatchlist().remove(displayedItem.getKey());
                 }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
     }
 
     private List<User> fetchPeopleWatching() {
