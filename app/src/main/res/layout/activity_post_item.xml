@@ -44,6 +44,7 @@
             android:layout_height="250dp"
             android:layout_below="@+id/back_btn"
             android:layout_centerHorizontal="true"
+            android:scaleType="centerCrop"
             android:background="@android:color/transparent"
             app:srcCompat="@drawable/loading_spinner"
             android:contentDescription="@string/item_image" />

@@ -23,6 +23,7 @@
         android:layout_marginBottom="5dp"
         android:layout_below="@id/detail_back_btn"
         android:layout_centerHorizontal="true"
+        android:scaleType="centerCrop"
         android:contentDescription="@string/image_of_item_being_sold"
         android:background="@android:color/transparent"
         app:srcCompat="@drawable/loading_spinner" />

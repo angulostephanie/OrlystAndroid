@@ -49,8 +49,8 @@ public class SignUpActivity extends AppCompatActivity {
 
     private boolean isFirstFilled = false;
     private boolean isLastFilled = false;
-    private boolean isEmailFilled = false;
-    private boolean isPasswordFilled = false;
+    private boolean isPasswordLong = false;
+    private boolean isOxyEmail = false;
     private boolean userAlreadyExists = false;
 
     @Override
@@ -130,10 +130,14 @@ public class SignUpActivity extends AppCompatActivity {
                 String email = text.toString();
                 if(length > 8) {
                     if(!email.substring(length - 8).equals(OXY_EMAIL)) {
+                        isOxyEmail = false;
                         floatingEmailLabel.setError(getString(R.string.email_alert));
                         floatingEmailLabel.setErrorEnabled(true);
                     } else {
+                        isOxyEmail = true;
                         floatingEmailLabel.setErrorEnabled(false);
+                        updateButtonStatus(isFirstFilled && isLastFilled &&
+                                isPasswordLong && isOxyEmail);
                     }
                 } else {
                     floatingEmailLabel.setErrorEnabled(false);
@@ -158,10 +162,15 @@ public class SignUpActivity extends AppCompatActivity {
                 int length = text.length();
                 userAlreadyExists = false;
                 if(length > 0 && length < 6) {
+                    isPasswordLong = false;
                     floatingPasswordLabel.setError(getString(R.string.password_length_alert));
                     floatingPasswordLabel.setErrorEnabled(true);
                 } else {
+                    isPasswordLong = true;
                     floatingPasswordLabel.setErrorEnabled(false);
+                    updateButtonStatus(isFirstFilled && isLastFilled &&
+                            isPasswordLong && isOxyEmail);
+
                 }
             }
             @Override
@@ -215,7 +224,7 @@ public class SignUpActivity extends AppCompatActivity {
                 isFirstFilled = s.length() != 0;
 
                 updateButtonStatus(isFirstFilled && isLastFilled &&
-                        isEmailFilled && isPasswordFilled);
+                        isPasswordLong && isOxyEmail);
             }
 
             @Override
@@ -224,7 +233,7 @@ public class SignUpActivity extends AppCompatActivity {
                 isFirstFilled = s.length() != 0;
 
                 updateButtonStatus(isFirstFilled && isLastFilled &&
-                        isEmailFilled && isPasswordFilled);
+                        isPasswordLong && isOxyEmail);
             }
 
             @Override
@@ -239,7 +248,7 @@ public class SignUpActivity extends AppCompatActivity {
                 isLastFilled = s.length() != 0;
 
                 updateButtonStatus(isFirstFilled && isLastFilled &&
-                        isEmailFilled && isPasswordFilled);
+                        isPasswordLong && isOxyEmail);
             }
 
             @Override
@@ -248,7 +257,7 @@ public class SignUpActivity extends AppCompatActivity {
                 isLastFilled = s.length() != 0;
 
                 updateButtonStatus(isFirstFilled && isLastFilled &&
-                        isEmailFilled && isPasswordFilled);
+                        isPasswordLong && isOxyEmail);
             }
 
             @Override
@@ -260,18 +269,17 @@ public class SignUpActivity extends AppCompatActivity {
         emailText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                isEmailFilled = s.length() != 0;
 
-                updateButtonStatus(isFirstFilled && isLastFilled &&isEmailFilled && isPasswordFilled);
+                updateButtonStatus(isFirstFilled && isLastFilled &&
+                        isPasswordLong && isOxyEmail);
 
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                isEmailFilled = s.length() != 0;
 
                 updateButtonStatus(isFirstFilled && isLastFilled &&
-                        isEmailFilled && isPasswordFilled);
+                        isPasswordLong && isOxyEmail);
 
             }
 
@@ -285,18 +293,16 @@ public class SignUpActivity extends AppCompatActivity {
         passwordText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                isPasswordFilled = s.length() != 0;
+
 
                 updateButtonStatus(isFirstFilled && isLastFilled &&
-                        isEmailFilled && isPasswordFilled);
+                        isPasswordLong && isOxyEmail);
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                isPasswordFilled = s.length() != 0;
-
                 updateButtonStatus(isFirstFilled && isLastFilled &&
-                        isEmailFilled && isPasswordFilled);
+                        isPasswordLong && isOxyEmail);
             }
 
             @Override

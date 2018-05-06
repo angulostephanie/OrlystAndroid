@@ -18,6 +18,7 @@
             android:fontFamily="sans-serif-smallcaps"
             android:text=""
             android:textColor="@android:color/white" />
+
         <com.wonderkiln.camerakit.CameraView
             android:id="@+id/capture_camera_view"
             android:layout_width="350dp"

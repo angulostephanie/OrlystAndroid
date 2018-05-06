@@ -17,6 +17,7 @@
     <string name = "password_length_alert">Password must be longer than 6 characters.</string>
     <string name = "invalid_creds">Invalid credentials, please try again.</string>
     <string name = "user_exists">User already exists! Please login.</string>
+    <string name = "user_doesnt_exists">User does not exist, please sign up.</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

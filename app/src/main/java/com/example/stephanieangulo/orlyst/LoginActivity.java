@@ -25,6 +25,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseUser;
 
 @SuppressLint("ClickableViewAccessibility")
@@ -43,6 +44,7 @@ public class LoginActivity extends AppCompatActivity {
     private boolean isEmailFilled = false;
     private boolean isPasswordFilled = false;
     private boolean invalidCreds = false;
+    private boolean nonExistingUser = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +118,10 @@ public class LoginActivity extends AppCompatActivity {
                             showError();
                             invalidCreds = true;
                             setupFloatingLabelErrors();
+                        } else if(e instanceof FirebaseAuthInvalidUserException) {
+                            showError();
+                            nonExistingUser = true;
+                            setupFloatingLabelErrors();
                         }
                         Log.d(TAG, "Error " + e.getClass());
                     }
@@ -170,6 +176,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence text, int start, int count, int after) {
                 if(text.toString().length() > 0) {
                     invalidCreds = false;
+                    nonExistingUser = false;
                     floatingPasswordLabel.setErrorEnabled(false);
                 }
             }
@@ -190,7 +197,9 @@ public class LoginActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence text, int start, int count, int after) {
                 if(text.toString().length() > 0) {
                     invalidCreds = false;
+                    nonExistingUser = false;
                     floatingPasswordLabel.setErrorEnabled(false);
+                    floatingEmailLabel.setErrorEnabled(false);
                 }
             }
             @Override
@@ -207,6 +216,10 @@ public class LoginActivity extends AppCompatActivity {
         if(invalidCreds) {
             floatingPasswordLabel.setError(getString(R.string.invalid_creds));
             floatingPasswordLabel.setErrorEnabled(true);
+        } else if(nonExistingUser) {
+            floatingEmailLabel.setError(getString(R.string.user_doesnt_exists));
+            floatingEmailLabel.setErrorEnabled(true);
+
         }
     }
     private void showError() {
