@@ -41,6 +41,7 @@ public class ItemDetailActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private DatabaseReference itemRef;
     private DatabaseReference watchlistRef;
+    private DatabaseReference peopleWatchingRef;
     private Item displayedItem;
     private User userSeller;
     private Map<String, Item> watchlistCurrentUser = new HashMap<>();
@@ -89,6 +90,8 @@ public class ItemDetailActivity extends AppCompatActivity {
                 .child(userSeller.getUserID()).child("items").child(displayedItem.getKey());
         watchlistRef = AppData.firebaseDatabase.getReference("users")
                 .child(mUser.getUid()).child("watchlist").child(displayedItem.getKey());
+        peopleWatchingRef = AppData.firebaseDatabase.getReference("users")
+                .child(userSeller.getUserID()).child("items").child(displayedItem.getKey()).child("peopleWatching");
 
 
         toolbar.setLogo(R.drawable.small_orlyst_logo);
@@ -196,17 +199,22 @@ public class ItemDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 addItemToWatchlist(itemRef, watchlistRef);
+                addItemToPeopleWatching(itemRef, peopleWatchingRef);
                 setUpRemoveWatchListBtn();
             }
         });
     }
     private void setUpRemoveWatchListBtn(){
+        DatabaseReference userWatchingRef = peopleWatchingRef = AppData.firebaseDatabase.getReference("users")
+                .child(userSeller.getUserID()).child("items").child(displayedItem.getKey()).child("peopleWatching").child(mUser.getUid());
         topBtn.setText("REMOVE FROM WATCHLIST");
         topBtn.setOnClickListener(null);
         topBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                
                 watchlistRef.removeValue();
+                userWatchingRef.removeValue();
                 setUpAddWatchListBtn();
             }
         });
@@ -222,6 +230,31 @@ public class ItemDetailActivity extends AppCompatActivity {
                 setResult(Activity.RESULT_OK, deleteItemIntent);
                 finish();
                 //startActivity(deleteItemIntent);
+            }
+        });
+    }
+
+    private void addItemToPeopleWatching(DatabaseReference fromPath, final DatabaseReference toPath) {
+        fromPath.addListenerForSingleValueEvent(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                toPath.setValue(mUser.getUid(), (databaseError, databaseReference) -> {
+
+                    if(databaseError != null) {
+                        Log.e(TAG, databaseError.getMessage());
+                    } else {
+                        Log.d(TAG, "successfully added to watchlist!");
+                        Toast.makeText(ItemDetailActivity.this,
+                                "Added this item to your list :)", Toast.LENGTH_SHORT).show();
+
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
             }
         });
     }

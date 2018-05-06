@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -21,6 +22,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
     private static final String TAG = "UserListAdapter";
     private Context context;
     private List<Item> itemsList;
+    private Boolean itemSold;
 
     public UserListAdapter(Context context, List<Item> list){
         this.context = context;
@@ -50,9 +52,13 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
                     .placeholder(R.drawable.loading_spinner)
                     .into(holder.thumbnail);
         }
+
         if(!item.isImageFound()) {
             holder.thumbnail.setImageResource(R.drawable.image_not_found);
         }
+        //if(itemSold)
+           // holder.layout.getBackground().setAlpha(128);
+
     }
 
 
@@ -64,15 +70,18 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
     public class ViewHolder extends RecyclerView.ViewHolder {
         public TextView name, description, price, category, user, onWatchlist;
         public ImageView thumbnail;
+        public RelativeLayout layout;
 
         public ViewHolder(View view) {
             super(view);
+            layout = view.findViewById(R.id.item_layout);
             name = view.findViewById(R.id.itemTitle);
             price = view.findViewById(R.id.itemPrice);
             category = view.findViewById(R.id.itemCategory);
             user = view.findViewById(R.id.userSellingItem);
             thumbnail = view.findViewById(R.id.itemImageView);
             onWatchlist = view.findViewById(R.id.onWatchlistText);
+
         }
     }
 }
