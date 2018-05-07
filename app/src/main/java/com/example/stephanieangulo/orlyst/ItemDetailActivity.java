@@ -238,16 +238,8 @@ public class ItemDetailActivity extends AppCompatActivity {
         bottomBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent deleteItemIntent = new Intent();
 
-                removeItemFromWatchLists();
-                itemRef.removeValue();
-                deleteImage();
-
-                Toast.makeText(mContext, "Item deleted", Toast.LENGTH_SHORT).show();
-                setResult(Activity.RESULT_OK, deleteItemIntent);
-                finish();
-                //startActivity(deleteItemIntent);
+                fetchPeopleWatching();
             }
         });
     }
@@ -267,28 +259,36 @@ public class ItemDetailActivity extends AppCompatActivity {
             }
         });
     }
-    private void removeItemFromWatchLists(){
-                List<String> peopleWatching = fetchPeopleWatching();
-                List<User> peopleWatchingUsers = fetchUsers(peopleWatching);
 
-                for(User user : peopleWatchingUsers) {
-                    user.getWatchlist().remove(displayedItem.getKey());
-                }
+    private void removeItemFromOtherWatchlists(List<User> peopleWatchingUsers) {
+        for(User user : peopleWatchingUsers) {
+            Map<String, Item> watchlist = user.getWatchlist();
+            watchlist.remove(displayedItem.getKey());
+            DatabaseReference userWatchListRef = AppData.firebaseDatabase.getReference("users")
+                    .child(user.getUserID()).child("watchlist").child(displayedItem.getKey());
+            userWatchListRef.removeValue();
+        }
+        itemRef.removeValue();
+        deleteImage();
+
+        Toast.makeText(mContext, "Item deleted", Toast.LENGTH_SHORT).show();
+        finish();
     }
 
-    private List<String> fetchPeopleWatching() {
-        final List<String> users = new ArrayList<>();
+    private void fetchPeopleWatching() {
+        final List<String> userIDs = new ArrayList<>();
 
-        peopleWatchingRef.addValueEventListener(new ValueEventListener() {
+        peopleWatchingRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot snapshot) {
+            public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.d(TAG, "yeeeeeeeet");
-                for (DataSnapshot data : snapshot.getChildren()) {
+                for (DataSnapshot data : dataSnapshot.getChildren()) {
                     String key = data.getKey();
-                    DataSnapshot a = snapshot.child(key);
+                    DataSnapshot a = dataSnapshot.child(key);
                     String userID = (String) a.getValue();
-                    users.add(userID);
+                    userIDs.add(userID);
                 }
+                 fetchUsers(userIDs);
             }
 
             @Override
@@ -297,10 +297,9 @@ public class ItemDetailActivity extends AppCompatActivity {
             }
         });
 
-        return users;
     }
 
-    private List<User> fetchUsers(List<String> usersIDToFetch) {
+    private void fetchUsers(List<String> usersIDToFetch) {
         final List<User> users = new ArrayList<>();
         final DatabaseReference userRef = AppData.firebaseDatabase.getReference("users");
         userRef.addValueEventListener(new ValueEventListener() {
@@ -313,7 +312,14 @@ public class ItemDetailActivity extends AppCompatActivity {
                     User user = a.getValue(User.class);
                     userDatabase.put(key, user);
                 }
+                Iterator<String> iterator = userDatabase.keySet().iterator();
 
+                for (String userID : usersIDToFetch){
+                    if(userDatabase.containsKey(userID)) {
+                        users.add(userDatabase.get(userID));
+                    }
+                }
+                removeItemFromOtherWatchlists(users);
             }
 
             @Override
@@ -321,18 +327,6 @@ public class ItemDetailActivity extends AppCompatActivity {
                 Log.e(TAG, databaseError.getDetails());
             }
         });
-
-        Iterator<String> iterator = userDatabase.keySet().iterator();
-
-        for (String userID : usersIDToFetch){
-            while (iterator.hasNext()) {
-                iterator.next();
-                if(userDatabase.containsKey(userID))
-                    users.add(userDatabase.get(userID));
-            }
-        }
-
-        return users;
     }
 
 
