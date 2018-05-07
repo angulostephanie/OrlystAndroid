@@ -2,6 +2,7 @@ package com.example.stephanieangulo.orlyst;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
@@ -10,6 +11,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -19,6 +21,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.StorageReference;
 
 import org.parceler.Parcels;
@@ -31,7 +35,10 @@ import java.util.List;
 public class ProfileActivity extends AppCompatActivity {
     private static final String TAG = "ProfileActivity";
     private User mDisplayedSeller;
+    private FirebaseUser currentUser;
+    private FirebaseAuth mAuth;
     private ImageView profileImageView;
+    private Button contactBtn;
     private UserListAdapter mAdapter;
     private TextView sellerName;
     private RecyclerView recyclerView;
@@ -45,10 +52,14 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
+        mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
+
         profileImageView= findViewById(R.id.seller_profile_image);
         sellerName = findViewById(R.id.seller_name);
         recyclerView = findViewById(R.id.profile_recycler_view);
         backBtn = findViewById(R.id.profile_back_btn);
+        contactBtn = findViewById(R.id.contact_seller_btn);
 
         toolbar = getSupportActionBar();
         toolbar.setTitle("");
@@ -68,6 +79,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         setUpProfilePage();
         setRecyclerView();
+        setUpContactBtn();
         if(mDisplayedSeller.getProfilePicture() != null)
             fetchProfilePhoto(mDisplayedSeller.getProfilePicture());
 
@@ -127,5 +139,25 @@ public class ProfileActivity extends AppCompatActivity {
                 .into(profileImageView);
     }
 
+    private void setUpContactBtn(){
+        contactBtn.setOnClickListener(v -> {
+
+            String[] emailAddress = new String[1];
+            emailAddress[0] = mDisplayedSeller.getEmail();
+            composeEmail(emailAddress, mDisplayedSeller.getFirst(), currentUser.getDisplayName());
+        });
+    }
+
+    private void composeEmail(String[] address, String sellerName, String buyerName){
+        Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
+        emailIntent.setData(Uri.parse("mailto:"));
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, address);
+        emailIntent.putExtra(Intent.EXTRA_TEXT, "Hey " + sellerName + ", ");
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "[ORLYST] " + buyerName + " is contacting you");
+        if (emailIntent.resolveActivity(getPackageManager()) != null) {
+            startActivity(emailIntent);
+        }
+
+    }
 
 }
