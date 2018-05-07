@@ -20,10 +20,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -36,6 +34,7 @@ import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -54,6 +53,7 @@ public class ItemDetailActivity extends AppCompatActivity {
     private Item displayedItem;
     private User userSeller;
     private Map<String, Item> watchlistCurrentUser = new HashMap<>();
+    private Map<String, User> userDatabase = new HashMap<>();
     private List<Item> mItems = new ArrayList<>();
     private List<User> peopleWatchingUsers;
     private TextView itemTitle;
@@ -212,7 +212,8 @@ public class ItemDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 addItemToWatchlist(itemRef, watchlistRef);
-                addItemToPeopleWatching(itemRef, peopleWatchingRef);
+                addPeopleWatchingToItem(mUser.getUid());
+                //addItemToPeopleWatching(itemRef, peopleWatchingRef);
                 setUpRemoveWatchListBtn();
             }
         });
@@ -267,17 +268,16 @@ public class ItemDetailActivity extends AppCompatActivity {
         });
     }
     private void removeItemFromWatchLists(){
-                // remove item from their watchlist
-                peopleWatchingUsers = fetchPeopleWatching();
-
+                List<String> peopleWatching = fetchPeopleWatching();
+                List<User> peopleWatchingUsers = fetchUsers(peopleWatching);
+        
                 for(User user : peopleWatchingUsers) {
                     user.getWatchlist().remove(displayedItem.getKey());
                 }
     }
 
-    private List<User> fetchPeopleWatching() {
-        final List<User> users = new ArrayList<>();
-        final ArrayList<String> usersString = new ArrayList<>();
+    private List<String> fetchPeopleWatching() {
+        final List<String> users = new ArrayList<>();
 
         peopleWatchingRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -286,17 +286,8 @@ public class ItemDetailActivity extends AppCompatActivity {
                 for (DataSnapshot data : snapshot.getChildren()) {
                     String key = data.getKey();
                     DataSnapshot a = snapshot.child(key);
-                    User user = a.getValue(User.class);
-                    users.add(user);
-                    Log.d(TAG, "item list size " + user.getItems().values().size());
-                    for (Item item : user.getItems().values()) {
-                        List<String> keys = getAllItemKeys(mItems);
-                        if (!keys.contains(item.getKey())) {
-                            Log.d(TAG, "getting item " + item.getItemName());
-                            mItems.add(item);
-                            Log.d(TAG, "Time stamp = " + item.getTimestamp());
-                        }
-                    }
+                    String userID = (String) a.getValue();
+                    users.add(userID);
                 }
             }
 
@@ -309,40 +300,72 @@ public class ItemDetailActivity extends AppCompatActivity {
         return users;
     }
 
-    private List<String> getAllItemKeys(List<Item> items) {
-        List<String> keys = new ArrayList<>();
-        for(Item item: items) {
-            keys.add(item.getKey());
-        }
-        return keys;
-    }
-
-    private void addItemToPeopleWatching(DatabaseReference fromPath, final DatabaseReference toPath) {
-        fromPath.addListenerForSingleValueEvent(new ValueEventListener() {
-
+    private List<User> fetchUsers(List<String> usersIDToFetch) {
+        final List<User> users = new ArrayList<>();
+        final DatabaseReference userRef = AppData.firebaseDatabase.getReference("users");
+        userRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                toPath.setValue(mUser.getUid(), (databaseError, databaseReference) -> {
+                Iterable<DataSnapshot> dataSnapshots = dataSnapshot.getChildren();
+                for (DataSnapshot data : dataSnapshots) {
+                    String key = data.getKey();
+                    DataSnapshot a = dataSnapshot.child(key);
+                    User user = a.getValue(User.class);
+                    userDatabase.put(key, user);
+                }
 
-                    if(databaseError != null) {
-                        Log.e(TAG, databaseError.getMessage());
-                    } else {
-                        Log.d(TAG, "successfully added to watchlist!");
-                        Toast.makeText(ItemDetailActivity.this,
-                                "Added this item to your list :)", Toast.LENGTH_SHORT).show();
-
-                    }
-                });
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.e(TAG, databaseError.getDetails());
             }
         });
+
+        Iterator<String> iterator = userDatabase.keySet().iterator();
+
+        for (String userID : usersIDToFetch){
+            while (iterator.hasNext()) {
+                iterator.next();
+                if(userDatabase.containsKey(userID))
+                    users.add(userDatabase.get(userID));
+            }
+        }
+
+        return users;
     }
 
-    
+
+
+    private void addPeopleWatchingToItem(String userID) {
+        DatabaseReference postItemRef = peopleWatchingRef.child(userID); //mItemReference.push();
+        postItemRef.setValue(userID);
+
+
+       /* postItemRef.updateChildren(itemValues).
+                addOnSuccessListener(new OnSuccessListener<Void>() {
+                                         @Override
+                                         public void onSuccess(Void aVoid) {
+                                             Log.e(TAG, "Successfully uploaded item info!");
+                                             infoUploaded = true;
+                                             returnToNewsFeed(photoUploaded);
+                                         }
+                                     }
+                ).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e(TAG, "FAIL");
+                Toast.makeText(mContext, "fail :/ check logcat for error",
+                        Toast.LENGTH_SHORT).show();
+            }
+        }).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                Log.e(TAG, "Complete");
+            }
+        });
+        */
+    }
 
      private void addItemToWatchlist(DatabaseReference fromPath, final DatabaseReference toPath) {
         fromPath.addListenerForSingleValueEvent(new ValueEventListener() {
