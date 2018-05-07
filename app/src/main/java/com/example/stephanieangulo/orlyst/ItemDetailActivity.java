@@ -270,7 +270,7 @@ public class ItemDetailActivity extends AppCompatActivity {
     private void removeItemFromWatchLists(){
                 List<String> peopleWatching = fetchPeopleWatching();
                 List<User> peopleWatchingUsers = fetchUsers(peopleWatching);
-        
+
                 for(User user : peopleWatchingUsers) {
                     user.getWatchlist().remove(displayedItem.getKey());
                 }
