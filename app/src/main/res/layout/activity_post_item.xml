@@ -53,28 +53,28 @@
             android:id="@+id/post_item_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="45dp"
-            android:layout_marginRight="45dp"
             android:layout_below="@+id/post_item_image"
             android:layout_centerHorizontal="true"
+            android:layout_marginLeft="45dp"
+            android:layout_marginRight="45dp"
+            android:layout_marginTop="5dp"
             android:ems="10"
             android:hint="@string/title_of_item"
-            android:inputType="textPersonName"
-            android:layout_marginTop="5dp" />
+            android:inputType="textCapSentences" />
 
 
         <EditText
             android:id="@+id/post_item_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="45dp"
-            android:layout_marginRight="45dp"
             android:layout_below="@+id/post_item_title"
             android:layout_centerHorizontal="true"
+            android:layout_marginLeft="45dp"
+            android:layout_marginRight="45dp"
             android:layout_marginTop="5dp"
             android:ems="10"
             android:hint="@string/description_of_item"
-            android:inputType="textPersonName" />
+            android:inputType="textCapSentences|textPersonName" />
         <EditText
             android:id="@+id/post_item_price"
             android:layout_width="match_parent"
