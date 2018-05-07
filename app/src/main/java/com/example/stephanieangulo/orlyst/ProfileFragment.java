@@ -170,6 +170,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         userItemsButton.setOnClickListener(this);
         watchlistButton.setOnClickListener(this);
 
+        userItemsButton.setBackgroundColor(getResources().getColor(R.color.bottomNavigation, null));
         fetchUser();
         setRecyclerView();
         onProfileItemClick();
@@ -207,10 +208,15 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         switch(v.getId()){
             case R.id.user_items_btn:
                 onUserItems = true;
+                userItemsButton.setBackgroundColor(getResources().getColor(R.color.bottomNavigation, null));
+                watchlistButton.setBackgroundColor(getResources().getColor(R.color.colorPrimary, null));
+
                 updateRecyclerView();
                 break;
             case R.id.watchlist_btn:
                 onUserItems = false;
+                watchlistButton.setBackgroundColor(getResources().getColor(R.color.bottomNavigation, null));
+                userItemsButton.setBackgroundColor(getResources().getColor(R.color.colorPrimary, null));
                 updateRecyclerView();
         }
     }
