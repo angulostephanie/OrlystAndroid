@@ -68,7 +68,7 @@ public class SignUpActivity extends AppCompatActivity {
         passwordText = findViewById(R.id.new_password_text);
         signUpBtn = findViewById(R.id.sign_up_btn);
         backBtn = findViewById(R.id.back_btn);
-        toolBar.setTitle("a");
+        toolBar.setTitle("");
 
         updateButtonStatus(false);
         addTextListeners();
