@@ -229,6 +229,7 @@ public class LoginActivity extends AppCompatActivity {
     }
     private void showError() {
         Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
+
         emailText.startAnimation(shake);
         passwordText.startAnimation(shake);
     }

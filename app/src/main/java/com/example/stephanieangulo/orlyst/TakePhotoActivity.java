@@ -44,7 +44,7 @@ public class TakePhotoActivity extends AppCompatActivity
         toolbar.setDisplayUseLogoEnabled(true);
         toolbar.setDisplayShowHomeEnabled(true);
 
-        toolbar.setTitle("Camera");
+        toolbar.setTitle("");
         loadFragment(new CameraFragment());
 
         cancelBtn.setOnClickListener(new View.OnClickListener() {
@@ -64,12 +64,12 @@ public class TakePhotoActivity extends AppCompatActivity
             Fragment fragment;
             switch (item.getItemId()) {
                 case R.id.camera_navigation_library:
-                    toolbar.setTitle("Library");
+                    toolbar.setTitle("");
                     fragment = new GalleryFragment();
                     loadFragment(fragment);
                     return true;
                 case R.id.camera_navigation_capture:
-                    toolbar.setTitle("Capture");
+                    toolbar.setTitle("");
                     fragment = new CameraFragment();
                     loadFragment(fragment);
                     return true;

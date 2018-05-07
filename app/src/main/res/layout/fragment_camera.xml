@@ -21,9 +21,9 @@
 
         <com.wonderkiln.camerakit.CameraView
             android:id="@+id/capture_camera_view"
-            android:layout_width="350dp"
-            android:layout_height="350dp"
             android:layout_below="@+id/lolpls_ignoreme"
+            android:layout_width="match_parent"
+            android:layout_height="400dp"
             android:layout_centerHorizontal="true"
             android:adjustViewBounds="true" />
 
@@ -32,9 +32,9 @@
             style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
+            android:layout_marginTop="15dp"
+            android:layout_below="@+id/capture_camera_view"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="93dp"
             android:fontFamily="sans-serif-smallcaps"
             android:text="@string/capture"
             android:textStyle="bold" />

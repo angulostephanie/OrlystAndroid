@@ -81,7 +81,7 @@ public class ItemImage {
 
 
         int j = 0;
-        while (cursor.moveToNext() && j < 10) {
+        while (cursor.moveToNext() && j < 12) {
             path = cursor.getString(index);
             ItemImage image = new ItemImage(path);
             Bitmap bitmap = image.decodeToBitmap();
