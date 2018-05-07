@@ -228,7 +228,7 @@ public class PostItemActivity extends AppCompatActivity {
                     public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
                         double progress = (100.0*taskSnapshot.getBytesTransferred()/taskSnapshot
                                 .getTotalByteCount());
-                        progressDialog.setMessage("Uploaded "+(int)progress+"%");
+                        Log.d("Progress", String.valueOf(progress));
                     }
                 });
     }

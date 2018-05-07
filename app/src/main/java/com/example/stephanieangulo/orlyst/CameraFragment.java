@@ -254,6 +254,7 @@ public class CameraFragment extends Fragment {
     }
     private void uploadImage(byte[] image, String key) {
         final ProgressDialog progressDialog = new ProgressDialog(mContext);
+
         progressDialog.setTitle("Uploading...");
         progressDialog.show();
 
@@ -279,10 +280,13 @@ public class CameraFragment extends Fragment {
                     public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
                         double progress = (100.0*taskSnapshot.getBytesTransferred()/taskSnapshot
                                 .getTotalByteCount());
-                        progressDialog.setMessage("Uploaded "+(int)progress+"%");
+                        Log.d("Progress", String.valueOf(progress));
+
                     }
                 });
     }
+
+
     private void returnToNewsFeed(boolean success) {
         if(success) {
             Toast.makeText(mContext, "Uploaded", Toast.LENGTH_SHORT).show();

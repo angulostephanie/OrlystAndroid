@@ -13,6 +13,7 @@ import java.util.Map;
 public class Item {
     private static final String TAG = "Item.java";
     private String itemName, description, seller, email, key, timestamp, sellerID, category, price;
+    private Map<String, String> peopleWatching = new HashMap<>();
     private boolean onWatchlist;
     private boolean isImageFound = true;
     private byte[] bytes;
@@ -53,6 +54,8 @@ public class Item {
         String timestamp = now.toString();
         return timestamp;
     }
+
+    public void setPeopleWatchingID(Map<String, String> ID) { this.peopleWatching = ID; }
     public void setItemName(String newName) {
         this.itemName = newName;
     }
@@ -84,6 +87,7 @@ public class Item {
         this.timestamp = newTimestamp;
     }
 
+    public Map<String, String> getPeopleWatchingID() { return peopleWatching; }
     public String getItemName() {
         return itemName;
     }
@@ -174,6 +178,7 @@ public class Item {
         result.put("category", category);
         result.put("price", price);
         result.put("timestamp", createTimestamp());
+        result.put("peopleWatching", peopleWatching);
         return result;
     }
 }

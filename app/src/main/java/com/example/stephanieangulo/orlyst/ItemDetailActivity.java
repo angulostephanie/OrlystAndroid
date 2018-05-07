@@ -20,8 +20,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -53,6 +55,7 @@ public class ItemDetailActivity extends AppCompatActivity {
     private User userSeller;
     private Map<String, Item> watchlistCurrentUser = new HashMap<>();
     private List<Item> mItems = new ArrayList<>();
+    private List<User> peopleWatchingUsers;
     private TextView itemTitle;
     private TextView itemDescription;
     private TextView itemSeller;
@@ -215,7 +218,7 @@ public class ItemDetailActivity extends AppCompatActivity {
         });
     }
     private void setUpRemoveWatchListBtn(){
-        DatabaseReference userWatchingRef = peopleWatchingRef = AppData.firebaseDatabase.getReference("users")
+        DatabaseReference userWatchingRef  = AppData.firebaseDatabase.getReference("users")
                 .child(userSeller.getUserID()).child("items").child(displayedItem.getKey()).child("peopleWatching").child(mUser.getUid());
         topBtn.setText("REMOVE FROM WATCHLIST");
         topBtn.setOnClickListener(null);
@@ -235,10 +238,10 @@ public class ItemDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent deleteItemIntent = new Intent();
-                itemRef.removeValue();
-                deleteImage();
 
                 removeItemFromWatchLists();
+                itemRef.removeValue();
+                deleteImage();
 
                 Toast.makeText(mContext, "Item deleted", Toast.LENGTH_SHORT).show();
                 setResult(Activity.RESULT_OK, deleteItemIntent);
@@ -264,8 +267,9 @@ public class ItemDetailActivity extends AppCompatActivity {
         });
     }
     private void removeItemFromWatchLists(){
-                List<User> peopleWatchingUsers = fetchPeopleWatching();
                 // remove item from their watchlist
+                peopleWatchingUsers = fetchPeopleWatching();
+
                 for(User user : peopleWatchingUsers) {
                     user.getWatchlist().remove(displayedItem.getKey());
                 }
@@ -273,13 +277,15 @@ public class ItemDetailActivity extends AppCompatActivity {
 
     private List<User> fetchPeopleWatching() {
         final List<User> users = new ArrayList<>();
+        final ArrayList<String> usersString = new ArrayList<>();
+
         peopleWatchingRef.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Iterable<DataSnapshot> dataSnapshots = dataSnapshot.getChildren();
-                for (DataSnapshot data : dataSnapshots) {
+            public void onDataChange(DataSnapshot snapshot) {
+                Log.d(TAG, "yeeeeeeeet");
+                for (DataSnapshot data : snapshot.getChildren()) {
                     String key = data.getKey();
-                    DataSnapshot a = dataSnapshot.child(key);
+                    DataSnapshot a = snapshot.child(key);
                     User user = a.getValue(User.class);
                     users.add(user);
                     Log.d(TAG, "item list size " + user.getItems().values().size());
@@ -292,14 +298,14 @@ public class ItemDetailActivity extends AppCompatActivity {
                         }
                     }
                 }
-
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.e(TAG, databaseError.getDetails());
+
             }
         });
+
         return users;
     }
 
@@ -335,6 +341,8 @@ public class ItemDetailActivity extends AppCompatActivity {
             }
         });
     }
+
+    
 
      private void addItemToWatchlist(DatabaseReference fromPath, final DatabaseReference toPath) {
         fromPath.addListenerForSingleValueEvent(new ValueEventListener() {
