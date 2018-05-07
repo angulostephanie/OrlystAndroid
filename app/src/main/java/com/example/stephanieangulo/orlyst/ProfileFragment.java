@@ -240,7 +240,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 User foundUser = dataSnapshot.getValue(User.class);
 
-                Log.d(TAG, "User found --> " + foundUser.getFirst());
+                //Log.d(TAG, "User found --> " + foundUser.getFirst());
                 mItems = new ArrayList<>(foundUser.getItems().values());
                 mWatchlist = new ArrayList<>(foundUser.getWatchlist().values());
                 mUser = foundUser;
