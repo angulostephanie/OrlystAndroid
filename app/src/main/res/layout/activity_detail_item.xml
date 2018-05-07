@@ -21,7 +21,6 @@
         android:layout_width="match_parent"
         android:layout_height="350dp"
         android:layout_marginTop="6dp"
-        android:layout_marginBottom="6dp"
         android:layout_below="@id/detail_back_btn"
         android:layout_centerHorizontal="true"
         android:scaleType="centerCrop"
@@ -33,32 +32,38 @@
         android:id="@+id/detail_item_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginBottom="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="10dp"
         android:layout_below="@+id/detail_item_image"
         android:text="@string/title_of_item"
-        android:textSize="18sp"
+        android:textSize="16sp"
         android:textStyle="bold" />
-    <TextView
-        android:id="@+id/item_description_tv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="12sp"
-        android:layout_marginBottom="5dp"
-        android:layout_below="@+id/seller_name_tv"
-        android:layout_alignStart="@id/detail_item_title"
-        android:text="@string/item_description" />
 
     <TextView
         android:id="@+id/seller_name_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/detail_item_title"
+        android:layout_below="@+id/detail_item_image"
+        android:layout_alignBaseline= "@+id/detail_item_title"
         android:layout_marginStart="6dp"
-        android:textSize="15sp"
+        android:layout_marginEnd="5dp"
+        android:textSize="13sp"
+        android:textColor="@color/colorAccent"
         android:layout_toEndOf="@+id/detail_item_title"
         android:text="@string/by_seller_name"
         android:textStyle="italic" />
+
+    <TextView
+        android:id="@+id/item_description_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="7dp"
+        android:layout_marginEnd="5dp"
+        android:layout_below="@+id/seller_name_tv"
+        android:layout_alignStart="@id/detail_item_title"
+        android:text="@string/item_description" />
 
     <TextView
         android:id="@+id/this_item_price"
