@@ -211,8 +211,6 @@ public class CameraFragment extends Fragment {
 
         @Override
         public void onError(CameraKitError cameraKitError) {
-            Toast.makeText(mContext, "Unable to take an image :(",
-                    Toast.LENGTH_SHORT).show();
             Log.e(TAG, "Error: " + cameraKitError.toString());
         }
 
@@ -236,6 +234,8 @@ public class CameraFragment extends Fragment {
             public void onSuccess(Void aVoid) {
                 Log.e(TAG, "Successfully uploaded item info!");
                 infoUploaded = true;
+                Toast.makeText(mContext, "Successfully updated your profile photo!",
+                        Toast.LENGTH_SHORT).show();
                 returnToNewsFeed(photoUploaded);
             }
         }).addOnFailureListener(new OnFailureListener() {

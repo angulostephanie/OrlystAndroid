@@ -161,6 +161,8 @@ public class GalleryFragment extends Fragment {
 
         while(permissionCheck != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(mActivity, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
+            permissionCheck = ContextCompat.checkSelfPermission(mContext, android.Manifest.permission.READ_EXTERNAL_STORAGE);
+
             // TODO: I want to force the user from the beginning however, maybe when they login, idk.
         }
 
@@ -357,6 +359,8 @@ public class GalleryFragment extends Fragment {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         progressDialog.dismiss();
+                        Toast.makeText(mContext, "Failed to updated your profile photo.",
+                                Toast.LENGTH_SHORT).show();
                         Toast.makeText(mContext, "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 })
@@ -371,7 +375,8 @@ public class GalleryFragment extends Fragment {
     }
     private void returnToNewsFeed(boolean success) {
         if(success) {
-            Toast.makeText(mContext, "Uploaded", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "Successfully updated your profile photo!",
+                    Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(mContext, MainActivity.class);
             startActivity(intent);
         }
