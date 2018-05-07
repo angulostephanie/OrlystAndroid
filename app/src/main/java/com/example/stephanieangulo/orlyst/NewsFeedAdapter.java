@@ -36,7 +36,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.ViewHo
         return new ViewHolder(itemView);
     }
     @Override
-    public void onBindViewHolder(ViewHolder holder, final int position) {
+    public void onBindViewHolder(NewsFeedAdapter.ViewHolder holder, final int position) {
         final Item item = mItemsList.get(position);
         holder.name.setText(item.getItemName());
         holder.price.setText("$" + item.getPrice());
