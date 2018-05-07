@@ -45,6 +45,7 @@ public class LoginActivity extends AppCompatActivity {
     private boolean isPasswordFilled = false;
     private boolean invalidCreds = false;
     private boolean nonExistingUser = false;
+    private android.support.v7.app.ActionBar toolBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,10 +55,13 @@ public class LoginActivity extends AppCompatActivity {
         mContext = this;
         mAuth = AppData.firebaseAuth;
 
+        toolBar = getSupportActionBar();
         emailText = findViewById(R.id.email_text);
         passwordText = findViewById(R.id.password_text);
         loginBtn = findViewById(R.id.login_btn);
         signUpPageBtn = findViewById(R.id.sign_up_page_btn);
+
+        toolBar.setTitle("");
 
         updateButtonStatus(false);
         addTextListeners();

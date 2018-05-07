@@ -46,6 +46,7 @@ public class SignUpActivity extends AppCompatActivity {
     private Button signUpBtn;
     private Button backBtn;
     private Context mContext;
+    private android.support.v7.app.ActionBar toolBar;
 
     private boolean isFirstFilled = false;
     private boolean isLastFilled = false;
@@ -60,12 +61,14 @@ public class SignUpActivity extends AppCompatActivity {
         mContext = this;
         mAuth = AppData.firebaseAuth;
 
+        toolBar = getSupportActionBar();
         firstNameText = findViewById(R.id.first_name_text);
         lastNameText = findViewById(R.id.last_name_text);
         emailText = findViewById(R.id.new_email_text);
         passwordText = findViewById(R.id.new_password_text);
         signUpBtn = findViewById(R.id.sign_up_btn);
         backBtn = findViewById(R.id.back_btn);
+        toolBar.setTitle("");
 
         updateButtonStatus(false);
         addTextListeners();
