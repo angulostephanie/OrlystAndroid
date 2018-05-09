@@ -28,8 +28,6 @@ import com.google.firebase.storage.StorageReference;
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class ProfileActivity extends AppCompatActivity {
@@ -42,7 +40,7 @@ public class ProfileActivity extends AppCompatActivity {
     private UserListAdapter mAdapter;
     private TextView sellerName;
     private RecyclerView recyclerView;
-    private List<Item> mItems;
+    private List<Item> mItems = new ArrayList<>();
     private ImageButton backBtn;
     private Context mContext;
     private ActionBar toolbar;
@@ -66,12 +64,12 @@ public class ProfileActivity extends AppCompatActivity {
 
         mContext = this;
         mDisplayedSeller = Parcels.unwrap(getIntent().getParcelableExtra("User"));
-        mItems = new ArrayList<>(mDisplayedSeller.getItems().values());
-        mItems.sort(Comparator.comparing(Item::getTimestamp));
-        Collections.reverse(mItems);
+        //mItems = new ArrayList<>(mDisplayedSeller.getItems().values());
+//        mItems.sort(Comparator.comparing(Item::getTimestamp));
+//        Collections.reverse(mItems);
 
-        mAdapter = new UserListAdapter(mContext,
-                new ArrayList<>(mDisplayedSeller.getItems().values()));
+//        mAdapter = new UserListAdapter(mContext,
+//                new ArrayList<>(mDisplayedSeller.getItems().values()));
 
         toolbar.setLogo(R.drawable.small_orlyst_logo);
         toolbar.setDisplayUseLogoEnabled(true);

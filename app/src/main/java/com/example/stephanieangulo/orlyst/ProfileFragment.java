@@ -1,14 +1,12 @@
 package com.example.stephanieangulo.orlyst;
 
 import android.app.Activity;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.NotificationCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -37,11 +35,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 
-import org.parceler.Parcels;
-
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,7 +74,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     private List<Item> mWatchlist = new ArrayList<>();
     private List<User> mUsers = new ArrayList<>();
     private List<Item> itemsDisplay = new ArrayList<>();
-    private Map<String, Item> watchlistCurrentUser = new HashMap<>();
+    private Map<String, Item> yourWatchlist = new HashMap<>();
     private boolean onUserItems = true;
 
 
@@ -241,27 +235,27 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 User foundUser = dataSnapshot.getValue(User.class);
 
                 //Log.d(TAG, "User found --> " + foundUser.getFirst());
-                mItems = new ArrayList<>(foundUser.getItems().values());
-                mWatchlist = new ArrayList<>(foundUser.getWatchlist().values());
-                mUser = foundUser;
-                Log.d(TAG, "User has " + mItems.size() + " items");
-                Log.d(TAG, "User has " + mWatchlist.size() + " itemson their watchlist");
-
-                if(mUser.getProfilePicture() != null)
-                    fetchProfilePhoto(mUser.getProfilePicture());
-                else
-                    profileImageView.setImageResource(R.drawable.add_prof_image);
-                mItems.sort(Comparator.comparing(Item::getTimestamp));
-                mWatchlist.sort(Comparator.comparing(Item::getTimestamp));
-
-                Collections.reverse(mItems);
-                Collections.reverse(mWatchlist);
-                mUsername.setText(foundUser.getFirst() + " " + foundUser.getLast());
-
-                updateRecyclerView();
-                Log.d(TAG,"Adapter count = " +mAdapter.getItemCount());
-                Log.d(TAG, "Adapter? " + mAdapter + " " + (mAdapter == null));
-                fetchDisplayedImages(true);
+//                mItems = new ArrayList<>(foundUser.getItems().values());
+//                mWatchlist = new ArrayList<>(foundUser.getWatchlist().values());
+//                mUser = foundUser;
+//                Log.d(TAG, "User has " + mItems.size() + " items");
+//                Log.d(TAG, "User has " + mWatchlist.size() + " itemson their watchlist");
+//
+//                if(mUser.getProfilePicture() != null)
+//                    fetchProfilePhoto(mUser.getProfilePicture());
+//                else
+//                    profileImageView.setImageResource(R.drawable.add_prof_image);
+//                mItems.sort(Comparator.comparing(Item::getTimestamp));
+//                mWatchlist.sort(Comparator.comparing(Item::getTimestamp));
+//
+//                Collections.reverse(mItems);
+//                Collections.reverse(mWatchlist);
+//                mUsername.setText(foundUser.getFirst() + " " + foundUser.getLast());
+//
+//                updateRecyclerView();
+//                Log.d(TAG,"Adapter count = " +mAdapter.getItemCount());
+//                Log.d(TAG, "Adapter? " + mAdapter + " " + (mAdapter == null));
+//                fetchDisplayedImages(true);
 
 
             }
@@ -334,27 +328,27 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     private void onProfileItemClick() {
         recyclerView.addOnItemTouchListener(new MyRecyclerItemClickListener(getActivity(),
                 (view, position) -> {
-                    Item selectedItem = itemsDisplay.get(position);
-                    String sellerID = selectedItem.getSellerID();
-                    User selectedUser = null;
-                    User userCurrent = null;
-                    for(User user: mUsers) {
-                        if(user.getUserID().equals(currentUser.getUid()))
-                            userCurrent = user;
-                        if(user.getUserID().equals(sellerID))
-                            selectedUser = user;
-                        if(selectedUser != null && userCurrent != null)
-                            break;
-                    }
-                    watchlistCurrentUser = userCurrent.getWatchlist();
-                    Intent itemIntent = new Intent(getActivity(), ItemDetailActivity.class);
-                    itemIntent.putExtra("Item", Parcels.wrap(selectedItem));
-                    itemIntent.putExtra("userSeller", Parcels.wrap(selectedUser));
-                    itemIntent.putExtra("watchlistCurrentUser", Parcels.wrap(watchlistCurrentUser));
-                    PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, itemIntent, 0);
-                    NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext, "profile");
-                    builder.setContentIntent(pendingIntent);
-                    startActivityForResult(itemIntent, FROM_PROFILE_RESULT_CODE);
+//                    Item selectedItem = itemsDisplay.get(position);
+//                    String sellerID = selectedItem.getSellerID();
+//                    User selectedUser = null;
+//                    User userCurrent = null;
+//                    for(User user: mUsers) {
+//                        if(user.getUserID().equals(currentUser.getUid()))
+//                            userCurrent = user;
+//                        if(user.getUserID().equals(sellerID))
+//                            selectedUser = user;
+//                        if(selectedUser != null && userCurrent != null)
+//                            break;
+//                    }
+//                    yourWatchlist = userCurrent.getWatchlist();
+//                    Intent itemIntent = new Intent(getActivity(), ItemDetailActivity.class);
+//                    itemIntent.putExtra("Item", Parcels.wrap(selectedItem));
+//                    itemIntent.putExtra("seller", Parcels.wrap(selectedUser));
+//                    itemIntent.putExtra("yourWatchlist", Parcels.wrap(yourWatchlist));
+//                    PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, itemIntent, 0);
+//                    NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext, "profile");
+//                    builder.setContentIntent(pendingIntent);
+//                    startActivityForResult(itemIntent, FROM_PROFILE_RESULT_CODE);
                 }));
     }
 

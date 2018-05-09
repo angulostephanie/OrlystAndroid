@@ -40,6 +40,7 @@ import java.util.Map;
 public class PostItemActivity extends AppCompatActivity {
     private static final String TAG = "PostItemActivity";
 
+    private DatabaseReference mItemReference;
     private DatabaseReference mUserReference;
     private FirebaseStorage mStorage;
     private StorageReference storageReference;
@@ -108,7 +109,8 @@ public class PostItemActivity extends AppCompatActivity {
         mContext = this;
         mAuth = AppData.firebaseAuth;
         mUser = mAuth.getCurrentUser();
-        mUserReference = AppData.getItemReference(mUser.getUid());
+        mUserReference = AppData.userRootReference;
+        mItemReference = AppData.itemRootReference;
         mStorage = AppData.firebaseStorage;
         storageReference = mStorage.getReference();
         toolbar = getSupportActionBar();
@@ -169,21 +171,23 @@ public class PostItemActivity extends AppCompatActivity {
                 .into(itemImage);
     }
     private void addItemToDatabase(String title, String description, String price) {
-        DatabaseReference postItemRef = mUserReference.push(); //mItemReference.push();
+        DatabaseReference postItemRef = mItemReference.push();
         String key = postItemRef.getKey();
+        DatabaseReference userItemListRef = mUserReference.child(mUser.getUid()).child("items").child(key);
         Item item = new Item(title, description, mUser.getDisplayName(),
                 mUser.getEmail(), key, mUser.getUid(), categories.get(category), price);
 
         Map<String, Object> itemValues = item.toMap();
 
         uploadImage(getImage(), key);
-
+        userItemListRef.setValue(key);
         postItemRef.updateChildren(itemValues).
                 addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.e(TAG, "Successfully uploaded item info!");
                         infoUploaded = true;
+                        uploadImage(getImage(), key);
                         returnToNewsFeed(photoUploaded);
                     }
                 }

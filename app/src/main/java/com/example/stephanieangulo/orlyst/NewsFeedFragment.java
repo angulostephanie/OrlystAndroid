@@ -39,9 +39,7 @@ import org.parceler.Parcels;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -74,8 +72,6 @@ public class NewsFeedFragment extends Fragment {
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private List<Item> mItems = new ArrayList<>();
-    private List<User> mUsers = new ArrayList<>();
-    private Map<String, Item> watchlistCurrentUser = new HashMap<>();
     private FloatingActionButton addBtn;
 
 
@@ -142,14 +138,13 @@ public class NewsFeedFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_news_feed, container, false);
         mContext = getContext();
         mAuth = AppData.firebaseAuth;
+        mItems = fetchAllItems();
 
         recyclerView = view.findViewById(R.id.feed_recycler_view);
         addBtn = view.findViewById(R.id.fabAdd);
-        mUsers = fetchUsers();
         currentUser = mAuth.getCurrentUser();
 
-
-        mAdapter = new NewsFeedAdapter(getActivity(), mItems);
+        mAdapter = new NewsFeedAdapter(mContext, mItems);
 
         setUpRecyclerView();
         onNewsFeedItemClick();
@@ -214,31 +209,19 @@ public class NewsFeedFragment extends Fragment {
         recyclerView.setNestedScrollingEnabled(false);
     }
 
+    private void updateRecyclerView() {
+        mAdapter = new NewsFeedAdapter(mContext, mItems);
+        setUpRecyclerView();
+        mAdapter.notifyDataSetChanged();
+    }
+
     private void onNewsFeedItemClick() {
         recyclerView.addOnItemTouchListener(new MyRecyclerItemClickListener(getActivity(),
                 (view, position) -> {
                     Item selectedItem = mItems.get(position);
+                    Log.d(TAG, "clicked " + selectedItem.getItemName());
                     String sellerID = selectedItem.getSellerID();
-                    User selectedUser = null;
-                    User userCurrent = null;
-                    for(User user: mUsers) {
-                        if(user.getUserID().equals(currentUser.getUid()))
-                            userCurrent = user;
-                        if(user.getUserID().equals(sellerID))
-                            selectedUser = user;
-                        if(selectedUser != null && userCurrent != null)
-                            break;
-                    }
-
-                    watchlistCurrentUser = userCurrent.getWatchlist();
-                    Intent itemIntent = new Intent(getActivity(), ItemDetailActivity.class);
-                    itemIntent.putExtra("Item", Parcels.wrap(selectedItem));
-                    itemIntent.putExtra("userSeller", Parcels.wrap(selectedUser));
-                    itemIntent.putExtra("watchlistCurrentUser", Parcels.wrap(watchlistCurrentUser));
-                    PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, itemIntent, 0);
-                    NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext, "newsfeed");
-                    builder.setContentIntent(pendingIntent);
-                    startActivityForResult(itemIntent, FROM_NEWSFEED_RESULT_CODE);
+                    fetchSeller(selectedItem, sellerID);
                 }));
     }
 
@@ -249,6 +232,7 @@ public class NewsFeedFragment extends Fragment {
             if(resultCode == Activity.RESULT_OK){
                 Intent refreshIntent = new Intent(mContext, MainActivity.class);
                 startActivity(refreshIntent);
+                mAdapter.notifyDataSetChanged();
             }
             if (resultCode == Activity.RESULT_CANCELED) {
                 //Write your code if there's no result
@@ -268,34 +252,45 @@ public class NewsFeedFragment extends Fragment {
             }
         });
     }
-    private List<User> fetchUsers() {
-        final List<User> users = new ArrayList<>();
-        final DatabaseReference userRef = AppData.firebaseDatabase.getReference("users");
-        userRef.addValueEventListener(new ValueEventListener() {
+
+
+    private List<Item> fetchAllItems() {
+        final List<Item> items = new ArrayList<>();
+        final DatabaseReference itemRef = AppData.firebaseDatabase.getReference("items");
+        itemRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Iterable<DataSnapshot> dataSnapshots = dataSnapshot.getChildren();
                 for (DataSnapshot data : dataSnapshots) {
                     String key = data.getKey();
                     DataSnapshot a = dataSnapshot.child(key);
-                    User user = a.getValue(User.class);
-                    users.add(user);
-                    Log.d(TAG, "item list size " + user.getItems().values().size());
-                    for(Item item: user.getItems().values()) {
-                        List<String> keys = getAllItemKeys(mItems);
-                        if(!keys.contains(item.getKey())) {
-                            Log.d(TAG, "getting item " + item.getItemName());
-                            mItems.add(item);
-                            Log.d(TAG, "Time stamp = " + item.getTimestamp());
-                            // TODO: add booleans on whether or not item is in watchlist
-                            fetchImage(item);
-                        }
-                    }
-                    Log.d(TAG, "hello " + user.getFirst());
+                    Item item = a.getValue(Item.class);
+                    items.add(item);
+                    fetchImage(item);
+                    Log.d(TAG, "Found this item " + item.getItemName());
                 }
+                mItems = new ArrayList<>(items);
+                Log.d(TAG, "mitems size --> " + mItems.size());
                 mItems.sort(Comparator.comparing(Item::getTimestamp));
                 Collections.reverse(mItems);
-                //mAdapter.notifyDataSetChanged();
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        return mItems;
+    }
+
+    private void fetchSeller(Item selectedItem, String sellerID) {
+        final DatabaseReference userRef = AppData.firebaseDatabase.getReference("users").child(sellerID);
+        userRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                User seller = dataSnapshot.getValue(User.class);
+                String currentID = currentUser.getUid();
+                Log.d(TAG, "Seller's email =" + seller.getEmail());
+                fetchYourWatchlist(selectedItem, seller, currentID);
             }
 
             @Override
@@ -303,8 +298,8 @@ public class NewsFeedFragment extends Fragment {
                 Log.e(TAG, databaseError.getDetails());
             }
         });
-        return users;
     }
+
     private void fetchImage(Item item) {
         final Item itemWithImage = item;
         StorageReference storageRef = AppData.firebaseStorage.getReference();
@@ -314,6 +309,7 @@ public class NewsFeedFragment extends Fragment {
         imageRef.getBytes(LIMIT).addOnSuccessListener(new OnSuccessListener<byte[]>() {
             @Override
             public void onSuccess(byte[] bytes) {
+                Log.d(TAG, "Got image! ");
                 itemWithImage.setBytes(bytes);
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -325,17 +321,43 @@ public class NewsFeedFragment extends Fragment {
         }).addOnCompleteListener(new OnCompleteListener<byte[]>() {
             @Override
             public void onComplete(@NonNull Task<byte[]> task) {
+                Log.d(TAG, "Notifying adapter of data changes! ");
                 mAdapter.notifyDataSetChanged();
             }
         });
     }
-    private List<String> getAllItemKeys(List<Item> items) {
-        List<String> keys = new ArrayList<>();
-        for(Item item: items) {
-            keys.add(item.getKey());
-        }
-        return keys;
+
+    private void fetchYourWatchlist(Item selectedItem, User seller, String currentID) {
+        final List<String> yourWatchlist = new ArrayList<>();
+        final DatabaseReference watchlistRef = AppData.watchlistRootReference.child(currentID);
+        watchlistRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Iterable<DataSnapshot> dataSnapshots = dataSnapshot.getChildren();
+                for (DataSnapshot data : dataSnapshots) {
+                    String itemID = (String)data.getValue();
+                    yourWatchlist.add(itemID);
+                }
+                goToDetailActivity(selectedItem, seller, yourWatchlist);
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
+    private void goToDetailActivity(Item selectedItem, User seller, List<String> yourWatchList) {
+        Intent itemIntent = new Intent(getActivity(), ItemDetailActivity.class);
+        itemIntent.putExtra("selectedItem", Parcels.wrap(selectedItem));
+        itemIntent.putExtra("seller", Parcels.wrap(seller));
+        itemIntent.putExtra("yourWatchList", Parcels.wrap(yourWatchList));
+        PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, itemIntent, 0);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext, "newsfeed");
+        builder.setContentIntent(pendingIntent);
+        startActivityForResult(itemIntent, FROM_NEWSFEED_RESULT_CODE);
+    }
 
 }

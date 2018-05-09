@@ -37,7 +37,7 @@ public class TakePhotoActivity extends AppCompatActivity
         BottomNavigationView navigation = findViewById(R.id.camera_navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        //currentUser = Parcels.unwrap(getIntent().getParcelableExtra("watchlistCurrentUser"));
+        //currentUser = Parcels.unwrap(getIntent().getParcelableExtra("yourWatchlist"));
         takingProfilePhoto = this.getIntent().getBooleanExtra("profilePhoto", false);
 
         toolbar.setLogo(R.drawable.small_orlyst_logo);

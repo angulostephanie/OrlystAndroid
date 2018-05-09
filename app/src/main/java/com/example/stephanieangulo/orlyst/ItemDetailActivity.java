@@ -34,9 +34,10 @@ import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class ItemDetailActivity extends AppCompatActivity {
     private static final String TAG = ItemDetailActivity.class.getSimpleName();
@@ -47,12 +48,13 @@ public class ItemDetailActivity extends AppCompatActivity {
     private FirebaseUser mUser;
     private FirebaseAuth mAuth;
     private DatabaseReference itemRef;
-    private DatabaseReference watchlistRef;
+    private DatabaseReference sellerListRef;
+    private DatabaseReference yourWatchlistRef;
     private DatabaseReference peopleWatchingRef;
     private StorageReference imageRef;
     private Item displayedItem;
-    private User userSeller;
-    private Map<String, Item> watchlistCurrentUser = new HashMap<>();
+    private User seller;
+    private List<String> yourWatchlist = new ArrayList<>();
     private Map<String, User> userDatabase = new HashMap<>();
     private List<Item> mItems = new ArrayList<>();
     private List<User> peopleWatchingUsers;
@@ -65,7 +67,6 @@ public class ItemDetailActivity extends AppCompatActivity {
     private ImageButton backBtn;
     private Button topBtn;
     private Button bottomBtn;
-    private Intent intent;
     private ActionBar toolbar;
 
     @Override
@@ -76,10 +77,6 @@ public class ItemDetailActivity extends AppCompatActivity {
         mContext = this;
         mAuth = AppData.firebaseAuth;
         mUser = mAuth.getCurrentUser();
-        intent = getIntent();
-
-        toolbar = getSupportActionBar();
-        toolbar.setTitle("");
 
         itemTitle = findViewById(R.id.detail_item_title);
         itemDescription = findViewById(R.id.item_description_tv);
@@ -91,28 +88,25 @@ public class ItemDetailActivity extends AppCompatActivity {
         bottomBtn = findViewById(R.id.detail_contact_btn);
         backBtn = findViewById(R.id.detail_back_btn);
 
-        displayedItem = Parcels.unwrap(getIntent().getParcelableExtra("Item"));
-        userSeller = Parcels.unwrap(getIntent().getParcelableExtra("userSeller"));
-        watchlistCurrentUser = Parcels.unwrap(getIntent().getParcelableExtra("watchlistCurrentUser"));
+        displayedItem = Parcels.unwrap(getIntent().getParcelableExtra("selectedItem"));
+        seller = Parcels.unwrap(getIntent().getParcelableExtra("seller"));
+        yourWatchlist = Parcels.unwrap(getIntent().getParcelableExtra("yourWatchList"));
 
-        //fromNewsfeed = intent.getBooleanExtra("fromNewsfeed", false);
-        //fromProfile = intent.getBooleanExtra("fromProfile", false);
-
-        itemRef = AppData.firebaseDatabase.getReference("users")
-                .child(userSeller.getUserID()).child("items").child(displayedItem.getKey());
-        watchlistRef = AppData.firebaseDatabase.getReference("users")
-                .child(mUser.getUid()).child("watchlist").child(displayedItem.getKey());
-        peopleWatchingRef = AppData.firebaseDatabase.getReference("users")
-                .child(userSeller.getUserID()).child("items").child(displayedItem.getKey()).child("peopleWatching");
+        itemRef = AppData.itemRootReference.child(displayedItem.getKey());
+        sellerListRef = AppData.userRootReference.child(seller.getUserID())
+                .child("items").child(displayedItem.getKey());
+        yourWatchlistRef = AppData.watchlistRootReference.child(mUser.getUid());
+        peopleWatchingRef = AppData.itemRootReference.child(displayedItem.getKey()).child("peopleWatching");
         imageRef = AppData.firebaseStorage.getReference().child("images/").child(displayedItem.getKey());
 
-
+        toolbar = getSupportActionBar();
+        toolbar.setTitle("");
         toolbar.setLogo(R.drawable.small_orlyst_logo);
         toolbar.setDisplayUseLogoEnabled(true);
         toolbar.setDisplayShowHomeEnabled(true);
 
         setUpDetailPage();
-        updateButtons();
+        setUpButtons();
         onItemSellerName();
 
         backBtn.setOnClickListener(v -> {
@@ -123,8 +117,8 @@ public class ItemDetailActivity extends AppCompatActivity {
 
     }
 
-    private void updateButtons() {
-        if(userSeller.getUserID().equals(mUser.getUid())) {
+    private void setUpButtons() {
+        if(seller.getUserID().equals(mUser.getUid())) {
             setUpEditBtn();
             setUpDeleteButton();
         } else {
@@ -133,7 +127,7 @@ public class ItemDetailActivity extends AppCompatActivity {
         }
     }
 
-    private void setUpEditBtn(){
+    private void setUpEditBtn() {
         topBtn.setText(EDIT_TEXT);
         topBtn.setOnClickListener(v -> {
             Toast.makeText(mContext, "Edit function not working yet sorry :(", Toast.LENGTH_SHORT).show();
@@ -141,12 +135,55 @@ public class ItemDetailActivity extends AppCompatActivity {
         });
     }
 
-    private void setUpContactBtn(){
+    private void setUpContactBtn() {
         bottomBtn.setOnClickListener(v -> {
-
             String[] emailAddress = new String[1];
             emailAddress[0] = displayedItem.getEmail();
-            composeEmail(emailAddress, displayedItem.getSeller(), userSeller.getFirst(), displayedItem.getItemName());
+            composeEmail(emailAddress, displayedItem.getSeller(), seller.getFirst(), displayedItem.getItemName());
+        });
+    }
+
+    private void setUpWatchlistBtn() {
+        Set<String> watchListSet = new HashSet<>(yourWatchlist);
+        if (watchListSet.contains(displayedItem.getKey())) {
+            setUpRemoveWatchListBtn();
+        } else {
+            setUpAddWatchListBtn();
+        }
+    }
+
+    private void setUpAddWatchListBtn(){
+        topBtn.setText("ADD TO WATCHLIST");
+        topBtn.setOnClickListener(null);
+        topBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addItemToYourWatchlist(displayedItem.getKey(), yourWatchlistRef);
+                addPeopleWatchingToItem(mUser.getUid());
+            }
+        });
+    }
+
+    private void setUpRemoveWatchListBtn(){
+        topBtn.setText("REMOVE FROM WATCHLIST");
+        topBtn.setOnClickListener(null);
+        topBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                yourWatchlistRef.child(displayedItem.getKey()).removeValue();
+                peopleWatchingRef.child(mUser.getUid()).removeValue();
+                setUpAddWatchListBtn();
+            }
+        });
+    }
+
+    private void setUpDeleteButton(){
+        bottomBtn.setText(DELETE_TEXT);
+        bottomBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fetchPeopleWatching();
+            }
         });
     }
 
@@ -163,7 +200,7 @@ public class ItemDetailActivity extends AppCompatActivity {
     }
 
     private void setUpDetailPage() {
-        Log.d(TAG, "User email is " + userSeller.getEmail());
+        Log.d(TAG, "User email is " + seller.getEmail());
         itemTitle.setText(displayedItem.getItemName());
         itemDescription.setText(displayedItem.getDescription());
         if(displayedItem.getBytes() != null)
@@ -177,6 +214,7 @@ public class ItemDetailActivity extends AppCompatActivity {
         itemCategory.setText(displayedItem.getCategory());
 
     }
+
     private void setItemImage(byte[] jpeg) {
         Glide.with(mContext)
                 .load(jpeg)
@@ -188,59 +226,12 @@ public class ItemDetailActivity extends AppCompatActivity {
     private void onItemSellerName() {
         itemSeller.setOnClickListener(v -> {
             Log.d(TAG, "Seller clicked");
-
             Intent profileIntent = new Intent(mContext, ProfileActivity.class);
-            profileIntent.putExtra("User", Parcels.wrap(userSeller));
+            profileIntent.putExtra("User", Parcels.wrap(seller));
             PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, profileIntent, 0);
             NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext, "profile");
             builder.setContentIntent(pendingIntent);
             startActivityForResult(profileIntent, 1);
-        });
-    }
-    private void setUpWatchlistBtn() {
-            if(watchlistCurrentUser.containsKey(displayedItem.getKey())) {
-                setUpRemoveWatchListBtn();
-            } else {
-                setUpAddWatchListBtn();
-            }
-    }
-
-    private void setUpAddWatchListBtn(){
-        topBtn.setText("ADD TO WATCHLIST");
-        topBtn.setOnClickListener(null);
-        topBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                addItemToWatchlist(itemRef, watchlistRef);
-                addPeopleWatchingToItem(mUser.getUid());
-                //addItemToPeopleWatching(itemRef, peopleWatchingRef);
-                setUpRemoveWatchListBtn();
-            }
-        });
-    }
-    private void setUpRemoveWatchListBtn(){
-        DatabaseReference userWatchingRef  = AppData.firebaseDatabase.getReference("users")
-                .child(userSeller.getUserID()).child("items").child(displayedItem.getKey()).child("peopleWatching").child(mUser.getUid());
-        topBtn.setText("REMOVE FROM WATCHLIST");
-        topBtn.setOnClickListener(null);
-        topBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                watchlistRef.removeValue();
-                userWatchingRef.removeValue();
-                setUpAddWatchListBtn();
-            }
-        });
-    }
-    private void setUpDeleteButton(){
-        bottomBtn.setText(DELETE_TEXT);
-        bottomBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                fetchPeopleWatching();
-            }
         });
     }
 
@@ -260,21 +251,6 @@ public class ItemDetailActivity extends AppCompatActivity {
         });
     }
 
-    private void removeItemFromOtherWatchlists(List<User> peopleWatchingUsers) {
-        for(User user : peopleWatchingUsers) {
-            Map<String, Item> watchlist = user.getWatchlist();
-            watchlist.remove(displayedItem.getKey());
-            DatabaseReference userWatchListRef = AppData.firebaseDatabase.getReference("users")
-                    .child(user.getUserID()).child("watchlist").child(displayedItem.getKey());
-            userWatchListRef.removeValue();
-        }
-        itemRef.removeValue();
-        deleteImage();
-
-        Toast.makeText(mContext, "Item deleted", Toast.LENGTH_SHORT).show();
-        finish();
-    }
-
     private void fetchPeopleWatching() {
         final List<String> userIDs = new ArrayList<>();
 
@@ -288,7 +264,7 @@ public class ItemDetailActivity extends AppCompatActivity {
                     String userID = (String) a.getValue();
                     userIDs.add(userID);
                 }
-                 fetchUsers(userIDs);
+                 removeItemFromEveryWhere(userIDs);
             }
 
             @Override
@@ -299,89 +275,38 @@ public class ItemDetailActivity extends AppCompatActivity {
 
     }
 
-    private void fetchUsers(List<String> usersIDToFetch) {
-        final List<User> users = new ArrayList<>();
-        final DatabaseReference userRef = AppData.firebaseDatabase.getReference("users");
-        userRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Iterable<DataSnapshot> dataSnapshots = dataSnapshot.getChildren();
-                for (DataSnapshot data : dataSnapshots) {
-                    String key = data.getKey();
-                    DataSnapshot a = dataSnapshot.child(key);
-                    User user = a.getValue(User.class);
-                    userDatabase.put(key, user);
-                }
-                Iterator<String> iterator = userDatabase.keySet().iterator();
-
-                for (String userID : usersIDToFetch){
-                    if(userDatabase.containsKey(userID)) {
-                        users.add(userDatabase.get(userID));
-                    }
-                }
-                removeItemFromOtherWatchlists(users);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.e(TAG, databaseError.getDetails());
-            }
-        });
+    private void removeItemFromEveryWhere(List<String> allPeopleWatching) {
+        for(String someonesWatchlist: allPeopleWatching) {
+            final DatabaseReference itemOnSomeonesWatchlist = AppData.firebaseDatabase
+                    .getReference("watchlist").child(someonesWatchlist).child(displayedItem.getKey());
+            itemOnSomeonesWatchlist.removeValue();
+        }
+        sellerListRef.removeValue();
+        itemRef.removeValue();
+        deleteImage();
+        Toast.makeText(mContext, "Item deleted", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "Deleted! closing activity :P");
+        setResult(RESULT_OK);
+        finish();
     }
-
-
 
     private void addPeopleWatchingToItem(String userID) {
-        DatabaseReference postItemRef = peopleWatchingRef.child(userID); //mItemReference.push();
-        postItemRef.setValue(userID);
-
-
-       /* postItemRef.updateChildren(itemValues).
-                addOnSuccessListener(new OnSuccessListener<Void>() {
-                                         @Override
-                                         public void onSuccess(Void aVoid) {
-                                             Log.e(TAG, "Successfully uploaded item info!");
-                                             infoUploaded = true;
-                                             returnToNewsFeed(photoUploaded);
-                                         }
-                                     }
-                ).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.e(TAG, "FAIL");
-                Toast.makeText(mContext, "fail :/ check logcat for error",
-                        Toast.LENGTH_SHORT).show();
-            }
-        }).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                Log.e(TAG, "Complete");
-            }
-        });
-        */
+        DatabaseReference thisPersonRef = peopleWatchingRef.child(userID);
+        thisPersonRef.setValue(userID);
     }
 
-     private void addItemToWatchlist(DatabaseReference fromPath, final DatabaseReference toPath) {
-        fromPath.addListenerForSingleValueEvent(new ValueEventListener() {
-
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                toPath.setValue(dataSnapshot.getValue(), (databaseError, databaseReference) -> {
-
-                    if(databaseError != null) {
-                        Log.e(TAG, databaseError.getMessage());
-                    } else {
-                        Log.d(TAG, "successfully added to watchlist!");
-                        Toast.makeText(ItemDetailActivity.this,
-                                "Added this item to your list :)", Toast.LENGTH_SHORT).show();
-
+    private void addItemToYourWatchlist(String itemKey, final DatabaseReference yourWatchlist) {
+        yourWatchlist.child(displayedItem.getKey()).setValue(itemKey)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "Successfully added this item to your watchlist :)");
+                        setUpRemoveWatchListBtn();
                     }
-                });
-            }
-
+                }).addOnFailureListener(new OnFailureListener() {
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-
+            public void onFailure(@NonNull Exception e) {
+                Log.e(TAG, e.getMessage());
             }
         });
     }

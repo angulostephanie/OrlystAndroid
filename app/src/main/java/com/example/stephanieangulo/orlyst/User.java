@@ -7,9 +7,8 @@ import java.util.Map;
 
 @Parcel
 public class User {
-    private Map<String, Item> items = new HashMap<>();
-    private Map<String, Item> watchlist = new HashMap<>();
-    private Map<String, User> usersInterested = new HashMap<>();
+    private Map<String, String> items = new HashMap<>();
+    private Map<String, String> watchlist = new HashMap<>();
     private byte[] bytes;
     private String first, last, email, userID, profilePicture;
 
@@ -36,10 +35,10 @@ public class User {
     public void setUserID(String userID) {
         this.userID = userID;
     }
-    public void setItems(Map<String, Item> items) {
+    public void setItems(Map<String, String> items) {
         this.items = items;
     }
-    public void setWatchlist(Map<String, Item> watchlist) {
+    public void setWatchlist(Map<String, String> watchlist) {
         this.watchlist = watchlist;
     }
     public void setProfilePicture(String profilePicture) { this.profilePicture = profilePicture;}
@@ -57,8 +56,8 @@ public class User {
     public String getUserID() {
         return userID;
     }
-    public Map<String, Item> getItems() { return items; }
-    public Map<String, Item> getWatchlist() { return watchlist; }
+    public Map<String, String> getItems() { return items; }
+    public Map<String, String> getWatchlist() { return watchlist; }
     public String getProfilePicture() { return profilePicture; }
     public byte[] getBytes() { return bytes; }
 
