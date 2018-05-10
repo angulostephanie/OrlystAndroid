@@ -74,6 +74,34 @@ public class NewsFeedFragment extends Fragment {
     private List<Item> mItems = new ArrayList<>();
     private FloatingActionButton addBtn;
 
+    private final DatabaseReference itemRef = AppData.itemRootReference;
+    private final DatabaseReference userRef = AppData.userRootReference;
+    private final DatabaseReference watchlistRef = AppData.watchlistRootReference;
+    private ValueEventListener newsFeedListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            List<Item> items = new ArrayList<>();
+            Iterable<DataSnapshot> dataSnapshots = dataSnapshot.getChildren();
+            for (DataSnapshot data : dataSnapshots) {
+                String key = data.getKey();
+                DataSnapshot a = dataSnapshot.child(key);
+                Item item = a.getValue(Item.class);
+                items.add(item);
+                fetchImage(item);
+                Log.d(TAG, "Found this item " + item.getItemName());
+            }
+            mItems = new ArrayList<>(items);
+            Log.d(TAG, "mitems size --> " + mItems.size());
+            mItems.sort(Comparator.comparing(Item::getTimestamp));
+            Collections.reverse(mItems);
+
+            mAdapter.notifyDataSetChanged();
+        }
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+    };
 
     public NewsFeedFragment() {
         // Required empty public constructor
@@ -168,6 +196,7 @@ public class NewsFeedFragment extends Fragment {
     public void onStop() {
         super.onStop();
     }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -179,6 +208,17 @@ public class NewsFeedFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onResume() {
+        itemRef.addValueEventListener(newsFeedListener);
+        mAdapter.notifyDataSetChanged();
+        super.onResume();
+    }
+    @Override
+    public void onPause() {
+        itemRef.removeEventListener(newsFeedListener);
+        super.onPause();
+    }
     @Override
     public void onDetach() {
         super.onDetach();
@@ -207,11 +247,6 @@ public class NewsFeedFragment extends Fragment {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(mAdapter);
         recyclerView.setNestedScrollingEnabled(false);
-    }
-
-    private void updateRecyclerView() {
-        mAdapter = new NewsFeedAdapter(mContext, mItems);
-        setUpRecyclerView();
         mAdapter.notifyDataSetChanged();
     }
 
@@ -255,36 +290,12 @@ public class NewsFeedFragment extends Fragment {
 
 
     private List<Item> fetchAllItems() {
-        final List<Item> items = new ArrayList<>();
-        final DatabaseReference itemRef = AppData.firebaseDatabase.getReference("items");
-        itemRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Iterable<DataSnapshot> dataSnapshots = dataSnapshot.getChildren();
-                for (DataSnapshot data : dataSnapshots) {
-                    String key = data.getKey();
-                    DataSnapshot a = dataSnapshot.child(key);
-                    Item item = a.getValue(Item.class);
-                    items.add(item);
-                    fetchImage(item);
-                    Log.d(TAG, "Found this item " + item.getItemName());
-                }
-                mItems = new ArrayList<>(items);
-                Log.d(TAG, "mitems size --> " + mItems.size());
-                mItems.sort(Comparator.comparing(Item::getTimestamp));
-                Collections.reverse(mItems);
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+        itemRef.addValueEventListener(newsFeedListener);
         return mItems;
     }
 
     private void fetchSeller(Item selectedItem, String sellerID) {
-        final DatabaseReference userRef = AppData.firebaseDatabase.getReference("users").child(sellerID);
-        userRef.addValueEventListener(new ValueEventListener() {
+        userRef.child(sellerID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 User seller = dataSnapshot.getValue(User.class);
@@ -328,12 +339,11 @@ public class NewsFeedFragment extends Fragment {
     }
 
     private void fetchYourWatchlist(Item selectedItem, User seller, String currentID) {
-        final List<String> yourWatchlist = new ArrayList<>();
-        final DatabaseReference watchlistRef = AppData.watchlistRootReference.child(currentID);
-        watchlistRef.addValueEventListener(new ValueEventListener() {
+        watchlistRef.child(currentID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Iterable<DataSnapshot> dataSnapshots = dataSnapshot.getChildren();
+                List<String> yourWatchlist = new ArrayList<>();
                 for (DataSnapshot data : dataSnapshots) {
                     String itemID = (String)data.getValue();
                     yourWatchlist.add(itemID);
